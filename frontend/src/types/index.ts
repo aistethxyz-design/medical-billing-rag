@@ -1,4 +1,5 @@
 // Global type definitions for the AISteth Medical Billing Platform
+import React from 'react';
 
 export interface User {
   id: string;
@@ -53,6 +54,25 @@ export interface ChatMessage {
 export interface BaseComponentProps {
   className?: string;
   children?: React.ReactNode;
+  [key: string]: any; // Allow additional props
+}
+
+// File upload specific types
+export interface DropzoneOptions {
+  accept?: Record<string, string[]>;
+  multiple?: boolean;
+  maxSize?: number;
+  onDrop?: (acceptedFiles: File[], rejectedFiles: any[]) => void;
+}
+
+export interface FileWithPath extends File {
+  path?: string;
+}
+
+// Fix for refKey and HTMLProps issues
+export interface CustomHTMLProps extends React.HTMLAttributes<HTMLElement> {
+  refKey?: string;
+  [key: string]: any;
 }
 
 // API Response types

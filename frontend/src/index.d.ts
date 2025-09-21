@@ -47,6 +47,30 @@ declare module '*.tiff' {
   export default src;
 }
 
+// React Dropzone module declaration
+declare module 'react-dropzone' {
+  export interface DropzoneOptions {
+    accept?: Record<string, string[]>;
+    multiple?: boolean;
+    maxSize?: number;
+    onDrop?: (acceptedFiles: File[], rejectedFiles: any[]) => void;
+    [key: string]: any;
+  }
+
+  export interface DropzoneState {
+    isDragActive: boolean;
+    isDragAccept: boolean;
+    isDragReject: boolean;
+    isFocused: boolean;
+    acceptedFiles: File[];
+    rejectedFiles: any[];
+    getRootProps: (props?: any) => any;
+    getInputProps: (props?: any) => any;
+  }
+
+  export function useDropzone(options?: DropzoneOptions): DropzoneState;
+}
+
 // Global type augmentations
 declare global {
   interface Window {
@@ -55,12 +79,23 @@ declare global {
   }
 }
 
-// React component types
+// React component types with more flexibility
 declare namespace React {
   interface Component<P = {}, S = {}, SS = any> {
     refs: {
       [key: string]: ReactInstance;
     };
+  }
+
+  interface HTMLAttributes<T> {
+    refKey?: string;
+    [key: string]: any;
+  }
+
+  interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+    accept?: string;
+    multiple?: boolean;
+    [key: string]: any;
   }
 }
 

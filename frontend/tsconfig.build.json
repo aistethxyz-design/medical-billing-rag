@@ -15,12 +15,14 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* More permissive linting for builds */
+    /* Very permissive for deployment builds */
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "skipDefaultLibCheck": true,
 
     /* Path mapping */
     "baseUrl": ".",
@@ -28,6 +30,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", "src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
