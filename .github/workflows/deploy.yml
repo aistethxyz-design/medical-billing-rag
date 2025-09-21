@@ -32,7 +32,7 @@ jobs:
     - name: Install Frontend Dependencies
       run: |
         cd frontend
-        npm ci --legacy-peer-deps
+        npm install --legacy-peer-deps
     
     - name: Create Environment File
       run: |
@@ -205,7 +205,7 @@ jobs:
       uses: actions/configure-pages@v4
     
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       with:
         path: './dist'
 
@@ -218,4 +218,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
