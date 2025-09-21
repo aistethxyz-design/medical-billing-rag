@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  medical-billing-rag:
+    build: .
+    container_name: medical-billing-rag
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT:-us-east-1}
+      - PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME:-medical-billing-codes}
+      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-meta-llama/llama-3.2-3b-instruct:free}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - medical-billing-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    image: nginx:alpine
+    container_name: medical-billing-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - medical-billing-rag
+    networks:
+      - medical-billing-network
+
+networks:
+  medical-billing-network:
+    driver: bridge
+
+volumes:
+  data:
+  logs:
+

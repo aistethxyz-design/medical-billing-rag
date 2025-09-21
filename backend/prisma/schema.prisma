@@ -1,0 +1,325 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "wasm"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String @default("PROVIDER")
+  practiceId String?
+  practice  Practice? @relation(fields: [practiceId], references: [id])
+  
+  // Medical provider specific fields
+  npi       String?  // National Provider Identifier
+  specialty String?
+  license   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  encounters        Encounter[]
+  codeOptimizations CodeOptimization[]
+  auditLogs         AuditLog[]
+  
+  @@map("users")
+}
+
+model Practice {
+  id           String @id @default(cuid())
+  name         String
+  taxId        String @unique
+  address      String
+  city         String
+  state        String
+  zipCode      String
+  phone        String
+  specialties  String // JSON string for SQLite compatibility
+  
+  // Settings
+  hipaaCompliant Boolean @default(true)
+  settings       String?   // JSON string for SQLite compatibility
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  users      User[]
+  encounters Encounter[]
+  
+  @@map("practices")
+}
+
+model Patient {
+  id        String @id @default(cuid())
+  // De-identified patient data for HIPAA compliance
+  patientId String @unique // Internal ID, not PHI
+  ageRange  String? // e.g., "18-25", "65+"
+  gender    String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  encounters Encounter[]
+  
+  @@map("patients")
+}
+
+model Encounter {
+  id          String    @id @default(cuid())
+  practiceId  String
+  providerId  String
+  patientId   String
+  
+  // Encounter details
+  date        DateTime
+  type        String
+  duration    Int?      // in minutes
+  location    String?   // office, hospital, etc.
+  
+  // Clinical data
+  chiefComplaint   String?
+  assessment       String?
+  plan            String?
+  notes           String?
+  
+  // Original document info
+  documentId      String?
+  documentType    String?
+  originalText    String?
+  
+  // Coding status
+  status          String @default("PENDING")
+  reviewedAt      DateTime?
+  reviewedById    String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  practice     Practice @relation(fields: [practiceId], references: [id])
+  provider     User     @relation(fields: [providerId], references: [id])
+  patient      Patient  @relation(fields: [patientId], references: [id])
+  
+  // Medical codes
+  diagnoses       Diagnosis[]
+  procedures      Procedure[]
+  optimizations   CodeOptimization[]
+  
+  @@map("encounters")
+}
+
+model Diagnosis {
+  id          String @id @default(cuid())
+  encounterId String
+  
+  // ICD-10 code information
+  icdCode     String
+  icdVersion  String @default("ICD-10")
+  description String
+  isPrimary   Boolean @default(false)
+  
+  // AI analysis
+  confidence    Float?
+  aiSuggestion  String?
+  isOptimized   Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  encounter Encounter @relation(fields: [encounterId], references: [id])
+  
+  @@map("diagnoses")
+}
+
+model Procedure {
+  id          String @id @default(cuid())
+  encounterId String
+  
+  // CPT/HCPCS code information
+  cptCode     String
+  hcpcsCode   String?
+  description String
+  modifier1   String?
+  modifier2   String?
+  modifier3   String?
+  modifier4   String?
+  
+  // Billing information
+  units       Int @default(1)
+  chargeAmount Float?
+  allowedAmount Float?
+  
+  // AI analysis
+  confidence     Float?
+  aiSuggestion   String?
+  isOptimized    Boolean @default(false)
+  bundlingRisk   Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  encounter Encounter @relation(fields: [encounterId], references: [id])
+  
+  @@map("procedures")
+}
+
+model CodeOptimization {
+  id          String @id @default(cuid())
+  encounterId String
+  providerId  String
+  
+  // Optimization details
+  type           String
+  originalCode   String
+  suggestedCode  String
+  reason         String
+  aiExplanation  String?
+  
+  // Financial impact
+  originalAmount   Float?
+  optimizedAmount  Float?
+  potentialGain    Float?
+  
+  // Review status
+  status          String @default("PENDING")
+  reviewedAt      DateTime?
+  approved        Boolean?
+  implementedAt   DateTime?
+  
+  // Risk assessment
+  auditRisk       String @default("LOW")
+  complianceNotes String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  encounter Encounter @relation(fields: [encounterId], references: [id])
+  provider  User      @relation(fields: [providerId], references: [id])
+  
+  @@map("code_optimizations")
+}
+
+model CodeReference {
+  id          String @id @default(cuid())
+  code        String @unique
+  type        String
+  description String
+  category    String?
+  
+  // Reimbursement data
+  medicareAmount  Float?
+  relativeValue   Float?
+  
+  // Usage analytics
+  frequency      Int @default(0)
+  lastUsed       DateTime?
+  
+  // Validation rules
+  validModifiers String // JSON string for SQLite compatibility
+  bundlingRules  String?    // JSON string for SQLite compatibility
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("code_references")
+}
+
+model Document {
+  id            String @id @default(cuid())
+  filename      String
+  originalName  String
+  fileType      String
+  fileSize      Int
+  filePath      String
+  
+  // Processing status
+  status        String @default("UPLOADED")
+  processedAt   DateTime?
+  ocrText       String?
+  extractedData String? // JSON string for SQLite compatibility
+  
+  // HIPAA compliance
+  encrypted     Boolean @default(true)
+  deidentified  Boolean @default(false)
+  retentionDate DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("documents")
+}
+
+model AuditLog {
+  id        String @id @default(cuid())
+  userId    String?
+  action    String
+  resource  String
+  details   String? // JSON string for SQLite compatibility
+  ipAddress String?
+  userAgent String?
+  
+  timestamp DateTime @default(now())
+  
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+  
+  @@map("audit_logs")
+}
+
+model Analytics {
+  id        String @id @default(cuid())
+  practiceId String?
+  providerId String?
+  
+  // Time period
+  periodStart DateTime
+  periodEnd   DateTime
+  
+  // Metrics
+  totalEncounters     Int
+  totalOptimizations  Int
+  approvedOptimizations Int
+  potentialRevenue    Float
+  actualRevenue       Float
+  
+  // Risk metrics
+  auditRiskScore     Float
+  complianceScore    Float
+  
+  // Code usage
+  topCodes          String // JSON string for SQLite compatibility
+  underutilizedCodes String // JSON string for SQLite compatibility
+  
+  createdAt DateTime @default(now())
+  
+  @@map("analytics")
+}
+
+// Note: SQLite doesn't support enums, so we use String types
+// Valid values are handled in application code:
+// UserRole: ADMIN, PRACTICE_MANAGER, PROVIDER, CODER, BILLER
+// EncounterType: OFFICE_VISIT, CONSULTATION, HOSPITAL_VISIT, EMERGENCY, SURGERY, TELEHEALTH, OTHER
+// DocumentType: PDF, DOCX, TXT, EHR_EXPORT, SCANNED_IMAGE
+// CodingStatus: PENDING, IN_PROGRESS, CODED, REVIEWED, BILLED, REJECTED
+// OptimizationType: UPCODE, DOWNCODE, MODIFIER_ADD, MODIFIER_REMOVE, BUNDLE_FIX, UNBUNDLE_FIX, DIAGNOSIS_ADD, PROCEDURE_ADD
+// OptimizationStatus: PENDING, REVIEWED, APPROVED, REJECTED, IMPLEMENTED
+// RiskLevel: LOW, MEDIUM, HIGH, CRITICAL
+// CodeType: CPT, ICD10, HCPCS, MODIFIER
+// ProcessingStatus: UPLOADED, PROCESSING, COMPLETED, FAILED 
