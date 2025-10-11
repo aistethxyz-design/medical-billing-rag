@@ -1,5 +1,6 @@
 # Multi-stage Dockerfile for AISteth Medical Billing Platform
 # Optimized for Coolify deployment on Hetzner
+# v1.1 - With curl and resilient startup
 
 # Stage 1: Build Frontend
 FROM node:20-alpine AS frontend-builder
