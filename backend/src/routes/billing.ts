@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { AuthenticatedRequest, requireRole, requireSamePractice } from '../middleware/auth';
+import { AuthenticatedRequest, requireRole, requirePracticeAccess } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { ragBillingAgent, RAGQuery, RAGResponse } from '../services/ragBillingAgent';
 import { billingCodeService, BillingCode } from '../services/billingCodeService';
@@ -31,7 +31,7 @@ const validateCodeSearch = [
 
 // POST /api/billing/analyze - Analyze clinical text for optimal billing codes
 router.post('/analyze',
-  requireSamePractice,
+  requirePracticeAccess,
   validateBillingQuery,
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const errors = validationResult(req);
@@ -249,7 +249,7 @@ router.get('/codes/category/:category',
 
 // POST /api/billing/encounter/:encounterId/analyze - Analyze specific encounter
 router.post('/encounter/:encounterId/analyze',
-  requireSamePractice,
+  requirePracticeAccess,
   param('encounterId').isString().notEmpty(),
   body('clinicalText').optional().isString(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
@@ -321,7 +321,7 @@ router.post('/encounter/:encounterId/analyze',
 
 // GET /api/billing/revenue-optimization - Get revenue optimization suggestions
 router.get('/revenue-optimization',
-  requireSamePractice,
+  requirePracticeAccess,
   query('startDate').optional().isISO8601(),
   query('endDate').optional().isISO8601(),
   query('providerId').optional().isString(),
@@ -465,7 +465,7 @@ router.get('/quick-searches',
 
 // GET /api/billing/recent-codes - Get recently used codes
 router.get('/recent-codes',
-  requireSamePractice,
+  requirePracticeAccess,
   query('limit').optional().isInt({ min: 1, max: 20 }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { limit = 10 } = req.query;

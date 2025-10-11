@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { AuthenticatedRequest, requireRole, requireSamePractice } from '../middleware/auth';
+import { AuthenticatedRequest, requireRole, requirePracticeAccess } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { aiService, CodeValidationService, NCCIService } from '../services/aiService';
 import { logger } from '../utils/logger';
@@ -27,7 +27,7 @@ const validateCodeOptimization = [
 
 // POST /api/coding/analyze - Analyze clinical text for medical codes
 router.post('/analyze', 
-  requireSamePractice,
+  requirePracticeAccess,
   validateCodingAnalysis,
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const errors = validationResult(req);
@@ -147,7 +147,7 @@ router.post('/analyze',
 
 // GET /api/coding/optimizations/:encounterId - Get optimizations for an encounter
 router.get('/optimizations/:encounterId',
-  requireSamePractice,
+  requirePracticeAccess,
   param('encounterId').isString().notEmpty(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { encounterId } = req.params;
@@ -204,7 +204,7 @@ router.get('/optimizations/:encounterId',
 // PUT /api/coding/optimizations/:optimizationId/approve - Approve an optimization
 router.put('/optimizations/:optimizationId/approve',
   requireRole(['PROVIDER', 'PRACTICE_MANAGER', 'ADMIN']),
-  requireSamePractice,
+  requirePracticeAccess,
   param('optimizationId').isString().notEmpty(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { optimizationId } = req.params;
@@ -266,7 +266,7 @@ router.put('/optimizations/:optimizationId/approve',
 // PUT /api/coding/optimizations/:optimizationId/reject - Reject an optimization
 router.put('/optimizations/:optimizationId/reject',
   requireRole(['PROVIDER', 'PRACTICE_MANAGER', 'ADMIN']),
-  requireSamePractice,
+  requirePracticeAccess,
   param('optimizationId').isString().notEmpty(),
   body('reason').optional().isString(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
@@ -371,7 +371,7 @@ router.get('/validate/:code',
 
 // GET /api/coding/revenue-impact - Get revenue impact analytics
 router.get('/revenue-impact',
-  requireSamePractice,
+  requirePracticeAccess,
   query('startDate').optional().isISO8601(),
   query('endDate').optional().isISO8601(),
   query('providerId').optional().isString(),

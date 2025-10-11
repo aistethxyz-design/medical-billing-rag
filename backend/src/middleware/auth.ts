@@ -8,7 +8,7 @@ import rateLimit from 'express-rate-limit';
 const prisma = new PrismaClient();
 
 // Type definitions for roles
-type UserRole = 'ADMIN' | 'PROVIDER' | 'CODER' | 'BILLER';
+type UserRole = 'ADMIN' | 'PRACTICE_MANAGER' | 'PROVIDER' | 'CODER' | 'BILLER';
 
 export interface AuthenticatedRequest extends Request {
   user?: {

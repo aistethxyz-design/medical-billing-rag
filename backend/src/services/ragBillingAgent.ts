@@ -176,7 +176,10 @@ class RAGBillingAgent {
     
     // Add specialty-specific terms
     if (clinicalContext.specialty === 'Emergency Medicine') {
-      terms.add('emergency', 'trauma', 'critical', 'urgent');
+      terms.add('emergency');
+      terms.add('trauma');
+      terms.add('critical');
+      terms.add('urgent');
     }
     
     return Array.from(terms);
