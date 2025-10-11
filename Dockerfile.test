@@ -1,0 +1,36 @@
+# Ultra-simple test Dockerfile for Coolify deployment verification
+FROM node:20-alpine
+
+# Install curl for health checks
+RUN apk add --no-cache curl dumb-init
+
+# Create app directory
+WORKDIR /app
+
+# Copy test server
+COPY test-server.js .
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+USER nodejs
+
+# Expose port
+EXPOSE 3001
+
+# Environment
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+# Use dumb-init
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start server
+CMD ["node", "test-server.js"]
+
