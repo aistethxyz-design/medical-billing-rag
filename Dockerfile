@@ -61,7 +61,7 @@ COPY --from=backend-builder --chown=nodejs:nodejs /app/backend/prisma ./backend/
 COPY --from=backend-builder --chown=nodejs:nodejs /app/backend/package*.json ./backend/
 
 # Copy medical billing data (if needed)
-COPY --chown=nodejs:nodejs "RAG/Codes by class.csv" ./data/
+COPY --chown=nodejs:nodejs RAG/Codes_by_class.csv ./data/
 
 # Set environment variables
 ENV NODE_ENV=production

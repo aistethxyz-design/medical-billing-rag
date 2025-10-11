@@ -561,7 +561,7 @@ def main():
     # Initialize the RAG system
     if 'rag_system' not in st.session_state:
         with st.spinner("Loading billing codes database..."):
-            st.session_state.rag_system = BillingRAGSystem("Codes by class.csv")
+            st.session_state.rag_system = BillingRAGSystem("Codes_by_class.csv")
     
     rag_system = st.session_state.rag_system
     

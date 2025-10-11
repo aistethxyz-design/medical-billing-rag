@@ -30,8 +30,8 @@ def main():
     print("=" * 40)
     
     # Check if CSV file exists
-    if not os.path.exists("Codes by class.csv"):
-        print("❌ Error: 'Codes by class.csv' not found!")
+    if not os.path.exists("Codes_by_class.csv"):
+        print("❌ Error: 'Codes_by_class.csv' not found!")
         print("Please ensure the billing codes CSV file is in the same directory.")
         return
     

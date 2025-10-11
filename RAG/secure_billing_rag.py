@@ -1193,7 +1193,7 @@ def main():
         with st.spinner("Initializing Secure RAG System..."):
             try:
                 st.session_state.rag_system = AdvancedBillingRAGSystem(
-                    'Codes by class.csv',
+                    'Codes_by_class.csv',
                     pinecone_key,
                     openrouter_key
                 )
