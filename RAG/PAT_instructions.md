@@ -36,3 +36,4 @@ If you prefer, you can also:
 3. Follow the steps above
 
 **Important**: Keep your PAT secure and never share it publicly!
+

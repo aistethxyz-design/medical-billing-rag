@@ -19,6 +19,10 @@ import Settings from '@/pages/Settings';
 import BillingAssistant from '@/pages/BillingAssistant';
 import ChatBot from '@/components/ChatBot';
 
+// RAG Components
+import RAGSearchPage from '@/pages/RAGSearchPage';
+import RAGLoginPage from '@/components/RAGLoginPage';
+
 // Styles
 import '@/styles/globals.css';
 

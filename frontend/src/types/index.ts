@@ -3,10 +3,15 @@ import React from 'react';
 
 export interface User {
   id: string;
+  username?: string;
   email: string;
   name: string;
-  role: 'admin' | 'provider' | 'staff';
+  role: 'admin' | 'provider' | 'staff' | 'doctor' | 'billing';
   organization?: string;
+  passwordHash?: string;
+  isActive?: boolean;
+  createdAt?: Date;
+  lastLogin?: Date;
 }
 
 export interface BillingCode {

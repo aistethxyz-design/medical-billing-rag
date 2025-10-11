@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Billing RAG Assistant - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .highlight { background-color: yellow; }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">
+                        🏥 Medical Billing RAG Assistant
+                    </h1>
+                </div>
+                <div id="userInfo" class="hidden flex items-center space-x-4">
+                    <div class="text-right">
+                        <p id="userName" class="text-sm font-medium text-gray-900"></p>
+                        <p id="userRole" class="text-xs text-gray-500"></p>
+                    </div>
+                    <div id="roleIndicator" class="w-3 h-3 rounded-full"></div>
+                    <button id="logoutBtn" class="text-sm text-red-600 hover:text-red-800">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="min-h-screen flex items-center justify-center">
+            <div class="max-w-md w-full space-y-8">
+                <div class="text-center">
+                    <div class="mx-auto h-12 w-12 bg-blue-600 rounded-full flex items-center justify-center">
+                        🔒
+                    </div>
+                    <h2 class="mt-6 text-3xl font-bold text-gray-900">
+                        Medical Billing RAG Assistant
+                    </h2>
+                    <p class="mt-2 text-sm text-gray-600">Secure Login Required</p>
+                </div>
+
+                <div class="bg-white py-8 px-6 shadow-lg rounded-lg">
+                    <form id="loginForm" class="space-y-6">
+                        <div id="loginError" class="hidden bg-red-50 border border-red-200 rounded-md p-3">
+                            <p class="text-sm text-red-600"></p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Username</label>
+                            <input id="username" type="text" placeholder="Enter your username" 
+                                   class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Password</label>
+                            <input id="password" type="password" placeholder="Enter your password"
+                                   class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+
+                        <button type="submit" id="loginBtn"
+                                class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            🔑 Login
+                        </button>
+                    </form>
+
+                    <!-- Demo Credentials -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">🧪 Demo Credentials</h3>
+                        <div class="space-y-2">
+                            <button onclick="fillCredentials('aistethxyz@gmail.com', 'bestaisteth')" 
+                                    class="w-full text-left p-2 text-xs bg-gray-50 hover:bg-gray-100 rounded border transition-colors">
+                                <div class="font-medium text-gray-700">Primary Admin</div>
+                                <div class="text-gray-500">aistethxyz@gmail.com / bestaisteth</div>
+                            </button>
+                            <button onclick="fillCredentials('admin', 'admin123')"
+                                    class="w-full text-left p-2 text-xs bg-gray-50 hover:bg-gray-100 rounded border transition-colors">
+                                <div class="font-medium text-gray-700">Admin</div>
+                                <div class="text-gray-500">admin / admin123</div>
+                            </button>
+                            <button onclick="fillCredentials('doctor', 'doctor456')"
+                                    class="w-full text-left p-2 text-xs bg-gray-50 hover:bg-gray-100 rounded border transition-colors">
+                                <div class="font-medium text-gray-700">Doctor</div>
+                                <div class="text-gray-500">doctor / doctor456</div>
+                            </button>
+                            <button onclick="fillCredentials('billing', 'billing789')"
+                                    class="w-full text-left p-2 text-xs bg-gray-50 hover:bg-gray-100 rounded border transition-colors">
+                                <div class="font-medium text-gray-700">Billing</div>
+                                <div class="text-gray-500">billing / billing789</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="mainApp" class="hidden space-y-6">
+            <!-- Dashboard Stats -->
+            <div id="dashboardStats" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+
+            <!-- Search Interface -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                    🔍 Search Billing Codes
+                </h2>
+                
+                <div class="flex gap-4 mb-4">
+                    <div class="flex-1 relative">
+                        <input id="searchQuery" type="text" placeholder="Search by code, description, or category..."
+                               class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <span class="absolute left-4 top-4">🔍</span>
+                    </div>
+                    <button id="searchBtn" onclick="performSearch()"
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Search
+                    </button>
+                    <button id="filtersBtn" onclick="toggleFilters()"
+                            class="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        🔧 Filters
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div id="filtersPanel" class="hidden bg-gray-50 rounded-lg p-4 border border-gray-200 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="categoryFilter" title="Filter by category" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Code Type</label>
+                            <select id="codeTypeFilter" title="Filter by code type" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="">All Types</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Min Amount ($)</label>
+                            <input id="minAmount" type="number" placeholder="0" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Max Amount ($)</label>
+                            <input id="maxAmount" type="number" placeholder="1000" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="clearFilters()" class="text-sm text-gray-600 hover:text-gray-800">
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultsCount" class="text-sm text-gray-600 mb-4"></div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResults" class="space-y-4">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let billingCodes = [];
+        let isFiltersVisible = false;
+
+        // Demo billing codes data (from CSV)
+        const sampleBillingCodes = [
+            {
+                code: "A003",
+                description: "General assessment",
+                howToUse: "Used for full assessments when time and complexity justify; less common in ER vs. H-codes",
+                amount: "$77.20",
+                category: "Assessment",
+                codeType: "General"
+            },
+            {
+                code: "H152",
+                description: "Comprehensive assessment - Default for most ER patients requiring moderate evaluation",
+                howToUse: "Weekend and Holiday",
+                amount: "$63.30",
+                category: "Emergency Department",
+                codeType: "Assessment"
+            },
+            {
+                code: "G521",
+                description: "Life Threatening Critical Care – First 15 min",
+                howToUse: "up to 3 MDs can bill ( encounters which Includes IVs, arterial lines, endotracheal or NG intubations, urinary catheters, defibrillations, & cardioversions)",
+                amount: "$110.55",
+                category: "Critical Care",
+                codeType: "Critical Care"
+            },
+            {
+                code: "A001",
+                description: "Minor assessment",
+                howToUse: "Brief encounter, often used for quick reviews or follow-ups in non-ER",
+                amount: "$24.90",
+                category: "Assessment",
+                codeType: "Minor"
+            },
+            {
+                code: "H101",
+                description: "Minor assessment",
+                howToUse: "Mon-Fri 0800-1700",
+                amount: "$15.00",
+                category: "Emergency Department",
+                codeType: "Assessment"
+            },
+            {
+                code: "E412",
+                description: "After Hours Procedures bonus MON-FRI 1700-0000",
+                howToUse: "percentage bonus, or absolute value bonus for a patient encounter; add if timing conditions in description are met",
+                amount: "20% bonus to billings",
+                category: "Premiums",
+                codeType: "Premium"
+            }
+        ];
+
+        // Authentication functions
+        function fillCredentials(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Mock authentication
+            const users = {
+                'aistethxyz@gmail.com': { name: 'AI Steth Admin', role: 'admin', password: 'bestaisteth' },
+                'admin': { name: 'Administrator', role: 'admin', password: 'admin123' },
+                'doctor': { name: 'Dr. Smith', role: 'doctor', password: 'doctor456' },
+                'billing': { name: 'Billing Specialist', role: 'billing', password: 'billing789' }
+            };
+
+            if (users[username] && users[username].password === password) {
+                currentUser = { username, ...users[username] };
+                showMainApp();
+            } else {
+                showError('Invalid username or password');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.querySelector('p').textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role;
+            
+            const roleIndicator = document.getElementById('roleIndicator');
+            const roleColors = {
+                'admin': 'bg-red-500',
+                'doctor': 'bg-blue-500',
+                'billing': 'bg-green-500'
+            };
+            roleIndicator.className = `w-3 h-3 rounded-full ${roleColors[currentUser.role] || 'bg-gray-500'}`;
+            
+            loadBillingCodes();
+            updateDashboard();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').classList.add('hidden');
+        }
+
+        // Data loading functions
+        async function loadBillingCodes() {
+            // In a real app, this would fetch from the CSV file
+            billingCodes = sampleBillingCodes;
+            populateFilters();
+            displayAllCodes();
+        }
+
+        function populateFilters() {
+            const categories = [...new Set(billingCodes.map(code => code.category))];
+            const codeTypes = [...new Set(billingCodes.map(code => code.codeType))];
+            
+            const categorySelect = document.getElementById('categoryFilter');
+            const codeTypeSelect = document.getElementById('codeTypeFilter');
+            
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+            
+            codeTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                codeTypeSelect.appendChild(option);
+            });
+        }
+
+        function updateDashboard() {
+            const statsContainer = document.getElementById('dashboardStats');
+            let stats = [];
+
+            if (currentUser.role === 'admin') {
+                stats = [
+                    { label: 'Total Codes', value: billingCodes.length, icon: '📋' },
+                    { label: 'Categories', value: new Set(billingCodes.map(c => c.category)).size, icon: '🗂️' },
+                    { label: 'System Status', value: 'Online', icon: '🟢' }
+                ];
+            } else if (currentUser.role === 'doctor') {
+                stats = [
+                    { label: 'Patients Today', value: '12', icon: '👥' },
+                    { label: 'Cases Completed', value: '8', icon: '✅' },
+                    { label: 'Revenue Today', value: '$2,450', icon: '💰' }
+                ];
+            } else if (currentUser.role === 'billing') {
+                stats = [
+                    { label: "Today's Revenue", value: '$3,450', icon: '💰' },
+                    { label: 'This Week', value: '$18,200', icon: '📈' },
+                    { label: 'Growth', value: '+5.2%', icon: '🚀' }
+                ];
+            }
+
+            statsContainer.innerHTML = stats.map(stat => `
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-lg bg-blue-500 text-white text-2xl">
+                            ${stat.icon}
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">${stat.label}</p>
+                            <p class="text-2xl font-bold text-gray-900">${stat.value}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Search functions
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const codeTypeFilter = document.getElementById('codeTypeFilter').value;
+            const minAmount = parseFloat(document.getElementById('minAmount').value) || 0;
+            const maxAmount = parseFloat(document.getElementById('maxAmount').value) || Infinity;
+
+            let results = billingCodes.filter(code => {
+                // Text search
+                const matchesQuery = !query || 
+                    code.code.toLowerCase().includes(query) ||
+                    code.description.toLowerCase().includes(query) ||
+                    (code.howToUse && code.howToUse.toLowerCase().includes(query));
+
+                // Category filter
+                const matchesCategory = !categoryFilter || code.category === categoryFilter;
+                
+                // Code type filter
+                const matchesCodeType = !codeTypeFilter || code.codeType === codeTypeFilter;
+                
+                // Amount filter
+                const amount = parseFloat(code.amount.replace(/[^0-9.]/g, '')) || 0;
+                const matchesAmount = amount >= minAmount && amount <= maxAmount;
+
+                return matchesQuery && matchesCategory && matchesCodeType && matchesAmount;
+            });
+
+            displayResults(results, query);
+        }
+
+        function displayAllCodes() {
+            displayResults(billingCodes, '');
+        }
+
+        function displayResults(results, searchQuery) {
+            const resultsContainer = document.getElementById('searchResults');
+            const resultsCount = document.getElementById('resultsCount');
+
+            resultsCount.textContent = searchQuery ? 
+                `Found ${results.length} results for "${searchQuery}"` : 
+                `Showing all ${results.length} billing codes`;
+
+            if (results.length === 0 && searchQuery) {
+                resultsContainer.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-gray-400 text-lg mb-2">No results found</div>
+                        <p class="text-gray-500">Try adjusting your search terms or filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = results.slice(0, 20).map((code, index) => `
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-4 cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleExpansion(${index})">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center">
+                                        <span class="text-blue-600 mr-2">📋</span>
+                                        <span class="font-bold text-lg text-gray-900">${code.code}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-green-600 mr-1">💰</span>
+                                        <span class="font-semibold text-green-700">${code.amount}</span>
+                                    </div>
+                                    ${code.category ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${code.category}</span>` : ''}
+                                    ${code.codeType ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">${code.codeType}</span>` : ''}
+                                </div>
+                                <div class="mt-2">
+                                    <h3 class="text-gray-900 font-medium">${highlightText(code.description, searchQuery)}</h3>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <span id="chevron-${index}">⬇️</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="details-${index}" class="hidden px-4 pb-4 border-t border-gray-100">
+                        ${code.howToUse ? `
+                            <div class="mt-3 flex items-start">
+                                <span class="text-gray-500 mr-2 mt-0.5">📖</span>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-1">How to Use:</h4>
+                                    <p class="text-sm text-gray-600">${code.howToUse}</p>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function highlightText(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\\\$&')})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function toggleExpansion(index) {
+            const details = document.getElementById(`details-${index}`);
+            const chevron = document.getElementById(`chevron-${index}`);
+            
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                chevron.textContent = '⬆️';
+            } else {
+                details.classList.add('hidden');
+                chevron.textContent = '⬇️';
+            }
+        }
+
+        function toggleFilters() {
+            const panel = document.getElementById('filtersPanel');
+            isFiltersVisible = !isFiltersVisible;
+            
+            if (isFiltersVisible) {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('codeTypeFilter').value = '';
+            document.getElementById('minAmount').value = '';
+            document.getElementById('maxAmount').value = '';
+            performSearch();
+        }
+
+        // Event listeners
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('searchQuery').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Medical Billing RAG Assistant loaded successfully!');
+        });
+    </script>
+</body>
+</html>
