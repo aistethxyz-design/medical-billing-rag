@@ -43,7 +43,7 @@ interface RevenueImpact {
 
 class AIService {
   private openai: OpenAI;
-  private isInitialized = false;
+  private _isInitialized = false;
 
   constructor() {
     this.openai = new OpenAI({
@@ -52,11 +52,16 @@ class AIService {
     });
   }
 
+  // Public getter for initialization status
+  get isInitialized(): boolean {
+    return this._isInitialized;
+  }
+
   async initialize(): Promise<void> {
     try {
       // Test OpenAI connection
       await this.openai.models.list();
-      this.isInitialized = true;
+      this._isInitialized = true;
       logger.info('OpenAI service initialized successfully');
     } catch (error) {
       logger.error('Failed to initialize OpenAI service:', error);
@@ -65,7 +70,7 @@ class AIService {
   }
 
   async analyzeMedicalCodes(clinicalText: string, specialty?: string): Promise<MedicalCodeAnalysis> {
-    if (!this.isInitialized) {
+    if (!this._isInitialized) {
       throw new Error('AI service not initialized');
     }
 

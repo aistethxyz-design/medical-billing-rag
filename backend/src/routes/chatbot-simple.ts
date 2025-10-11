@@ -24,19 +24,8 @@ router.post('/chat', async (req, res) => {
       await aiService.initialize();
     }
 
-    // Create a simple medical coding context
-    const systemPrompt = `You are an AI medical coding assistant. You help with:
-- Medical billing code suggestions
-- Revenue optimization
-- Code validation and compliance
-- Documentation requirements
-
-Please provide helpful, accurate information about medical coding and billing.`;
-
-    const response = await aiService.generateResponse([
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: message }
-    ]);
+    // Generate response using the chatbot method
+    const response = await aiService.chatbotResponse(message, context);
 
     res.json({
       success: true,
