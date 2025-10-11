@@ -42,8 +42,8 @@ RUN npm run build
 # Stage 3: Production Image
 FROM node:20-alpine AS production
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init and curl for proper signal handling and health checks
+RUN apk add --no-cache dumb-init curl
 
 # Create app user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -78,9 +78,9 @@ USER nodejs
 # Expose ports
 EXPOSE 3000 3001
 
-# Health check
+# Health check - use curl for better reliability
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD curl -f http://localhost:3001/health || exit 1
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
