@@ -10,7 +10,7 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 
 # Install frontend dependencies
-RUN npm ci --prefer-offline --no-audit
+RUN npm install --prefer-offline --no-audit
 
 # Copy frontend source code
 COPY frontend/ ./
@@ -28,7 +28,7 @@ COPY backend/package*.json ./
 COPY backend/prisma ./prisma/
 
 # Install backend dependencies
-RUN npm ci --prefer-offline --no-audit
+RUN npm install --prefer-offline --no-audit
 
 # Copy backend source code
 COPY backend/ ./
