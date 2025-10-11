@@ -197,19 +197,25 @@ process.on('SIGTERM', () => {
 // Start server
 async function startServer() {
   try {
-    // Initialize AI services
-    await initializeAI();
-    logger.info('AI services initialized');
+    // Initialize AI services (non-blocking - server will start even if AI fails)
+    try {
+      await initializeAI();
+      logger.info('✅ AI services initialized successfully');
+    } catch (aiError) {
+      logger.warn('⚠️  AI services initialization failed - server will run with limited functionality', aiError);
+      logger.warn('⚠️  Please check OPENAI_API_KEY environment variable');
+    }
     
-    // Start server
+    // Start server (always start, even if AI failed)
     app.listen(PORT, () => {
       logger.info(`🏥 CodeMax AI Backend Server running on port ${PORT}`);
       logger.info(`📊 Medical Coding Optimization API Ready`);
       logger.info(`🔒 HIPAA-compliant healthcare data processing enabled`);
-      logger.info(`🤖 AI-powered billing optimization active`);
+      logger.info(`🤖 AI-powered billing optimization ${process.env.OPENAI_API_KEY ? 'active' : 'disabled (missing API key)'}`);
+      logger.info(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
-    logger.error('Failed to start server:', error);
+    logger.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 }
