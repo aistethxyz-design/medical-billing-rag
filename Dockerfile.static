@@ -1,17 +1,36 @@
-# Ultra-minimal static file server
-# Just serves the HTML file - nothing else!
+# AISteth Landing Page - Static Build v1.1
+# Professional React landing page built with Vite
 FROM nginx:alpine
 
-# Copy the single HTML file
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Copy the built landing page (HTML, CSS, JS, assets)
 COPY index.html /usr/share/nginx/html/index.html
+COPY assets /usr/share/nginx/html/assets
 
 # Create a simple nginx config
 RUN echo 'server { \
     listen 3001; \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    \
+    # Enable gzip compression \
+    gzip on; \
+    gzip_types text/css application/javascript text/javascript application/json; \
+    \
+    # Cache static assets \
+    location /assets/ { \
+        expires 1y; \
+        add_header Cache-Control "public, immutable"; \
     } \
+    \
+    # Main app routing \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+    \
+    # Health check endpoint \
     location /health { \
         access_log off; \
         return 200 "healthy\n"; \
@@ -28,5 +47,3 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
-
-
