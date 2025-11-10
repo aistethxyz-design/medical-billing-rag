@@ -1,0 +1,122 @@
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+
+export default function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [location, setLocation] = useLocation();
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  return (
+    <header className="bg-card border-b border-border sticky top-0 z-50" data-testid="header">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          <div className="flex items-center space-x-2" data-testid="logo">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <i className="fas fa-stethoscope text-primary-foreground text-sm"></i>
+            </div>
+            <span className="text-xl font-bold text-primary">AISTETH</span>
+          </div>
+          
+          <nav className="hidden md:flex items-center space-x-8" data-testid="desktop-nav">
+            <button 
+              onClick={() => scrollToSection('features')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-features"
+            >
+              Features
+            </button>
+            <button 
+              onClick={() => scrollToSection('pricing')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-pricing"
+            >
+              Pricing
+            </button>
+            <button 
+              onClick={() => scrollToSection('testimonials')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-testimonials"
+            >
+              Testimonials
+            </button>
+            <button 
+              onClick={() => scrollToSection('contact')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-contact"
+            >
+              Contact
+            </button>
+            <Button
+              onClick={() => setLocation('/login')}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              data-testid="nav-login"
+            >
+              Login
+            </Button>
+          </nav>
+          
+          <button 
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            data-testid="mobile-menu-toggle"
+          >
+            <i className="fas fa-bars text-primary"></i>
+          </button>
+        </div>
+        
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-border" data-testid="mobile-nav">
+            <nav className="flex flex-col space-y-4">
+              <button 
+                onClick={() => scrollToSection('features')}
+                className="text-muted-foreground hover:text-foreground transition-colors text-left"
+                data-testid="mobile-nav-features"
+              >
+                Features
+              </button>
+              <button 
+                onClick={() => scrollToSection('pricing')}
+                className="text-muted-foreground hover:text-foreground transition-colors text-left"
+                data-testid="mobile-nav-pricing"
+              >
+                Pricing
+              </button>
+              <button 
+                onClick={() => scrollToSection('testimonials')}
+                className="text-muted-foreground hover:text-foreground transition-colors text-left"
+                data-testid="mobile-nav-testimonials"
+              >
+                Testimonials
+              </button>
+              <button 
+                onClick={() => scrollToSection('contact')}
+                className="text-muted-foreground hover:text-foreground transition-colors text-left"
+                data-testid="mobile-nav-contact"
+              >
+                Contact
+              </button>
+              <Button
+                onClick={() => {
+                  setLocation('/login');
+                  setIsMobileMenuOpen(false);
+                }}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
+                data-testid="mobile-nav-login"
+              >
+                Login
+              </Button>
+            </nav>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
