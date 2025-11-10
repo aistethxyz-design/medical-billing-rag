@@ -147,16 +147,26 @@ def main():
     
     if st.button("🔍 Search", key="search_button"):
         if search_query:
-            # Simple search
-            results = df[df['description'].str.contains(search_query, case=False, na=False)]
+            # Simple search - handle both capitalized and lowercase column names
+            description_col = 'Description' if 'Description' in df.columns else 'description'
+            code_col = 'Code' if 'Code' in df.columns else 'code'
+            amount_col = 'Amount ($CAD)' if 'Amount ($CAD)' in df.columns else 'amount'
+            
+            results = df[df[description_col].str.contains(search_query, case=False, na=False)]
             st.subheader(f"Found {len(results)} results")
             
             if len(results) > 0:
                 for _, row in results.iterrows():
-                    with st.expander(f"{row['code']} - {row['description']} - {row['amount']}"):
-                        st.write(f"**Type:** {row['code_type']}")
-                        st.write(f"**Description:** {row['description']}")
-                        st.write(f"**Amount:** {row['amount']}")
+                    code_val = row[code_col] if code_col in row.index else 'N/A'
+                    desc_val = row[description_col] if description_col in row.index else 'N/A'
+                    amount_val = row[amount_col] if amount_col in row.index else 'N/A'
+                    
+                    with st.expander(f"{code_val} - {desc_val} - {amount_val}"):
+                        st.write(f"**Code:** {code_val}")
+                        st.write(f"**Description:** {desc_val}")
+                        st.write(f"**Amount:** {amount_val}")
+                        if 'How to Use' in row.index and pd.notna(row['How to Use']):
+                            st.write(f"**How to Use:** {row['How to Use']}")
             else:
                 st.warning("No results found. Try a different search term.")
         else:
@@ -169,7 +179,7 @@ def main():
         with col1:
             st.metric("Total Users", "4")
         with col2:
-            st.metric("Total Codes", len(df))
+            st.metric("Total Codes", len(df) if df is not None else 0)
         with col3:
             st.metric("System Status", "Online")
         
@@ -210,7 +220,11 @@ def main():
     
     # Show all codes
     st.header("📋 All Billing Codes")
-    st.dataframe(df, use_container_width=True)
+    # Display dataframe with proper column names
+    display_df = df.copy()
+    if 'Unnamed: 4' in display_df.columns:
+        display_df = display_df.drop(columns=['Unnamed: 4'])
+    st.dataframe(display_df, use_container_width=True)
 
 if __name__ == "__main__":
     main()
