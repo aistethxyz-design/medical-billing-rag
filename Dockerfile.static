@@ -7,11 +7,11 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY landing/AistethLanding/package*.json ./
+COPY RAG/landing/AistethLanding/package*.json ./
 RUN npm ci --legacy-peer-deps || npm ci
 
 # Copy source files
-COPY landing/AistethLanding/ ./
+COPY RAG/landing/AistethLanding/ ./
 
 # Build the application
 RUN npm run build
