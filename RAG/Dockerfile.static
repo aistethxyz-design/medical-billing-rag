@@ -1,9 +1,6 @@
 # AISteth Landing Page - Static Build v1.1
 # Professional React landing page built with Vite
 
-# AISteth Landing Page - Static Build v1.1
-# Professional React landing page built with Vite
-
 # Build stage
 FROM node:20-alpine AS builder
 
