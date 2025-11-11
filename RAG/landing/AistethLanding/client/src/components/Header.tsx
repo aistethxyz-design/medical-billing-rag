@@ -54,6 +54,7 @@ export default function Header() {
             >
               Contact
             </button>
+            {/* Login button */}
             <Button
               onClick={() => setLocation('/login')}
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
