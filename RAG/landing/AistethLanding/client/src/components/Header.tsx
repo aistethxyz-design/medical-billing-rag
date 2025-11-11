@@ -53,12 +53,15 @@ export default function Header() {
             >
               Contact
             </button>
-            {/* Login button */}
             <button
               onClick={() => setLocation('/login')}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-sm"
+              className="!bg-blue-600 hover:!bg-blue-500 !text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl ml-4"
               data-testid="nav-login"
-              style={{ backgroundColor: 'hsl(221, 83%, 53%)' }}
+              style={{ 
+                backgroundColor: '#2563eb',
+                color: 'white',
+                minWidth: '80px'
+              }}
             >
               Login
             </button>
