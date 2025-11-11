@@ -56,8 +56,9 @@ export default function Header() {
             {/* Login button */}
             <button
               onClick={() => setLocation('/login')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-sm"
               data-testid="nav-login"
+              style={{ backgroundColor: 'hsl(221, 83%, 53%)' }}
             >
               Login
             </button>
@@ -108,8 +109,9 @@ export default function Header() {
                   setLocation('/login');
                   setIsMobileMenuOpen(false);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors w-full"
+                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors w-full shadow-sm"
                 data-testid="mobile-nav-login"
+                style={{ backgroundColor: 'hsl(221, 83%, 53%)' }}
               >
                 Login
               </button>
