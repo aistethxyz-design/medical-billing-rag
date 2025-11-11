@@ -25,6 +25,7 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "shared"),
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
+    extensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json"],
   },
   root: path.resolve(__dirname, "client"),
   build: {
