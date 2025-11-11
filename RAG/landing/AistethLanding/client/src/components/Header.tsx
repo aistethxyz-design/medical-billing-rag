@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -55,13 +54,13 @@ export default function Header() {
               Contact
             </button>
             {/* Login button */}
-            <Button
+            <button
               onClick={() => setLocation('/login')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
               data-testid="nav-login"
             >
               Login
-            </Button>
+            </button>
           </nav>
           
           <button 
@@ -104,16 +103,16 @@ export default function Header() {
               >
                 Contact
               </button>
-              <Button
+              <button
                 onClick={() => {
                   setLocation('/login');
                   setIsMobileMenuOpen(false);
                 }}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors w-full"
                 data-testid="mobile-nav-login"
               >
                 Login
-              </Button>
+              </button>
             </nav>
           </div>
         )}
