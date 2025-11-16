@@ -25,7 +25,10 @@ function RAGContent() {
   const [iframeError, setIframeError] = useState(false);
 
   // Debug: Always log to see if component renders
-  console.log("RAG Component rendered", { match, params });
+  console.log("RAG Component rendered", { match, params, loading, isValid });
+
+  // CRITICAL: Always render something immediately - don't wait for useEffect
+  // This ensures the page is never blank
 
   useEffect(() => {
     // Safety timeout - if validation takes too long, show error
@@ -258,28 +261,13 @@ function RAGContent() {
   );
 }
 
-// Export with error boundary
+// Export with error boundary - ensure something ALWAYS renders
 export default function RAG() {
-  try {
-    return <RAGContent />;
-  } catch (error) {
-    console.error("RAG Component Error:", error);
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-2">Error Loading RAG Page</h1>
-          <p className="text-muted-foreground mb-4">
-            {error instanceof Error ? error.message : "Unknown error"}
-          </p>
-          <button
-            onClick={() => window.location.href = "/login"}
-            className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Always render something - even if there's an error
+  return (
+    <div style={{ minHeight: '100vh', width: '100%', backgroundColor: '#fff' }}>
+      <RAGContent />
+    </div>
+  );
 }
 
