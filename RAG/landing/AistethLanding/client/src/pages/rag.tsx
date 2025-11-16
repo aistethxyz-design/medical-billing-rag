@@ -43,12 +43,10 @@ function RAGContent() {
   useEffect(() => {
     // Safety timeout - if validation takes too long, show error
     const timeoutId = setTimeout(() => {
-      if (loading) {
-        console.warn("RAG Page - Validation timeout");
-        setIsValid(false);
-        setLoading(false);
-        setError("Validation timeout. Please try logging in again.");
-      }
+      console.warn("RAG Page - Validation timeout");
+      setIsValid(false);
+      setLoading(false);
+      setError("Validation timeout. Please try logging in again.");
     }, 5000); // 5 second timeout
 
     // If route doesn't match, redirect
