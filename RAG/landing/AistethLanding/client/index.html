@@ -11,8 +11,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Fallback content if JavaScript fails to load -->
+      <noscript>
+        <div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;">
+          <h1>JavaScript Required</h1>
+          <p>Please enable JavaScript to use this application.</p>
+        </div>
+      </noscript>
+      <!-- Loading indicator while React mounts -->
+      <div id="loading-fallback" style="padding: 20px; text-align: center; font-family: Arial, sans-serif;">
+        <p>Loading...</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Remove loading fallback once React mounts
+      window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          const loadingFallback = document.getElementById('loading-fallback');
+          if (loadingFallback) {
+            loadingFallback.remove();
+          }
+        }, 100);
+      });
+    </script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
   </body>
