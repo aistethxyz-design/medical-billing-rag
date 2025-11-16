@@ -114,22 +114,20 @@ export default function RAG() {
   // Valid encoder - embed RAG agent
   useEffect(() => {
     if (isValid) {
-      // Set a timeout to check if iframe loads
+      // Set a timeout to detect if iframe fails to load
       const timer = setTimeout(() => {
-        const iframe = document.querySelector('iframe');
+        const iframe = document.querySelector('iframe') as HTMLIFrameElement;
         if (iframe) {
           try {
-            // Try to access iframe content (will fail if CORS blocks it, but that's ok)
+            // Check if iframe has loaded (CORS will block this, but that's ok)
             const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-            if (!iframeDoc) {
-              console.log("Iframe loaded (CORS may prevent content access check)");
-            }
+            console.log("Iframe check:", iframeDoc ? "Loaded" : "CORS blocked (expected)");
           } catch (e) {
-            // CORS error is expected, but iframe might still be loading
-            console.log("Iframe CORS check (expected):", e);
+            // CORS error is expected for cross-origin iframes
+            console.log("Iframe CORS check (expected for cross-origin):", e);
           }
         }
-      }, 3000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
@@ -164,9 +162,28 @@ export default function RAG() {
     );
   }
 
+  // Try iframe first, but if it fails, offer direct link
+  const handleDirectRedirect = () => {
+    window.open(RAG_AGENT_URL, '_blank');
+  };
+
   return (
     <div className="min-h-screen w-full bg-background">
-      <div className="w-full h-screen border-0 relative">
+      {/* Header with info */}
+      <div className="bg-card border-b border-border p-2 flex justify-between items-center">
+        <div className="text-sm text-muted-foreground">
+          Medical Billing RAG Agent
+        </div>
+        <button
+          onClick={handleDirectRedirect}
+          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded shadow-lg"
+          title="Open RAG Agent in new tab if iframe doesn't load"
+        >
+          Open in New Tab
+        </button>
+      </div>
+      
+      <div className="w-full" style={{ height: 'calc(100vh - 50px)' }}>
         <iframe
           src={RAG_AGENT_URL}
           className="w-full h-full border-0"
@@ -182,10 +199,17 @@ export default function RAG() {
             setIframeError(true);
           }}
         />
-        <div className="absolute bottom-4 right-4 bg-black/50 text-white text-xs px-2 py-1 rounded">
-          RAG Agent: {RAG_AGENT_URL}
-        </div>
       </div>
+      
+      {/* Loading indicator overlay */}
+      {loading && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading RAG Agent...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
