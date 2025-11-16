@@ -3,6 +3,11 @@ import { useLocation, useRoute } from "wouter";
 import { verifyEncoder } from "@/lib/encoder";
 import { USERS } from "./login";
 
+// Simple error boundary component
+function RAGErrorBoundary({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+
 // RAG Agent URL - can be configured via environment variable
 // This should point to where your Streamlit RAG agent is actually deployed
 // For example: http://5.161.47.228:8501 or https://your-streamlit-host.com
@@ -11,21 +16,31 @@ const RAG_AGENT_URL = import.meta.env.VITE_RAG_AGENT_URL ||
     ? "http://5.161.47.228:8501"  // Default production IP (update this to your actual Streamlit host)
     : "http://localhost:8501");  // Development localhost
 
-export default function RAG() {
-  const [, params] = useRoute("/RAG/:encoder");
+function RAGContent() {
+  const [match, params] = useRoute("/RAG/:encoder");
   const [, setLocation] = useLocation();
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [iframeError, setIframeError] = useState(false);
 
+  // Debug: Always log to see if component renders
+  console.log("RAG Component rendered", { match, params });
+
   useEffect(() => {
+    // If route doesn't match, redirect
+    if (!match) {
+      console.log("RAG Page - Route doesn't match, redirecting to login");
+      setLocation("/login");
+      return;
+    }
+
     const encoder = params?.encoder;
     
     console.log("RAG Page - Encoder:", encoder);
     
     if (!encoder || encoder.length !== 12) {
-      console.log("RAG Page - Invalid encoder length");
+      console.log("RAG Page - Invalid encoder length:", encoder?.length);
       setIsValid(false);
       setLoading(false);
       setError("Invalid encoder format");
@@ -78,7 +93,18 @@ export default function RAG() {
     } finally {
       setLoading(false);
     }
-  }, [params?.encoder, setLocation]);
+  }, [match, params?.encoder, setLocation]);
+
+  // Always show something - even if route doesn't match
+  if (!match) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -86,6 +112,7 @@ export default function RAG() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Verifying access...</p>
+          <p className="text-xs text-muted-foreground mt-2">Encoder: {params?.encoder}</p>
         </div>
       </div>
     );
@@ -212,5 +239,30 @@ export default function RAG() {
       )}
     </div>
   );
+}
+
+// Export with error boundary
+export default function RAG() {
+  try {
+    return <RAGContent />;
+  } catch (error) {
+    console.error("RAG Component Error:", error);
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold mb-2">Error Loading RAG Page</h1>
+          <p className="text-muted-foreground mb-4">
+            {error instanceof Error ? error.message : "Unknown error"}
+          </p>
+          <button
+            onClick={() => window.location.href = "/login"}
+            className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 }
 
