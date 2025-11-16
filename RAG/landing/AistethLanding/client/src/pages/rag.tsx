@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useRoute } from "wouter";
-import { verifyEncoder } from "@/lib/encoder";
+import { verifyEncoder, generateEncoder } from "@/lib/encoder";
 import { USERS } from "./login";
 
 // Simple error boundary component
@@ -41,9 +41,20 @@ function RAGContent() {
   }
 
   useEffect(() => {
+    // Safety timeout - if validation takes too long, show error
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.warn("RAG Page - Validation timeout");
+        setIsValid(false);
+        setLoading(false);
+        setError("Validation timeout. Please try logging in again.");
+      }
+    }, 5000); // 5 second timeout
+
     // If route doesn't match, redirect
     if (!match) {
       console.log("RAG Page - Route doesn't match, redirecting to login");
+      clearTimeout(timeoutId);
       setLocation("/login");
       return;
     }
@@ -54,6 +65,7 @@ function RAGContent() {
     
     if (!encoder || encoder.length !== 12) {
       console.log("RAG Page - Invalid encoder length:", encoder?.length);
+      clearTimeout(timeoutId);
       setIsValid(false);
       setLoading(false);
       setError("Invalid encoder format");
@@ -66,6 +78,7 @@ function RAGContent() {
     
     if (!userStr) {
       console.log("RAG Page - No user in sessionStorage");
+      clearTimeout(timeoutId);
       setIsValid(false);
       setLoading(false);
       setError("No active session. Please login again.");
@@ -80,6 +93,7 @@ function RAGContent() {
       const userData = USERS[user.username as keyof typeof USERS];
       if (!userData) {
         console.log("RAG Page - User not found in USERS:", user.username);
+        clearTimeout(timeoutId);
         setIsValid(false);
         setLoading(false);
         setError("User not found");
@@ -88,7 +102,8 @@ function RAGContent() {
 
       // Verify encoder matches
       const valid = verifyEncoder(encoder, user.username, userData.password);
-      console.log("RAG Page - Encoder valid:", valid);
+      console.log("RAG Page - Encoder valid:", valid, "Expected:", generateEncoder(user.username, userData.password), "Got:", encoder);
+      clearTimeout(timeoutId);
       setIsValid(valid);
       
       if (!valid) {
@@ -101,11 +116,14 @@ function RAGContent() {
       }
     } catch (error) {
       console.error("RAG Page - Error:", error);
+      clearTimeout(timeoutId);
       setIsValid(false);
       setError("Error verifying access");
     } finally {
       setLoading(false);
     }
+
+    return () => clearTimeout(timeoutId);
   }, [match, params?.encoder, setLocation]);
 
   // Always show something - even if route doesn't match
