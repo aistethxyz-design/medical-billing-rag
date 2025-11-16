@@ -27,19 +27,6 @@ function RAGContent() {
   // Debug: Always log to see if component renders
   console.log("RAG Component rendered", { match, params });
 
-  // IMMEDIATE render - show something right away
-  if (loading && isValid === null) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Verifying access...</p>
-          <p className="text-xs text-muted-foreground mt-2">URL: /RAG/{params?.encoder || 'loading...'}</p>
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     // Safety timeout - if validation takes too long, show error
     const timeoutId = setTimeout(() => {
