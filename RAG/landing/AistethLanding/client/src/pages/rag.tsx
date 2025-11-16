@@ -27,6 +27,19 @@ function RAGContent() {
   // Debug: Always log to see if component renders
   console.log("RAG Component rendered", { match, params });
 
+  // IMMEDIATE render - show something right away
+  if (loading && isValid === null) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verifying access...</p>
+          <p className="text-xs text-muted-foreground mt-2">URL: /RAG/{params?.encoder || 'loading...'}</p>
+        </div>
+      </div>
+    );
+  }
+
   useEffect(() => {
     // If route doesn't match, redirect
     if (!match) {
@@ -100,12 +113,13 @@ function RAGContent() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
         <div className="text-center">
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">Route not matched. Redirecting...</p>
         </div>
       </div>
     );
   }
 
+  // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-background">
