@@ -6,13 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Lock, User, CheckCircle } from "lucide-react";
-
-// RAG Agent URL - can be configured via environment variable
-// Default to production URL, fallback to localhost for development
-const RAG_AGENT_URL = import.meta.env.VITE_RAG_AGENT_URL || 
-  (import.meta.env.PROD 
-    ? "https://rag.aisteth.xyz"  // Production subdomain
-    : "http://localhost:8501");  // Development localhost
+import { generateEncoder } from "@/lib/encoder";
 
 // User credentials (matching the login_system.py)
 const USERS = {
@@ -38,6 +32,9 @@ const USERS = {
   }
 };
 
+// Export USERS for use in RAG page
+export { USERS };
+
 export default function Login() {
   const [, setLocation] = useLocation();
   const [username, setUsername] = useState("");
@@ -62,22 +59,25 @@ export default function Login() {
     // Check credentials
     const user = USERS[username as keyof typeof USERS];
     if (user && user.password === password) {
+      // Generate unique encoder for this login
+      const encoder = generateEncoder(username, password);
+      
       // Store user info in sessionStorage
       sessionStorage.setItem("user", JSON.stringify({
         username,
         name: user.name,
         role: user.role,
-        loginTime: new Date().toISOString()
+        loginTime: new Date().toISOString(),
+        encoder: encoder
       }));
 
       // Show success message
-      setSuccess(`Login successful! Redirecting to RAG Agent at ${RAG_AGENT_URL}...`);
+      setSuccess("Login successful! Redirecting to RAG Agent...");
       setIsLoading(false);
 
-      // Redirect to RAG agent after a short delay
+      // Redirect to RAG page with encoder after a short delay
       setTimeout(() => {
-        console.log("Redirecting to:", RAG_AGENT_URL);
-        window.location.href = RAG_AGENT_URL;
+        setLocation(`/RAG/${encoder}`);
       }, 1500);
     } else {
       setError("Invalid username or password");
