@@ -8,7 +8,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Lock, User, CheckCircle } from "lucide-react";
 
 // RAG Agent URL - can be configured via environment variable
-const RAG_AGENT_URL = import.meta.env.VITE_RAG_AGENT_URL || "http://localhost:8501";
+// Default to production URL, fallback to localhost for development
+const RAG_AGENT_URL = import.meta.env.VITE_RAG_AGENT_URL || 
+  (import.meta.env.PROD 
+    ? "https://rag.aisteth.xyz"  // Production subdomain
+    : "http://localhost:8501");  // Development localhost
 
 // User credentials (matching the login_system.py)
 const USERS = {
