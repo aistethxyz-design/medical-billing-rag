@@ -6,7 +6,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
-const PORT = 3002;
+const PORT = process.env.PORT || 3002;
 
 // OpenAI/OpenRouter/DeepSeek setup
 const OpenAI = require('openai');
@@ -635,6 +635,40 @@ app.get('/api/billing/recent-codes', (req, res) => {
     recentCodes: []
   });
 });
+
+// Serve static files from the frontend build directory
+// Try multiple paths to find the frontend build
+const possibleFrontendPaths = [
+  path.join(__dirname, '../frontend/dist'),
+  path.join(__dirname, '../../frontend/dist'),
+  path.join(__dirname, 'frontend/dist'),
+  path.join(process.cwd(), 'frontend/dist'),
+  path.join(process.cwd(), '../frontend/dist')
+];
+
+let frontendPath = null;
+for (const p of possibleFrontendPaths) {
+  if (fs.existsSync(p)) {
+    frontendPath = p;
+    console.log('✅ Found frontend build at:', frontendPath);
+    break;
+  }
+}
+
+if (frontendPath) {
+  app.use(express.static(frontendPath));
+  
+  // Handle client-side routing - send index.html for any unknown routes
+  app.get('*', (req, res) => {
+    if (req.path.startsWith('/api')) {
+      // Don't redirect API calls
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+} else {
+  console.warn('⚠️  Frontend build not found. Static files will not be served.');
+}
 
 // Start server
 console.log('🚀 Starting Simple RAG Billing Server...');
