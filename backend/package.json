@@ -4,7 +4,7 @@
   "description": "Backend API for AISteth medical AI assistant platform",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "set PRISMA_CLIENT_ENGINE_TYPE=wasm && nodemon src/server.ts",
+    "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest",

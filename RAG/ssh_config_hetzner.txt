@@ -1,0 +1,18 @@
+# SSH Config for Hetzner Server
+# Copy this to: C:\Users\mehul\.ssh\config
+# (Create the file if it doesn't exist)
+
+Host hetzner
+    HostName 5.161.47.228
+    User root
+    IdentityFile C:\Users\mehul\.ssh\id_ed25519
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+
+Host hetzner-kwasi
+    HostName 5.161.47.228
+    User kwasi
+    IdentityFile C:\Users\mehul\.ssh\id_ed25519
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+

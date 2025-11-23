@@ -67,3 +67,4 @@ backend/prisma/dev.db-journal
 # Uploads (will be volume mounted in production)
 backend/uploads/*
 
+

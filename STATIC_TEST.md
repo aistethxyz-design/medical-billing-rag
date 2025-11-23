@@ -85,3 +85,6 @@ Then you can deploy the full app by changing Dockerfile back to `Dockerfile`
 
 **This is the simplest test possible. If you see the purple page, Coolify works!** 🎉
 
+
+
+

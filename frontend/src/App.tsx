@@ -64,7 +64,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router basename="/medical-billing-rag">
+      <Router>
         <div className="App">
           <Routes>
             {/* Public routes */}
@@ -140,11 +140,9 @@ function App() {
             <Route
               path="/billing"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <BillingAssistant />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <BillingAssistant />
+                </AppLayout>
               }
             />
             

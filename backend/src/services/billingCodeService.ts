@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client'; // Temporarily disabled
 import { logger } from '../utils/logger';
 import fs from 'fs';
 import path from 'path';
@@ -48,12 +48,12 @@ export interface EncounterAnalysis {
 }
 
 class BillingCodeService {
-  private prisma: PrismaClient;
+  // private prisma: PrismaClient; // Temporarily disabled
   private billingCodes: Map<string, BillingCode> = new Map();
   private codeIndex: Map<string, string[]> = new Map(); // keyword -> codes
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Temporarily disabled
   }
 
   async initialize(): Promise<void> {
@@ -69,17 +69,45 @@ class BillingCodeService {
 
   private async loadBillingCodes(): Promise<void> {
     try {
-      const csvPath = path.join(process.cwd(), 'Codes by class.csv');
-      const csvContent = fs.readFileSync(csvPath, 'utf-8');
+      // Try multiple possible paths for the CSV file
+      const possiblePaths = [
+        path.join(process.cwd(), 'Codes by class.csv'), // Root directory
+        path.join(process.cwd(), '..', 'Codes by class.csv'), // One level up from backend
+        path.join(__dirname, '..', '..', '..', 'Codes by class.csv'), // From backend/src/services
+      ];
+      
+      let csvPath: string | null = null;
+      let csvContent: string = '';
+      
+      for (const possiblePath of possiblePaths) {
+        if (fs.existsSync(possiblePath)) {
+          csvPath = possiblePath;
+          csvContent = fs.readFileSync(possiblePath, 'utf-8');
+          logger.info(`Found CSV file at: ${csvPath}`);
+          break;
+        }
+      }
+      
+      if (!csvPath) {
+        throw new Error(`Could not find 'Codes by class.csv' in any of these locations: ${possiblePaths.join(', ')}`);
+      }
+      
       const lines = csvContent.split('\n');
 
       for (let i = 1; i < lines.length; i++) { // Skip header
         const line = lines[i].trim();
         if (!line || line.startsWith(',,,')) continue; // Skip empty lines
 
-        const [code, description, howToUse, amountStr] = line.split(',');
+        // Handle CSV with quoted fields that may contain commas
+        const parts = this.parseCSVLine(line);
+        if (parts.length < 2) continue;
         
-        if (!code || !description) continue;
+        const code = parts[0]?.trim();
+        const description = parts[1]?.trim();
+        const howToUse = parts[2]?.trim() || '';
+        const amountStr = parts[3]?.trim() || '';
+        
+        if (!code || !description || code === 'Code') continue; // Skip header and invalid rows
 
         const amount = this.parseAmount(amountStr);
         const category = this.categorizeCode(code);
@@ -104,6 +132,28 @@ class BillingCodeService {
       logger.error('Failed to load billing codes:', error);
       throw error;
     }
+  }
+
+  private parseCSVLine(line: string): string[] {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current); // Add last field
+    
+    return result;
   }
 
   private parseAmount(amountStr: string): number {
@@ -532,25 +582,24 @@ class BillingCodeService {
   }
 
   async analyzeEncounter(encounterId: string, clinicalText: string): Promise<EncounterAnalysis> {
-    const encounter = await this.prisma.encounter.findUnique({
-      where: { id: encounterId },
-      include: {
-        diagnoses: true,
-        procedures: true
-      }
-    });
+    // Temporarily disabled Prisma dependency
+    // const encounter = await this.prisma.encounter.findUnique({
+    //   where: { id: encounterId },
+    //   include: {
+    //     diagnoses: true,
+    //     procedures: true
+    //   }
+    // });
 
-    if (!encounter) {
-      throw new Error('Encounter not found');
-    }
+    // if (!encounter) {
+    //   throw new Error('Encounter not found');
+    // }
 
-    // Find optimal codes
-    const optimizations = await this.findOptimalCodes(clinicalText, encounter.type);
+    // Find optimal codes (using default encounter type)
+    const optimizations = await this.findOptimalCodes(clinicalText, 'Emergency');
     
-    // Calculate current revenue
-    const currentRevenue = encounter.procedures.reduce((sum, proc) => 
-      sum + (proc.chargeAmount || 0), 0
-    );
+    // Calculate current revenue (default to 0 without database)
+    const currentRevenue = 0;
     
     // Calculate potential revenue
     const potentialRevenue = optimizations.reduce((sum, opt) => 

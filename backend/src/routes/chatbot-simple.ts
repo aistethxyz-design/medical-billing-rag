@@ -19,9 +19,12 @@ router.post('/chat', async (req, res) => {
 
     logger.info('Chatbot request received:', { message: message.substring(0, 100) });
 
-    // Initialize AI service if not already done
-    if (!aiService.isInitialized) {
+    // Initialize AI service (will handle if already initialized)
+    try {
       await aiService.initialize();
+    } catch (error) {
+      logger.warn('AI service initialization warning:', error);
+      // Continue anyway - might work without full initialization
     }
 
     // Generate response using the chatbot method
@@ -53,3 +56,4 @@ router.get('/health', (req, res) => {
 });
 
 export default router;
+

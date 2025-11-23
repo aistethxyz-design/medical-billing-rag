@@ -122,14 +122,20 @@ const BillingAssistant: React.FC = () => {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       if (data.success) {
         setAnalysis(data.analysis);
       } else {
         console.error('Analysis failed:', data.error);
+        alert(`Analysis failed: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Analysis failed:', error);
+      alert(`Failed to analyze: ${error instanceof Error ? error.message : 'Please make sure the backend server is running on port 3002'}`);
     } finally {
       setIsAnalyzing(false);
     }

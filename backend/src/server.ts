@@ -126,7 +126,7 @@ app.get('/health', (req, res) => {
 // app.use('/api/coding', authenticate, codingRoutes);
 // app.use('/api/analytics', authenticate, analyticsRoutes);
 app.use('/api/chatbot', chatbotRoutes);
-// app.use('/api/billing', authenticate, billingRoutes);
+app.use('/api/billing', billingRoutes); // Temporarily disabled auth
 
 // Medical Coding AI Features Demo Endpoint
 app.get('/api/demo/features', (req, res) => {

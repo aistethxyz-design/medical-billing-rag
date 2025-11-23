@@ -130,3 +130,6 @@ When ready to deploy the full application:
 
 **This test server has ZERO dependencies and WILL work if Coolify is set up correctly!** 🚀
 
+
+
+

@@ -167,3 +167,5 @@ This creates import conflicts where TypeScript can't determine which version to 
 *Fixed: October 11, 2025*  
 *Ready for deployment to aisteth.xyz via Coolify*
 
+
+
