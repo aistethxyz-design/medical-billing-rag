@@ -82,7 +82,7 @@ export default function Header() {
               Contact
             </button>
             <button
-              onClick={handleLoginClick}
+              onClick={() => navigate('/login')}
               className="!bg-blue-600 hover:!bg-blue-500 !text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl ml-4"
               data-testid="nav-login"
               style={{ 
@@ -91,7 +91,7 @@ export default function Header() {
                 minWidth: '80px'
               }}
             >
-              {isAuthenticated ? 'Dashboard' : 'Login'}
+              Login
             </button>
           </nav>
           
@@ -136,12 +136,15 @@ export default function Header() {
                 Contact
               </button>
               <button
-                onClick={handleLoginClick}
+                onClick={() => {
+                  navigate('/login');
+                  setIsMobileMenuOpen(false);
+                }}
                 className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors w-full shadow-sm"
                 data-testid="mobile-nav-login"
                 style={{ backgroundColor: 'hsl(221, 83%, 53%)' }}
               >
-                {isAuthenticated ? 'Dashboard' : 'Login'}
+                Login
               </button>
             </nav>
           </div>

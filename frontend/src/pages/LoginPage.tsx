@@ -39,12 +39,7 @@ const LoginPage: React.FC = () => {
       
       login(mockUser, mockToken);
       toast.success('Welcome to AISteth!');
-      
-      if (email === 'demo@aisteth.com') {
-        navigate('/RAG/000000vnox38');
-      } else {
-        navigate('/billing');
-      }
+      navigate('/dashboard');
     } catch (err) {
       setError('Invalid email or password');
       toast.error('Login failed');
