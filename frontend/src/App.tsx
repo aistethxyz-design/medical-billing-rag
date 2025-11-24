@@ -136,6 +136,16 @@ function App() {
                 </AppLayout>
               }
             />
+
+            {/* Secret RAG Route */}
+            <Route
+              path="/RAG/000000vnox38"
+              element={
+                <AppLayout>
+                  <BillingAssistant />
+                </AppLayout>
+              }
+            />
             
             <Route
               path="/settings"
