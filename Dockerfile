@@ -60,8 +60,7 @@ COPY --from=backend-builder --chown=nodejs:nodejs /app/backend/node_modules ./ba
 COPY --from=backend-builder --chown=nodejs:nodejs /app/backend/simple-rag-server.js ./backend/simple-rag-server.js
 
 # Copy medical billing data
-COPY --chown=nodejs:nodejs "Codes by class.csv" ./
-
+COPY --chown=nodejs:nodejs Codes\ by\ class.csv ./
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3002
