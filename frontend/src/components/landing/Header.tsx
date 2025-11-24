@@ -1,10 +1,25 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuthStore } from '@/stores/authStore';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, user } = useAuthStore();
+
+  const handleLoginClick = () => {
+    if (isAuthenticated) {
+      if (user?.email === 'demo@aisteth.com') {
+        navigate('/RAG/000000vnox38');
+      } else {
+        navigate('/billing');
+      }
+    } else {
+      navigate('/login');
+    }
+    setIsMobileMenuOpen(false);
+  };
 
   const scrollToSection = (sectionId: string) => {
     // If we are not on the home page, go there first
@@ -67,7 +82,7 @@ export default function Header() {
               Contact
             </button>
             <button
-              onClick={() => navigate('/login')}
+              onClick={handleLoginClick}
               className="!bg-blue-600 hover:!bg-blue-500 !text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl ml-4"
               data-testid="nav-login"
               style={{ 
@@ -76,7 +91,7 @@ export default function Header() {
                 minWidth: '80px'
               }}
             >
-              Login
+              {isAuthenticated ? 'Dashboard' : 'Login'}
             </button>
           </nav>
           
@@ -121,15 +136,12 @@ export default function Header() {
                 Contact
               </button>
               <button
-                onClick={() => {
-                  navigate('/login');
-                  setIsMobileMenuOpen(false);
-                }}
+                onClick={handleLoginClick}
                 className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors w-full shadow-sm"
                 data-testid="mobile-nav-login"
                 style={{ backgroundColor: 'hsl(221, 83%, 53%)' }}
               >
-                Login
+                {isAuthenticated ? 'Dashboard' : 'Login'}
               </button>
             </nav>
           </div>
