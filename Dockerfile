@@ -85,4 +85,3 @@ ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application
 CMD ["node", "backend/simple-rag-server.js"]
-
