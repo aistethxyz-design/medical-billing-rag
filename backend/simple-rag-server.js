@@ -65,11 +65,26 @@ let codeIndex = new Map();
 
 function loadBillingCodes() {
   try {
-    const csvPath = path.join(__dirname, '..', 'Codes by class.csv');
-    console.log('Loading CSV from:', csvPath);
+    // Try multiple possible locations for the CSV file
+    const possibleCsvPaths = [
+      path.join(__dirname, '..', 'Codes_by_class.csv'), // Local dev (backend/..)
+      path.join(process.cwd(), 'Codes_by_class.csv'),   // Production (root)
+      path.join(__dirname, 'Codes_by_class.csv'),       // Fallback
+      path.join('/app', 'Codes_by_class.csv')           // Docker absolute path
+    ];
+
+    let csvPath = null;
+    for (const p of possibleCsvPaths) {
+      if (fs.existsSync(p)) {
+        csvPath = p;
+        console.log('✅ Found CSV file at:', csvPath);
+        break;
+      }
+    }
     
-    if (!fs.existsSync(csvPath)) {
-      throw new Error(`CSV file not found at: ${csvPath}`);
+    if (!csvPath) {
+      console.error('❌ Tried looking in:', possibleCsvPaths);
+      throw new Error(`CSV file not found (Codes_by_class.csv)`);
     }
     
     const csvContent = fs.readFileSync(csvPath, 'utf-8');
