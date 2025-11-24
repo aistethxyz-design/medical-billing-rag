@@ -48,10 +48,16 @@ console.log('🌐 Base URL:', baseURL);
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003', 'http://localhost:5173'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003', 'http://localhost:5173', 'https://aisteth.xyz', 'http://aisteth.xyz'],
   credentials: true
 }));
 app.use(express.json());
+
+// Request Logging Middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
 // Load billing codes from CSV
 let billingCodes = [];
@@ -656,14 +662,31 @@ for (const p of possibleFrontendPaths) {
 }
 
 if (frontendPath) {
+  console.log('📂 Serving static files from:', frontendPath);
+  
+  // Serve static assets with correct caching and explicit fallthrough
+  app.use('/assets', express.static(path.join(frontendPath, 'assets'), {
+    fallthrough: false // 404 if asset not found, don't fall through to index.html
+  }));
+  
+  // Serve other static files (favicon, etc)
   app.use(express.static(frontendPath));
   
-  // Handle client-side routing - send index.html for any unknown routes
+  // Handle client-side routing - send index.html for ANY unknown routes that aren't API or assets
   app.get('*', (req, res) => {
     if (req.path.startsWith('/api')) {
-      // Don't redirect API calls
       return res.status(404).json({ error: 'API endpoint not found' });
     }
+    
+    // Check if it looks like a static asset request (js, css, images)
+    if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+      // If we are here, express.static didn't find it. 
+      // Don't serve index.html for missing assets, but log it.
+      console.error(`❌ Missing asset: ${req.path}`);
+      return res.status(404).send('File not found');
+    }
+    
+    console.log(`🔄 Serving index.html for route: ${req.path}`);
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 } else {
