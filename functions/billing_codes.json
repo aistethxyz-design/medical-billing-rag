@@ -1,0 +1,2368 @@
+[
+  {
+    "code": "A003",
+    "description": "General assessment",
+    "howToUse": "Used for full assessments when time and complexity justify; less common in ER vs. H-codes",
+    "amount": 77.2,
+    "category": "Assessment"
+  },
+  {
+    "code": "A004",
+    "description": "Medical specific assessment",
+    "howToUse": "For focused systems assessments (e.g., cardiovascular); may be used if H-codes don't apply",
+    "amount": 43.1,
+    "category": "Assessment"
+  },
+  {
+    "code": "A007",
+    "description": "Intermediate assessment",
+    "howToUse": "Used if not eligible for H-codes and problem requires intermediate evaluation",
+    "amount": 36.85,
+    "category": "Assessment"
+  },
+  {
+    "code": "A001",
+    "description": "Minor assessment",
+    "howToUse": "Brief encounter, often used for quick reviews or follow-ups in non-ER",
+    "amount": 24.9,
+    "category": "Assessment"
+  },
+  {
+    "code": "A008",
+    "description": "Mini assessment",
+    "howToUse": "A mini assessment is rendered when an assessment of a patient for an unrelated non-WSIB problem is performed during the same visit as an assessment of a WSIB related problem for which only a minor assessment was rendered.",
+    "amount": 13.05,
+    "category": "Assessment"
+  },
+  {
+    "code": "A004",
+    "description": "General re-assessment",
+    "howToUse": "Can be used for general reassessments",
+    "amount": 38.35,
+    "category": "Assessment"
+  },
+  {
+    "code": "A888",
+    "description": "Special visit premium – Emergency Department",
+    "howToUse": "Billed in addition to an assessment when called in to ER",
+    "amount": 20.65,
+    "category": "Assessment"
+  },
+  {
+    "code": "A901",
+    "description": "Certification of death",
+    "howToUse": "Used when pronouncing death in ER or elsewhere",
+    "amount": 20,
+    "category": "Assessment"
+  },
+  {
+    "code": "H101",
+    "description": "Minor assessment",
+    "howToUse": "Mon-Fri 0800-1700",
+    "amount": 15,
+    "category": "Emergency",
+    "timeOfDay": "Day"
+  },
+  {
+    "code": "H103",
+    "description": "Multiple systems assessment - High-acuity patients requiring extensive work-up",
+    "howToUse": "Mon-Fri 0800-1700",
+    "amount": 35.65,
+    "category": "Emergency",
+    "timeOfDay": "Day"
+  },
+  {
+    "code": "H102",
+    "description": "Comprehensive assessment - Default for most ER patients requiring moderate evaluation",
+    "howToUse": "Mon-Fri 0800-1700",
+    "amount": 37.2,
+    "category": "Emergency",
+    "timeOfDay": "Day"
+  },
+  {
+    "code": "H104",
+    "description": "Reassess (every 2 hours) assessment - Reassessment within the same shift",
+    "howToUse": "Mon-Fri 0800-1700",
+    "amount": 15,
+    "category": "Emergency",
+    "timeOfDay": "Day"
+  },
+  {
+    "code": "H131",
+    "description": "Minor assessment",
+    "howToUse": "Mon-Fri 1700-0000",
+    "amount": 18.7,
+    "category": "Emergency",
+    "timeOfDay": "Evening"
+  },
+  {
+    "code": "H133",
+    "description": "Multiple systems assessment - High-acuity patients requiring extensive work-up",
+    "howToUse": "Mon-Fri 1700-0000",
+    "amount": 42.4,
+    "category": "Emergency",
+    "timeOfDay": "Evening"
+  },
+  {
+    "code": "H132",
+    "description": "Comprehensive assessment - Default for most ER patients requiring moderate evaluation",
+    "howToUse": "Mon-Fri 1700-0000",
+    "amount": 46.3,
+    "category": "Emergency",
+    "timeOfDay": "Evening"
+  },
+  {
+    "code": "H134",
+    "description": "Reassess (every 2 hours) assessment - Reassessment within the same shift",
+    "howToUse": "Mon-Fri 1700-0000",
+    "amount": 18.7,
+    "category": "Emergency",
+    "timeOfDay": "Evening"
+  },
+  {
+    "code": "H151",
+    "description": "Minor assessment",
+    "howToUse": "Weekend and Holiday",
+    "amount": 25.5,
+    "category": "Emergency",
+    "timeOfDay": "Weekend"
+  },
+  {
+    "code": "H153",
+    "description": "Multiple systems assessment - High-acuity patients requiring extensive work-up",
+    "howToUse": "Weekend and Holiday",
+    "amount": 56.4,
+    "category": "Emergency",
+    "timeOfDay": "Weekend"
+  },
+  {
+    "code": "H152",
+    "description": "Comprehensive assessment - Default for most ER patients requiring moderate evaluation",
+    "howToUse": "Weekend and Holiday",
+    "amount": 63.3,
+    "category": "Emergency",
+    "timeOfDay": "Weekend"
+  },
+  {
+    "code": "H154",
+    "description": "Reassess (every 2 hours) assessment - Reassessment within the same shift",
+    "howToUse": "Weekend and Holiday",
+    "amount": 25.5,
+    "category": "Emergency",
+    "timeOfDay": "Weekend"
+  },
+  {
+    "code": "H151",
+    "description": "Minor assessment",
+    "howToUse": "Night",
+    "amount": 29.8,
+    "category": "Emergency",
+    "timeOfDay": "Night"
+  },
+  {
+    "code": "H153",
+    "description": "Multiple systems assessment - High-acuity patients requiring extensive work-up",
+    "howToUse": "Night",
+    "amount": 65.95,
+    "category": "Emergency",
+    "timeOfDay": "Night"
+  },
+  {
+    "code": "H152",
+    "description": "Comprehensive assessment - Default for most ER patients requiring moderate evaluation",
+    "howToUse": "Night",
+    "amount": 73.9,
+    "category": "Emergency",
+    "timeOfDay": "Night"
+  },
+  {
+    "code": "H154",
+    "description": "Reassess (every 2 hours) assessment - Reassessment within the same shift",
+    "howToUse": "Night",
+    "amount": 29.8,
+    "category": "Emergency",
+    "timeOfDay": "Night"
+  },
+  {
+    "code": "H105",
+    "description": "Special pediatric emergency assessment",
+    "howToUse": "Children under 2 years old, if full work-up is done",
+    "amount": 101.9,
+    "category": "Emergency"
+  },
+  {
+    "code": "H107",
+    "description": "Obstetrical emergency assessment",
+    "howToUse": "ER assessment for obstetric complaint",
+    "amount": 88.95,
+    "category": "Emergency"
+  },
+  {
+    "code": "H109",
+    "description": "Mental health emergency assessment",
+    "howToUse": "For psych evaluations requiring added time",
+    "amount": 88.95,
+    "category": "Emergency"
+  },
+  {
+    "code": "H110",
+    "description": "Emergency department consultation",
+    "howToUse": "Requires referral and documented consultation",
+    "amount": 105,
+    "category": "Emergency"
+  },
+  {
+    "code": "B100A",
+    "description": "First Telemedicine Patient Encounter premium",
+    "howToUse": "Bill for the first telemedicine patient encounter",
+    "amount": 35,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "G521",
+    "description": "Life Threatening Critical Care – First 15 min",
+    "howToUse": "up to 3 MDs can bill ( encounters which Includes IVs, arterial lines, endotracheal or NG intubations, urinary catheters, defibrillations, & cardioversions)",
+    "amount": 110.55,
+    "category": "Procedure"
+  },
+  {
+    "code": "G523",
+    "description": "Life Threatening Critical Care – 2nd 15 min",
+    "howToUse": "up to 3 MDs can bill ( encounters which Includes IVs, arterial lines, endotracheal or NG intubations, urinary catheters, defibrillations, & cardioversions)",
+    "amount": 55.2,
+    "category": "Procedure"
+  },
+  {
+    "code": "G522",
+    "description": "Life Threatening Critical Care Further Reassessment (every 15min; max 4 units)",
+    "howToUse": "up to 3 MDs can bill ( encounters which Includes IVs, arterial lines, endotracheal or NG intubations, urinary catheters, defibrillations, & cardioversions)",
+    "amount": 36.35,
+    "category": "Procedure"
+  },
+  {
+    "code": "G395",
+    "description": "Other Critical Care - First 15 min",
+    "howToUse": "(encounters Including IVs, arterial lines, endotracheal or NG intubations, urinary catheters, defibrillations, & cardioversions)",
+    "amount": 56.8,
+    "category": "Procedure"
+  },
+  {
+    "code": "G391",
+    "description": "Other Critical Care - per 15 min; max 8 units",
+    "howToUse": "(encounters Including IVs, arterial lines, endotracheal or NG intubations, urinary catheters, defibrillations, & cardioversions)",
+    "amount": 28.35,
+    "category": "Procedure"
+  },
+  {
+    "code": "E412",
+    "description": "After Hours Procedures bonus  MON-FRI 1700-0000",
+    "howToUse": "percentage bonus, or absolute value bonus for a patient encounter; add if timing conditions in description are met",
+    "amount": 20,
+    "category": "Premium"
+  },
+  {
+    "code": "E412",
+    "description": "After Hours Procedural bonus  Weekends (0800-0000) & HOLIDAYS",
+    "howToUse": "percentage bonus, or absolute value bonus for a patient encounter; add if timing conditions in description are met",
+    "amount": 20,
+    "category": "Premium"
+  },
+  {
+    "code": "E413",
+    "description": "After Hours Procedural bonus Nights 0000-0800",
+    "howToUse": "percentage bonus, or absolute value bonus for a patient encounter; add if timing conditions in description are met",
+    "amount": 40,
+    "category": "Premium"
+  },
+  {
+    "code": "H113",
+    "description": "After Hours bonus for codes starting with G & K Weekend (0800-0000) & HOLIDAYS",
+    "howToUse": "percentage bonus, or absolute value bonus for a patient encounter; add if timing conditions in description are met",
+    "amount": 19.8,
+    "category": "Emergency"
+  },
+  {
+    "code": "H113",
+    "description": "After Hours bonus for codes starting with G & K Nights 0000-0800",
+    "howToUse": "percentage bonus, or absolute value bonus for a patient encounter; add if timing conditions in description are met",
+    "amount": 34.2,
+    "category": "Emergency"
+  },
+  {
+    "code": "E420",
+    "description": "Trauma Premium",
+    "howToUse": "Applies to “G” codes & procedures; Medical record needs ISS score >15 or >12 if patient is less than 16 years old",
+    "amount": 50,
+    "category": "Premium"
+  },
+  {
+    "code": "K734",
+    "description": "ED MD to NON CritiCALL",
+    "howToUse": "Requires a minimum of 10 minutes discussing a patient between referring MD and consulted MD. MD should document the start/stop time of the call, name of consultant MD, reasons for consult, opinion and recommendation of consultant MD.",
+    "amount": 31.35,
+    "category": "Consultation"
+  },
+  {
+    "code": "K736",
+    "description": "ED MD to CritiCALL telephone",
+    "howToUse": "Requires a minimum of 10 minutes discussing a patient between referring MD and consulted MD. MD should document the start/stop time of the call, name of consultant MD, reasons for consult, opinion and recommendation of consultant MD.",
+    "amount": 31.35,
+    "category": "Consultation"
+  },
+  {
+    "code": "H105",
+    "description": "In-patient interim admission orders",
+    "howToUse": "1.H105 is payable in addition to the initial consultation or assessment rendered in the emergency department or Hospital Urgent Care Clinic provided that each service is rendered separately by the Emergency Department Physician.",
+    "amount": 0,
+    "category": "Emergency"
+  },
+  {
+    "code": "H065",
+    "description": "Consultation to a CFPC MD (two plus one trained emergency physician)",
+    "howToUse": "1. The amount payable for a consultation by an ER Physician will be adjusted to a lesser assessment fee under either of the following circumstances:",
+    "amount": 0,
+    "category": "Emergency"
+  },
+  {
+    "code": "care area in a hospital",
+    "description": "or to a critically ill patient in a hospital.",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Other"
+  },
+  {
+    "code": "the consulting physician fails to ensure that a copy of the ER report is sent to the physician or nurse practitioner who referred the patient",
+    "description": "the amount payable for the service will be adjusted to the amount payable for an assessment.,$74.25 ,",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Other"
+  },
+  {
+    "code": "H055",
+    "description": "Consultation to a FRCPC MD (5 YEAR trained emergency physician)",
+    "howToUse": "1. The amount payable for a consultation by an ER Physician will be adjusted to a lesser assessment fee under either of the following circumstances:",
+    "amount": 0,
+    "category": "Emergency"
+  },
+  {
+    "code": "care area in a hospital",
+    "description": "or to a critically ill patient in a hospital.",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Other"
+  },
+  {
+    "code": "the consulting physician fails to ensure that a copy of the ER report is sent to the physician or nurse practitioner who referred the patient",
+    "description": "the amount payable for the service will be adjusted to the amount payable for an assessment.,$97.60 ,",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Other"
+  },
+  {
+    "code": "B100A",
+    "description": "Telestroke consultation: First Telemedicine Patient Encounter premium",
+    "howToUse": "Services cannot be billed in addition to the premiums for a missed, cancelled, or abandonned session.",
+    "amount": 35,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "B200A",
+    "description": "Telestroke consultation: Subsequent Telemedicine Patient Encounter Premium",
+    "howToUse": "",
+    "amount": 15,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "B101A",
+    "description": "Telestroke consultation: First Cancelled/Missed Telemedicine Patient Encounter premium",
+    "howToUse": "",
+    "amount": 35,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "B201A",
+    "description": "Telestroke consultation: Subsequent Missed/Cancelled Telemedicine Patient Encounter premium",
+    "howToUse": "",
+    "amount": 15,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "B102A",
+    "description": "Telestroke consultation: First Technical Difficulties Abandoned Patient Encounter premium",
+    "howToUse": "",
+    "amount": 35,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "B202A",
+    "description": "Telestroke consultation: Subsequent Technical Difficulties Abandoned Patient Encounter premium",
+    "howToUse": "",
+    "amount": 15,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "K101",
+    "description": "Ground ambulance transfer with patient per quarter hour or part thereof",
+    "howToUse": "See GP 30 to GP 33",
+    "amount": 0,
+    "category": "Consultation"
+  },
+  {
+    "code": "Detention-in-Ambulance is payable for constant attendance with a patient in an ambulance",
+    "description": "to provide all aspects of care to the patient. Time is calculated only for that period during which the physician is in constant attendance with the patient in the ambulance. The service includes an initial examination and ongoing monitoring of the patient’s condition and all interventions",
+    "howToUse": "except in those circumstances in which the Schedule provides for separate or additional payment for the intervention. For the purposes of calculation of time units payable for detention",
+    "amount": 30,
+    "category": "Dislocation"
+  },
+  {
+    "code": "k111",
+    "description": "Air ambulance transfer with patient per quarter hour or part thereof",
+    "howToUse": "See GP 30 to GP 33",
+    "amount": 0,
+    "category": "Other"
+  },
+  {
+    "code": "Detention-in-Ambulance is payable for constant attendance with a patient in an ambulance",
+    "description": "to provide all aspects of care to the patient. Time is calculated only for that period during which the physician is in constant attendance with the patient in the ambulance. The service includes an initial examination and ongoing monitoring of the patient’s condition and all interventions",
+    "howToUse": "except in those circumstances in which the Schedule provides for separate or additional payment for the intervention. For the purposes of calculation of time units payable for detention",
+    "amount": 30,
+    "category": "Dislocation"
+  },
+  {
+    "code": "k112",
+    "description": "Ambulance - Return trip without patient to place of origin following air or ground ambulance transfer, per half hour or major part thereof",
+    "howToUse": "See GP 30 to GP 33",
+    "amount": 0,
+    "category": "Other"
+  },
+  {
+    "code": "Detention-in-Ambulance is payable for constant attendance with a patient in an ambulance",
+    "description": "to provide all aspects of care to the patient. Time is calculated only for that period during which the physician is in constant attendance with the patient in the ambulance. The service includes an initial examination and ongoing monitoring of the patient’s condition and all interventions",
+    "howToUse": "except in those circumstances in which the Schedule provides for separate or additional payment for the intervention. For the purposes of calculation of time units payable for detention",
+    "amount": 30,
+    "category": "Dislocation"
+  },
+  {
+    "code": "H960",
+    "description": "Special Visit Premium Travel Premium",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis.  A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added.  This code applies to the first person seen on a special +C75visit for encounters Mon-Fri 0800-1700",
+    "amount": 36.4,
+    "category": "Emergency",
+    "timeOfDay": "Day"
+  },
+  {
+    "code": "H980",
+    "description": "Special Visit Premium First person seen",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis.  A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added.  This code applies to the first person seen on a special visit for encounters Mon-Fri 0800-1700",
+    "amount": 20,
+    "category": "Emergency",
+    "timeOfDay": "Day"
+  },
+  {
+    "code": "H981",
+    "description": "Special Visit Premium Additional Persons",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis.A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added.  This code is eligible for use on patients after the first person seen for a max of 5 times including the 1st patient seen) for encounters Mon-Fri 0800-1700. After the 5th patient seen, revert to billing H-prefix assessment codes.",
+    "amount": 20,
+    "category": "Emergency",
+    "timeOfDay": "Day"
+  },
+  {
+    "code": "H962",
+    "description": "Special Visit Premium Travel Premium",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added.  This code is for special visit travel Mon-Fri 1700-0000; max use 2 times",
+    "amount": 36.4,
+    "category": "Emergency",
+    "timeOfDay": "Evening"
+  },
+  {
+    "code": "H984",
+    "description": "Special Visit Premium First person seen Mon-Fri 1700-0000",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. This code applies to the first patient seen on a special visit for encounters Mon-Fri 1700-0000",
+    "amount": 60,
+    "category": "Emergency",
+    "timeOfDay": "Evening"
+  },
+  {
+    "code": "H985",
+    "description": "Special Visit Premium Additional Persons",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. This code is eligible for use on patients after the first person seen for a max of 5 times including the 1st patient seen for encounters Mon-Fri 1700-0000. After the 5th patient seen, revert to billing H-prefix assessment codes.",
+    "amount": 60,
+    "category": "Emergency",
+    "timeOfDay": "Evening"
+  },
+  {
+    "code": "H963",
+    "description": "Special Visit Premium Travel Premium Weekend and Holidays; max use 4 times",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. This code is for special visit travel on the Weekend and Holidays; max use 4 times",
+    "amount": 36.4,
+    "category": "Emergency",
+    "timeOfDay": "Weekend"
+  },
+  {
+    "code": "H988",
+    "description": "First person seen Weekend and Holidays",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. This code applies to the first person seen on a special visit for encounters on the weekend and holidays (nights have a higher premium)",
+    "amount": 75,
+    "category": "Emergency",
+    "timeOfDay": "Weekend"
+  },
+  {
+    "code": "H989",
+    "description": "Special Visit Premium Additional Persons (max of 10 including the 1st patient seen)  Weekend and Holidays",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. Eligible for use on patients after the first person seen for a max of 5 times for encounters on the Weekend and Holidays. After the 5th patient seen, revert to billing H-prefix assessment codes",
+    "amount": 75,
+    "category": "Emergency",
+    "timeOfDay": "Weekend"
+  },
+  {
+    "code": "H964",
+    "description": "Special Visit Premium Travel Premium",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. This code is for visit travel for encounters at night 0000 to 0700 max use 2 times",
+    "amount": 36.4,
+    "category": "Emergency",
+    "timeOfDay": "Night"
+  },
+  {
+    "code": "H986",
+    "description": "Special Visit Premium First person seen Night 0000-0700",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. This code aplies to the first person seen on a special visit for encounters at night 0000-0700",
+    "amount": 100,
+    "category": "Emergency",
+    "timeOfDay": "Night"
+  },
+  {
+    "code": "H987",
+    "description": "Special Visit Premium Additional Persons",
+    "howToUse": "Special Visit premiums can be claimed for emergency physicians getting called in early or for additional work on a non-elective basis. A main prefix assessment code: (ex. A003  A004  A007  A001) must be used before these premiums are added. This code is eligible for use on patients after the first person for an unlimited number of patients seen at Night 0000-0700",
+    "amount": 100,
+    "category": "Emergency",
+    "timeOfDay": "Night"
+  },
+  {
+    "code": "E400C",
+    "description": "Anesthesia After hours premiums: evenings, weekends, holidays",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "- use this premium if anesthesia provided between 1800-2400",
+    "description": "on weekends or a holiday,add 50%,",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Other"
+  },
+  {
+    "code": "E401C",
+    "description": "Anesthesia After hours premiums: nights`",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E021C",
+    "description": "Anesthesia Age Premiums: Newborn < 37 gestational age",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E014C",
+    "description": "Anesthesia Age Premiums: Newborn to 28d",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E009C",
+    "description": "Anesthesia Age Premiums: 29 days-1 yo",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E019C",
+    "description": "Anesthesia Age Premiums: 1-8 yo",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E007C",
+    "description": "Anesthesia Age Premiums: 70-79 yo",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E018C",
+    "description": "Anesthesia Age Premiums: 80 yo +",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E022C",
+    "description": "Anesthesia ASA premium III",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E017C",
+    "description": "Anesthesia ASA premium IV",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E010C",
+    "description": "Anesthesia BMI premium",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "A903",
+    "description": "Anesthesia Preop assessment",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Assessment"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E011C",
+    "description": "Anesthesia patient position premium",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "E024C",
+    "description": "Anesthesia ASA Sitting (>60°) premium",
+    "howToUse": "Anesthesia: “C” suffix with Procedure Code",
+    "amount": 0,
+    "category": "Premium"
+  },
+  {
+    "code": "Billing is unit based",
+    "description": "calculate as Base units (minimum = 6) + physical time spent (per 15 min) = total # of units. (1 unit = $15.01)",
+    "howToUse": "",
+    "amount": 0,
+    "category": "Telemedicine"
+  },
+  {
+    "code": "H100",
+    "description": "Bedside Ulltrasound (POCUS)",
+    "howToUse": "uses if bedside ultrasound (POCUS) is used for suspected pericardial tamponade, cardiac standstill, Free abdominal fluid(from trauma), ruptured AAA, or ruptured extopic pregnancy",
+    "amount": 0,
+    "category": "Emergency"
+  },
+  {
+    "code": "K623",
+    "description": "Form 1",
+    "howToUse": "add if Form 1  completed or performed during visit/encounter",
+    "amount": 104.8,
+    "category": "Consultation"
+  },
+  {
+    "code": "K070",
+    "description": "Home Care Form (CCAC)",
+    "howToUse": "add if Home Care Form (CCAC)  completed or performed during visit/encounter",
+    "amount": 31.75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K035",
+    "description": "MOT (ministry of transportation)",
+    "howToUse": "add if MOT (ministry of transportation) completed or performed during visit/encounter",
+    "amount": 36.25,
+    "category": "Consultation"
+  },
+  {
+    "code": "A771",
+    "description": "Death Certificate",
+    "howToUse": "add if Death Certificate  completed or performed during visit/encounter",
+    "amount": 20.6,
+    "category": "Assessment"
+  },
+  {
+    "code": "A777",
+    "description": "Death Certificate + Pronouncement",
+    "howToUse": "add if Death Certificate + Pronouncement  completed or performed during visit/encounter",
+    "amount": 33.7,
+    "category": "Assessment"
+  },
+  {
+    "code": "K015",
+    "description": "Counseling relatives of patient terminally ill or post resus",
+    "howToUse": "add if Counseling relatives of patient terminally ill or post resus completed or performed during visit/encounter",
+    "amount": 62.75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K005",
+    "description": "Counseling (q30min) – can be  billed with same day “H” codes if there are 2 separate Dx for visit",
+    "howToUse": "add if Counseling (q30min) – can be  billed with same day “H” codes if there are 2 separate Dx for visit completed or performed during visit/encounter",
+    "amount": 62.75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K014",
+    "description": "Counseling for Organ Donation",
+    "howToUse": "add if Counseling for Organ Donation  completed or performed during visit/encounter",
+    "amount": 62.75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K028",
+    "description": "Counselling STD/Needle Stick (q30min)",
+    "howToUse": "add if Counselling STD/Needle Stick (q30min)  completed or performed during visit/encounter",
+    "amount": 62.75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K018",
+    "description": "Counseling: Female Sexual Assault + Kit",
+    "howToUse": "add if Counseling: Female Sexual Assault + Kit  completed or performed during visit/encounter",
+    "amount": 308.7,
+    "category": "Consultation"
+  },
+  {
+    "code": "K021",
+    "description": "Counseling: Male Sexual Assault + Kit",
+    "howToUse": "add if Counseling: Male Sexual Assault + Kit  completed or performed during visit/encounter",
+    "amount": 243.5,
+    "category": "Consultation"
+  },
+  {
+    "code": "K061",
+    "description": "Police bloodwork(court order) for police requested blood samples",
+    "howToUse": "add if Police bloodwork(court order) for police requested blood samples completed or performed during visit/encounter",
+    "amount": 30,
+    "category": "Consultation"
+  },
+  {
+    "code": "G115",
+    "description": "Heart Pacing (External thoracic)",
+    "howToUse": "add if Heart Pacing (External thoracic) completed or performed during visit/encounter. these (*) codes do not bill with G codes. You can bill with “H” Codes,",
+    "amount": 46.3,
+    "category": "Procedure"
+  },
+  {
+    "code": "Z443",
+    "description": "Heart Pacing (transvenous)",
+    "howToUse": "add if Heart Pacing (transvenous) completed or performed during visit/encounter.",
+    "amount": 154.1,
+    "category": "Surgery"
+  },
+  {
+    "code": "G210",
+    "description": "Hypothermia Induction",
+    "howToUse": "add if Hypothermia Induction completed or performed during visit/encounter",
+    "amount": 190.75,
+    "category": "Procedure"
+  },
+  {
+    "code": "G211",
+    "description": "Intubation (Endotracheal)",
+    "howToUse": "add if Intubation (Endotracheal) completed or performed during visit/encounter",
+    "amount": 38.34,
+    "category": "Procedure"
+  },
+  {
+    "code": "G224",
+    "description": "Nerve Block (Allowed as add-on for specific blocks)",
+    "howToUse": "add if Nerve Block (Allowed as add-on for specific blocks) completed or performed during visit/encounter. This block is allowed in addition to procedures` for:  Intercostal, Pudendal, Femoral, Sciatic, Illioinguinal, Ulnar, Median, Radial, Brachial.",
+    "amount": 15.55,
+    "category": "Procedure"
+  },
+  {
+    "code": "G218",
+    "description": "Ilioinguinal or Iliohypogastric Nerve Block",
+    "howToUse": "add if Ilioinguinal or Iliohypogastric Nerve Block completed or performed during visit/encounter. Can NOT bill in addition to suture codes or other procedures.  For Exception see G224. Must last longer than 4 hours",
+    "amount": 54.65,
+    "category": "Procedure"
+  },
+  {
+    "code": "G219",
+    "description": "Infraorbital Nerve Block",
+    "howToUse": "add if Infraorbital Nerve Block completed or performed during visit/encounter. Can NOT bill in addition to suture codes or other procedures.  For Exception see G224. Must last longer than 4 hours",
+    "amount": 34.2,
+    "category": "Procedure"
+  },
+  {
+    "code": "G220",
+    "description": "Intercostal Nerve Block",
+    "howToUse": "add if Intercostal Nerve Block completed or performed during visit/encounter. Can NOT bill in addition to suture codes or other procedures.  For Exception see G224. Must last longer than 4 hours",
+    "amount": 34.2,
+    "category": "Procedure"
+  },
+  {
+    "code": "G221",
+    "description": "Intercostal Nerve Block (Each additional)",
+    "howToUse": "add if Intercostal Nerve Block (Each additional) completed or performed during visit/encounter. Can NOT bill in addition to suture codes or other procedures.  For Exception see G224. Must last longer than 4 hours",
+    "amount": 16.95,
+    "category": "Procedure"
+  },
+  {
+    "code": "G225",
+    "description": "Mental Branch Nerve Block",
+    "howToUse": "add if Mental Branch Nerve Block completed or performed during visit/encounter. Can NOT bill in addition to suture codes or other procedures.  For Exception see G224. Must last longer than 4 hours",
+    "amount": 34.2,
+    "category": "Procedure"
+  },
+  {
+    "code": "G235",
+    "description": "Supraorbital Nerve Block",
+    "howToUse": "add if Supraorbital Nerve Block completed or performed during visit/encounter. Can NOT bill in addition to suture codes or other procedures.  For Exception see G224. Must last longer than 4 hours",
+    "amount": 34.1,
+    "category": "Procedure"
+  },
+  {
+    "code": "G250",
+    "description": "Mandibular, Maxillary Nerve Block",
+    "howToUse": "add if Mandibular, Maxillary Nerve Block completed or performed during visit/encounter. Can NOT bill in addition to suture codes or other procedures.  For Exception see G224. Must last longer than 4 hours",
+    "amount": 75.1,
+    "category": "Procedure"
+  },
+  {
+    "code": "G268",
+    "description": "Arterial Line*",
+    "howToUse": "add if Arterial Line* completed or performed during visit/encounter. these (*) codes do not bill with G codes. You can bill with “H” Codes,",
+    "amount": 31.25,
+    "category": "Procedure"
+  },
+  {
+    "code": "G269",
+    "description": "Central Venous Line",
+    "howToUse": "add if Central Venous Line completed or performed during visit/encounter. these (*) codes do not bill with G codes. You can bill with “H” Codes,",
+    "amount": 31.25,
+    "category": "Procedure"
+  },
+  {
+    "code": "G270",
+    "description": "Intraosseous (IO)  Insertion",
+    "howToUse": "add if Intraosseous (IO)  Insertion completed or performed during visit/encounter",
+    "amount": 23.9,
+    "category": "Procedure"
+  },
+  {
+    "code": "G322",
+    "description": "Nasogastric (NG) Tube Insert (in an Intubated patient)",
+    "howToUse": "add if Nasogastric (NG) Tube Insert (in an Intubated patient) completed or performed during visit/encounter. these (*) codes do not bill with G codes. You can bill with “H” Codes,",
+    "amount": 9.6,
+    "category": "Procedure"
+  },
+  {
+    "code": "G328",
+    "description": "Joint or Bursa Aspiration",
+    "howToUse": "add if Joint or Bursa Aspiration completed or performed during visit/encounter",
+    "amount": 39.8,
+    "category": "Procedure"
+  },
+  {
+    "code": "G329",
+    "description": "Additional joint or bursa Aspiration (Each additional - maximum of 2)",
+    "howToUse": "add if Additional joint or bursa Aspiration (Each additional - maximum of 2) completed or performed during visit/encounter",
+    "amount": 20.25,
+    "category": "Procedure"
+  },
+  {
+    "code": "G356",
+    "description": "Nasogastric (NG) Tube – Therapeutic",
+    "howToUse": "add if Nasogastric (NG) Tube – Therapeutic completed or performed during visit/encounter. these (*) codes do not bill with G codes. You can bill with “H” Codes,",
+    "amount": 33.8,
+    "category": "Procedure"
+  },
+  {
+    "code": "G370",
+    "description": "Bursa or joint injection",
+    "howToUse": "add if Bursa or joint injection completed or performed during visit/encounter",
+    "amount": 20.25,
+    "category": "Procedure"
+  },
+  {
+    "code": "G371",
+    "description": "Bursa or joint injection (Each additional - max 5)",
+    "howToUse": "add if Bursa or joint injection (Each additional - max 5) completed or performed during visit/encounter",
+    "amount": 19.9,
+    "category": "Procedure"
+  },
+  {
+    "code": "G372",
+    "description": "Intramuscular (IM) Injection",
+    "howToUse": "add if Intramuscular (IM) Injection completed or performed during visit/encounter",
+    "amount": 3.89,
+    "category": "Procedure"
+  },
+  {
+    "code": "G403",
+    "description": "BPPV Maneuver",
+    "howToUse": "add if BPPV Maneuver completed or performed during visit/encounter",
+    "amount": 21.15,
+    "category": "Procedure"
+  },
+  {
+    "code": "G420",
+    "description": "Ear Syringing",
+    "howToUse": "add if Ear Syringing completed or performed during visit/encounter",
+    "amount": 11.25,
+    "category": "Procedure"
+  },
+  {
+    "code": "G435",
+    "description": "Tonometry",
+    "howToUse": "add if Tonometry completed or performed during visit/encounter",
+    "amount": 5.1,
+    "category": "Procedure"
+  },
+  {
+    "code": "E446",
+    "description": "Ultrasound (US) guided bursa or joint injection or aspiration after failed blind attempt",
+    "howToUse": "add if Ultrasound (US) guided bursa or joint injection or aspiration after failed blind attempt completed or performed during visit/encounter",
+    "amount": 30,
+    "category": "Premium"
+  },
+  {
+    "code": "J149P",
+    "description": "Ultrasound (US) guided aspiration",
+    "howToUse": "add if Ultrasound (US) guided aspiration  completed or performed during visit/encounter",
+    "amount": 47.3,
+    "category": "Other"
+  },
+  {
+    "code": "G900",
+    "description": "Bladder Ultrasound Post-void residual (PVR)",
+    "howToUse": "add if Bladder Ultrasound Post-void residual (PVR) completed or performed during visit/encounter",
+    "amount": 12.7,
+    "category": "Procedure"
+  },
+  {
+    "code": "G004",
+    "description": "Hemoccult Test",
+    "howToUse": "add if Hemoccult Test completed or performed during visit/encounter",
+    "amount": 1.53,
+    "category": "Procedure"
+  },
+  {
+    "code": "Z080",
+    "description": "Wound Debridement – Extends to subcutanous (SQ) tissue (once)",
+    "howToUse": "add if Wound Debridement – Extends to subcutanous (SQ) tissue (once) completed or performed during visit/encounter. Minimum 10 min of debridement.  Suture codes do NOT apply",
+    "amount": 20,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z081",
+    "description": "Wound Debridement – Extends to subcutanous (SQ) tissue (twice)",
+    "howToUse": "add if Wound Debridement – Extends to subcutanous (SQ) tissue (twice) completed or performed during visit/encounter. Minimum 10 min of debridement.  Suture codes do NOT apply",
+    "amount": 30,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z082",
+    "description": "Wound Debridement – Extends to subcutanous (SQ) tissue (three times)",
+    "howToUse": "add if Wound Debridement – Extends to subcutanous (SQ) tissue (three times) completed or performed during visit/encounter. Minimum 10 min of debridement.  Suture codes do NOT apply",
+    "amount": 45,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z083",
+    "description": "Wound Debridement – Extends to  subcutanous (SQ) tissue (4 or more)",
+    "howToUse": "add if Wound Debridement – Extends to  subcutanous (SQ) tissue (4 or more) completed or performed during visit/encounter. Minimum 10 min of debridement.  Suture codes do NOT apply",
+    "amount": 60,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z084",
+    "description": "Debridement – To tendon, bone, ligament, bursa (once)",
+    "howToUse": "add if Debridement – To tendon, bone, ligament, bursa (once) completed or performed during visit/encounter. Minimum 10 min of debridement.  Suture codes do NOT apply",
+    "amount": 60,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z085",
+    "description": "Debridement – To tendon, bone, ligament, bursa (2 or more sites)",
+    "howToUse": "add if Debridement – To tendon, bone, ligament, bursa (2 or more sites) completed or performed during visit/encounter. Minimum 10 min of debridement.  Suture codes do NOT apply",
+    "amount": 90,
+    "category": "Surgery"
+  },
+  {
+    "code": "R660",
+    "description": "Burn Debridement Hand – each digit",
+    "howToUse": "add if Burn Debridement Hand – each digit  completed or performed during visit/encounter",
+    "amount": 28.6,
+    "category": "Repair"
+  },
+  {
+    "code": "R662",
+    "description": "Burn Debridement Nose, cheek, lip, ear, forehead, scalp,  neck eyelid - each",
+    "howToUse": "add if Burn Debridement Nose, cheek, lip, ear, forehead, scalp,  neck eyelid - each completed or performed during visit/encounter",
+    "amount": 28.9,
+    "category": "Repair"
+  },
+  {
+    "code": "R662",
+    "description": "Burn Debridement Hand – Dorsum, Palm - each",
+    "howToUse": "add if Burn Debridement Hand – Dorsum, Palm - each  completed or performed during visit/encounter",
+    "amount": 28.9,
+    "category": "Repair"
+  },
+  {
+    "code": "R637",
+    "description": "Burn Debridement Debride & excision per % total body  treated other than hand, head, or neck",
+    "howToUse": "add if Burn Debridement Debride & excision per % total body  treated other than hand, head, or neck completed or performed during visit/encounter",
+    "amount": 29.65,
+    "category": "Repair"
+  },
+  {
+    "code": "Z101",
+    "description": "Incision and Drainage (I&D) - One",
+    "howToUse": "add if Incision and Drainage (I&D) - One completed or performed during visit/encounter",
+    "amount": 25.75,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z102",
+    "description": "Incision and Drainage (I&D) - One plus general anesthesia (General Anesthesia (+GA))",
+    "howToUse": "add if Incision and Drainage (I&D) - One plus general anesthesia (General Anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 44.35,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z173",
+    "description": "Incision and Drainage (I&D) - Two",
+    "howToUse": "add if Incision and Drainage (I&D) - Two completed or performed during visit/encounter",
+    "amount": 30.35,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z172",
+    "description": "Incision and Drainage (I&D) - Two or more plus general anesthesia (General Anesthesia (+GA))",
+    "howToUse": "add if Incision and Drainage (I&D) - Two or more plus general anesthesia (General Anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 66.6,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z174",
+    "description": "Incision and Drainage (I&D) - Three or more",
+    "howToUse": "add if Incision and Drainage (I&D) - Three or more completed or performed during visit/encounter",
+    "amount": 40.8,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z103",
+    "description": "Incision and Drainage (I&D) - Palmar/Plantar Space",
+    "howToUse": "add if Incision and Drainage (I&D) - Palmar/Plantar Space completed or performed during visit/encounter",
+    "amount": 44.35,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z227",
+    "description": "Incision and Drainage (I&D) - intramuscular",
+    "howToUse": "add if Incision and Drainage (I&D) - intramuscular completed or performed during visit/encounter",
+    "amount": 101.65,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z226",
+    "description": "Incision and Drainage (I&D) - bursa/soft tissue",
+    "howToUse": "add if Incision and Drainage (I&D) - bursa/soft tissue completed or performed during visit/encounter",
+    "amount": 97.65,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z104",
+    "description": "Incision and Drainage (I&D) - Perianal",
+    "howToUse": "add if Incision and Drainage (I&D) - Perianal completed or performed during visit/encounter",
+    "amount": 20.1,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z105",
+    "description": "Inscision and Drainage (I&D) - Perianal (with general anesthesia (+GA))",
+    "howToUse": "add if Inscision and Drainage (I&D) - Perianal (with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 66,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z106",
+    "description": "Incision and Drainage (I&D) - Ischiorectal/Pilonidal",
+    "howToUse": "add if Incision and Drainage (I&D) - Ischiorectal/Pilonidal completed or performed during visit/encounter",
+    "amount": 44.35,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z107",
+    "description": "Incision and Drainage (I&D) - Ischiorectal/Pilonidal (with general anesthesia (+GA))",
+    "howToUse": "add if Incision and Drainage (I&D) - Ischiorectal/Pilonidal (with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 108,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z108",
+    "description": "Incision and Drainage (I&D) - Palmar/Plantar Space (with general anesthesia (+GA))",
+    "howToUse": "add if Incision and Drainage (I&D) - Palmar/Plantar Space (with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 72,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z301",
+    "description": "Incision and Drainage (I&D) – Nose",
+    "howToUse": "add if Incision and Drainage (I&D) – Nose  completed or performed during visit/encounter",
+    "amount": 55.6,
+    "category": "Surgery"
+  },
+  {
+    "code": "E318",
+    "description": "Incision and Drainage (I&D) – Ear (packing/compression dressing)",
+    "howToUse": "add if Incision and Drainage (I&D) – Ear (packing/compression dressing)  completed or performed during visit/encounter",
+    "amount": 92.4,
+    "category": "Premium"
+  },
+  {
+    "code": "Z114",
+    "description": "Foreign Body Removal – Skin",
+    "howToUse": "add if Foreign Body Removal – Skin completed or performed during visit/encounter",
+    "amount": 25.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z115",
+    "description": "Foreign Body Removal – Skin (with general anesthesia (+GA))",
+    "howToUse": "add if Foreign Body Removal – Skin (with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 11.15,
+    "category": "Surgery"
+  },
+  {
+    "code": "R517",
+    "description": "Foreign Body Removal – Muscle",
+    "howToUse": "add if Foreign Body Removal – Muscle completed or performed during visit/encounter",
+    "amount": 107.7,
+    "category": "Repair"
+  },
+  {
+    "code": "Z128",
+    "description": "Nail Excision – Partial/Complete (once)",
+    "howToUse": "add if Nail Excision – Partial/Complete (once) completed or performed during visit/encounter",
+    "amount": 33.1,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z129",
+    "description": "Nail Excision – Partial/Complete (Multiple)",
+    "howToUse": "add if Nail Excision – Partial/Complete (Multiple) completed or performed during visit/encounter",
+    "amount": 35.7,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z130",
+    "description": "Nail Excision with Nail Bed Destruction (once)",
+    "howToUse": "add if Nail Excision with Nail Bed Destruction (once) completed or performed during visit/encounter",
+    "amount": 62.7,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z131",
+    "description": "Nail Excision with Nail Bed Destruction (Multiple)",
+    "howToUse": "add if Nail Excision with Nail Bed Destruction (Multiple) completed or performed during visit/encounter",
+    "amount": 82.65,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z143",
+    "description": "Minor Procedure (e.g., Skin Lesion Removal)",
+    "howToUse": "add if Minor Procedure (e.g., Skin Lesion Removal) completed or performed during visit/encounter",
+    "amount": 0,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z154",
+    "description": "Laceration Repair ≤ 5 cm – on Face/in layers/with bleeding vessels",
+    "howToUse": "add if Laceration Repair ≤ 5 cm – on Face/in layers/with bleeding vessels completed or performed during visit/encounter",
+    "amount": 35.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z175",
+    "description": "Laceration Repair 5.1–10 cm",
+    "howToUse": "add if Laceration Repair 5.1–10 cm completed or performed during visit/encounter",
+    "amount": 35.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z176",
+    "description": "Laceration Repair ≤ 5 cm",
+    "howToUse": "add if Laceration Repair ≤ 5 cm completed or performed during visit/encounter",
+    "amount": 20,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z177",
+    "description": "Laceration Repair 5.1–10 cm – on Face/in layers/with bleeding vessels",
+    "howToUse": "add if Laceration Repair 5.1–10 cm – on Face/in layers/with bleeding vessels completed or performed during visit/encounter",
+    "amount": 71.3,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z179",
+    "description": "Laceration Repair 10.1–15 cm",
+    "howToUse": "add if Laceration Repair 10.1–15 cm completed or performed during visit/encounter",
+    "amount": 50.4,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z187",
+    "description": "Complex Laceration Repair – Face (20 min)",
+    "howToUse": "add if Complex Laceration Repair – Face (20 min) completed or performed during visit/encounter",
+    "amount": 92.3,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z188",
+    "description": "Complex Laceration Repair – Digit (20 min)",
+    "howToUse": "add if Complex Laceration Repair – Digit (20 min) completed or performed during visit/encounter",
+    "amount": 92.3,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z189",
+    "description": "Complex Laceration Repair Repair – Digit Zone 1 (20 min)",
+    "howToUse": "add if Complex Laceration Repair Repair – Digit Zone 1 (20 min) completed or performed during visit/encounter",
+    "amount": 92.3,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z190",
+    "description": "Laceration Repair 10.1–15 cm – on Face/in layers/with bleeding vessels",
+    "howToUse": "add if Laceration Repair 10.1–15 cm – on Face/in layers/with bleeding vessels completed or performed during visit/encounter",
+    "amount": 101.45,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z191",
+    "description": "Laceration Repair >15.1 cm",
+    "howToUse": "add if Laceration Repair >15.1 cm completed or performed during visit/encounter",
+    "amount": 77.3,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z192",
+    "description": "Laceration Repair >15.1 cm – on Face/in layers/with bleeding vessels",
+    "howToUse": "add if Laceration Repair >15.1 cm – on Face/in layers/with bleeding vessels completed or performed during visit/encounter",
+    "amount": 154.95,
+    "category": "Surgery"
+  },
+  {
+    "code": "R629",
+    "description": "Revision of amputated finger tip",
+    "howToUse": "add if Revision of amputated finger tip  completed or performed during visit/encounter",
+    "amount": 241.55,
+    "category": "Repair"
+  },
+  {
+    "code": "R578",
+    "description": "Tendon repair, extensor",
+    "howToUse": "add if Tendon repair, extensor  completed or performed during visit/encounter",
+    "amount": 164.1,
+    "category": "Repair"
+  },
+  {
+    "code": "E580",
+    "description": "Tendon repair, extensor (each additional)",
+    "howToUse": "add if Tendon repair, extensor (each additional)  completed or performed during visit/encounter",
+    "amount": 70.95,
+    "category": "Premium"
+  },
+  {
+    "code": "R858",
+    "description": "Tendon repair, flexor",
+    "howToUse": "add if Tendon repair, flexor  completed or performed during visit/encounter",
+    "amount": 307.6,
+    "category": "Repair"
+  },
+  {
+    "code": "E581",
+    "description": "Tendon repair, flexor (each additional)",
+    "howToUse": "add if Tendon repair, flexor (each additional)  completed or performed during visit/encounter",
+    "amount": 128.95,
+    "category": "Premium"
+  },
+  {
+    "code": "R525",
+    "description": "Muscle repair (including skin closure)",
+    "howToUse": "add if Muscle repair (including skin closure)  completed or performed during visit/encounter",
+    "amount": 88.6,
+    "category": "Repair"
+  },
+  {
+    "code": "Z201",
+    "description": "Cast/splint – Finger",
+    "howToUse": "add if Cast/splint – Finger completed or performed during visit/encounter",
+    "amount": 10.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z202",
+    "description": "Cast/splint – Hand",
+    "howToUse": "add if Cast/splint – Hand completed or performed during visit/encounter",
+    "amount": 14.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z203",
+    "description": "Cast/splint – Wrist, Forearm, Arm",
+    "howToUse": "add if Cast/splint – Wrist, Forearm, Arm completed or performed during visit/encounter",
+    "amount": 24.1,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z204",
+    "description": "Cast/splint Removal",
+    "howToUse": "add if Cast/splint Removal completed or performed during visit/encounter",
+    "amount": 10.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z213",
+    "description": "Cast/splint – Leg (below knee)",
+    "howToUse": "add if Cast/splint – Leg (below knee) completed or performed during visit/encounter",
+    "amount": 24.1,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z211",
+    "description": "Cast/splint – Whole leg",
+    "howToUse": "add if Cast/splint – Whole leg completed or performed during visit/encounter",
+    "amount": 28.8,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z216",
+    "description": "Cast/splint Wedging",
+    "howToUse": "add if Cast/splint Wedging completed or performed during visit/encounter",
+    "amount": 10.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z198",
+    "description": "Cast/splint - Toes",
+    "howToUse": "add if Cast/splint - Toes  completed or performed during visit/encounter",
+    "amount": 10.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z199",
+    "description": "Cast/splint - Foot, Ankle",
+    "howToUse": "add if Cast/splint - Foot, Ankle  completed or performed during visit/encounter",
+    "amount": 14.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z311",
+    "description": "Foreign Body Removal – Nose (simple)",
+    "howToUse": "add if Foreign Body Removal – Nose (simple) completed or performed during visit/encounter",
+    "amount": 10.55,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z312",
+    "description": "Foreign Body Removal – Nose (Complicated or with general anesthesia (+GA))",
+    "howToUse": "add if Foreign Body Removal – Nose (Complicated or with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 50.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z314",
+    "description": "Epistaxis – Cauterization",
+    "howToUse": "add if Epistaxis – Cauterization completed or performed during visit/encounter",
+    "amount": 11.5,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z315",
+    "description": "Epistaxis – Anterior Packing",
+    "howToUse": "add if Epistaxis – Anterior Packing completed or performed during visit/encounter",
+    "amount": 15.35,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z316",
+    "description": "Epistaxis – Anterior & Posterior Packing",
+    "howToUse": "add if Epistaxis – Anterior & Posterior Packing completed or performed during visit/encounter",
+    "amount": 35.5,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z322",
+    "description": "Foreign Body Removal – Larynx (Direct)",
+    "howToUse": "add if Foreign Body Removal – Larynx (Direct) completed or performed during visit/encounter",
+    "amount": 106.45,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z332",
+    "description": "Thoracentesis (Therapeutic)",
+    "howToUse": "add if Thoracentesis (Therapeutic) completed or performed during visit/encounter",
+    "amount": 59.15,
+    "category": "Surgery"
+  },
+  {
+    "code": "M137",
+    "description": "Thoracotomy",
+    "howToUse": "add if Thoracotomy completed or performed during visit/encounter",
+    "amount": 390.65,
+    "category": "Major Surgery"
+  },
+  {
+    "code": "Z341",
+    "description": "Chest Tube",
+    "howToUse": "add if Chest Tube completed or performed during visit/encounter",
+    "amount": 69.8,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z401",
+    "description": "Pericardiocentesis",
+    "howToUse": "add if Pericardiocentesis completed or performed during visit/encounter",
+    "amount": 131.7,
+    "category": "Surgery"
+  },
+  {
+    "code": "P009",
+    "description": "Non OBGYN MD assists L&D/CS or  resuscitation of newborn",
+    "howToUse": "add if Non OBGYN MD assists L&D/CS or  resuscitation of newborn completed or performed during visit/encounter",
+    "amount": 498.7,
+    "category": "Obstetrics"
+  },
+  {
+    "code": "Z432",
+    "description": "Foreign Body Removal – Vaginal (with general anesthesia (+GA))",
+    "howToUse": "add if Foreign Body Removal – Vaginal (with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 54.1,
+    "category": "Surgery"
+  },
+  {
+    "code": "G365",
+    "description": "Pap smear",
+    "howToUse": "add if Pap smear completed or performed during visit/encounter",
+    "amount": 6.75,
+    "category": "Procedure"
+  },
+  {
+    "code": "Z437",
+    "description": "Cardioversion (Chemical or Electricity Shock)",
+    "howToUse": "add if Cardioversion (Chemical or Electricity Shock) completed or performed during visit/encounter. You can bill this with can bill with G395 or H Codes",
+    "amount": 92.45,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z459",
+    "description": "Arterial Blood Gas (ABG)",
+    "howToUse": "add if Arterial Blood Gas (ABG) completed or performed during visit/encounter",
+    "amount": 10.2,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z506",
+    "description": "Incision and Drainage (I&D) - Oral Cavity",
+    "howToUse": "add if Incision and Drainage (I&D) - Oral Cavity completed or performed during visit/encounter",
+    "amount": 50.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z510",
+    "description": "Incision and Drainage (I&D) - Pharyngeal",
+    "howToUse": "add if Incision and Drainage (I&D) - Pharyngeal completed or performed during visit/encounter",
+    "amount": 91.1,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z520",
+    "description": "Gastrostomy Tube Change",
+    "howToUse": "add if Gastrostomy Tube Change completed or performed during visit/encounter",
+    "amount": 10.65,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z538",
+    "description": "Hernia Reduction",
+    "howToUse": "add if Hernia Reduction completed or performed during visit/encounter",
+    "amount": 25.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z541",
+    "description": "Foreign Body Removal – Rectum (with general anesthesia (+GA))",
+    "howToUse": "add if Foreign Body Removal – Rectum (with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 58.15,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z543",
+    "description": "Anoscopy",
+    "howToUse": "add if Anoscopy completed or performed during visit/encounter",
+    "amount": 8.7,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z756",
+    "description": "Fecal Disimpaction",
+    "howToUse": "add if Fecal Disimpaction completed or performed during visit/encounter",
+    "amount": 36.8,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z545",
+    "description": "Incision and Drainage (I&D) - Thrombosed Hemorrhoid",
+    "howToUse": "add if Incision and Drainage (I&D) - Thrombosed Hemorrhoid completed or performed during visit/encounter",
+    "amount": 25.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z590",
+    "description": "Abdominal Paracentesis (for Diagnostic reasons)",
+    "howToUse": "add if Abdominal Paracentesis (for Diagnostic reasons) completed or performed during visit/encounter",
+    "amount": 25.25,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z591",
+    "description": "Abdominal Paracentesis (for Therapeutic reasons)",
+    "howToUse": "add if Abdominal Paracentesis (for Therapeutic reasons) completed or performed during visit/encounter",
+    "amount": 46.5,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z611",
+    "description": "Urinary Catheter (Foley)",
+    "howToUse": "add if Urinary Catheter (Foley) completed or performed during visit/encounter. these (*) codes do not bill with G codes. You can bill with “H” Codes,",
+    "amount": 8.55,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z608",
+    "description": "Manual urinary/foley catheter declotting &  bladder irrigation",
+    "howToUse": "add if Manual urinary/foley catheter declotting &  bladder irrigation completed or performed during visit/encounter. these (*) codes do not bill with G codes. You can bill with “H” Codes,",
+    "amount": 58.65,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z714",
+    "description": "Incision and Drainage (I&D) - Vulva, Bartholin, or Skene’s gland",
+    "howToUse": "add if Incision and Drainage (I&D) - Vulva, Bartholin, or Skene’s gland completed or performed during visit/encounter",
+    "amount": 17.3,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z715",
+    "description": "Incision and Drainage (I&D) - Vulva, Bartholin or skene's gland (general anesthesia (+GA))",
+    "howToUse": "add if Incision and Drainage (I&D) - Vulva, Bartholin or skene's gland (general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 50.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z728",
+    "description": "Incision and Drainage (I&D) - Vaginal",
+    "howToUse": "add if Incision and Drainage (I&D) - Vaginal completed or performed during visit/encounter",
+    "amount": 115,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z741",
+    "description": "Tracheotomy",
+    "howToUse": "add if Tracheotomy completed or performed during visit/encounter",
+    "amount": 273.15,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z783",
+    "description": "Laceration repair with Secondary Wound Closure",
+    "howToUse": "add if Laceration repair with Secondary Wound Closure completed or performed during visit/encounter",
+    "amount": 97.35,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z847",
+    "description": "Foreign Body Removal – Cornea (once)",
+    "howToUse": "add if Foreign Body Removal – Cornea (once) completed or performed during visit/encounter",
+    "amount": 33,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z848",
+    "description": "Foreign Body Removal – Cornea (twice)",
+    "howToUse": "add if Foreign Body Removal – Cornea (twice) completed or performed during visit/encounter",
+    "amount": 45,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z854",
+    "description": "Incision and Drainage (I&D) - Eyelid",
+    "howToUse": "add if Incision and Drainage (I&D) - Eyelid completed or performed during visit/encounter",
+    "amount": 60,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z866",
+    "description": "Foreign Body Removal – Ear (Complicated or with general anesthesia (+GA))",
+    "howToUse": "add if Foreign Body Removal – Ear (Complicated or with general anesthesia (+GA)) completed or performed during visit/encounter",
+    "amount": 50.9,
+    "category": "Surgery"
+  },
+  {
+    "code": "Z915",
+    "description": "Foreign Body Removal – Ear (Simple)",
+    "howToUse": "add if Foreign Body Removal – Ear (Simple) completed or performed during visit/encounter",
+    "amount": 10.55,
+    "category": "Surgery"
+  },
+  {
+    "code": "K005",
+    "description": "Primary mental health care – 20 mins",
+    "howToUse": "add if Primary mental health care – 20 mins completed or performed during visit/encounter",
+    "amount": 34.4,
+    "category": "Consultation"
+  },
+  {
+    "code": "K013",
+    "description": "Add’l primary mental health care – per 10 mins",
+    "howToUse": "add if Add’l primary mental health care – per 10 mins completed or performed during visit/encounter",
+    "amount": 17.15,
+    "category": "Consultation"
+  },
+  {
+    "code": "K017",
+    "description": "Individual care (non-mental health) – per 30 mins",
+    "howToUse": "add if Individual care (non-mental health) – per 30 mins completed or performed during visit/encounter",
+    "amount": 62.75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K022",
+    "description": "Smoking cessation (Initial)",
+    "howToUse": "add if Smoking cessation (Initial) completed or performed during visit/encounter",
+    "amount": 15.9,
+    "category": "Consultation"
+  },
+  {
+    "code": "K023",
+    "description": "Smoking cessation (Follow-up)",
+    "howToUse": "add if Smoking cessation (Follow-up) completed or performed during visit/encounter",
+    "amount": 7.8,
+    "category": "Consultation"
+  },
+  {
+    "code": "K030",
+    "description": "Interview with relative(s) of patient",
+    "howToUse": "add if Interview with relative(s) of patient completed or performed during visit/encounter",
+    "amount": 34.4,
+    "category": "Consultation"
+  },
+  {
+    "code": "K035",
+    "description": "Case conference – Physician attendance (first 30 mins)",
+    "howToUse": "add if Case conference – Physician attendance (first 30 mins) completed or performed during visit/encounter",
+    "amount": 75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K036",
+    "description": "Case conference – Add’l 15 mins",
+    "howToUse": "add if Case conference – Add’l 15 mins completed or performed during visit/encounter",
+    "amount": 37.5,
+    "category": "Consultation"
+  },
+  {
+    "code": "K037",
+    "description": "Case conference – Physician’s preparation time",
+    "howToUse": "add if Case conference – Physician’s preparation time completed or performed during visit/encounter",
+    "amount": 31.25,
+    "category": "Consultation"
+  },
+  {
+    "code": "K050",
+    "description": "Form: Insurance, disability, etc.",
+    "howToUse": "add if Form: Insurance, disability, etc. completed or performed during visit/encounter",
+    "amount": 40,
+    "category": "Consultation"
+  },
+  {
+    "code": "K051",
+    "description": "Completion of forms for outside agency",
+    "howToUse": "add if Completion of forms for outside agency completed or performed during visit/encounter",
+    "amount": 26.25,
+    "category": "Consultation"
+  },
+  {
+    "code": "K070",
+    "description": "Transfer of records (up to 20 pages)",
+    "howToUse": "add if Transfer of records (up to 20 pages) completed or performed during visit/encounter",
+    "amount": 30,
+    "category": "Consultation"
+  },
+  {
+    "code": "K071",
+    "description": "Transfer of records (each additional 10 pages)",
+    "howToUse": "add if Transfer of records (each additional 10 pages) completed or performed during visit/encounter",
+    "amount": 0.25,
+    "category": "Consultation"
+  },
+  {
+    "code": "K100",
+    "description": "Immunization administration (e.g., tetanus, HBV, etc.)",
+    "howToUse": "add if Immunization administration (e.g., tetanus, HBV, etc.) completed or performed during visit/encounter",
+    "amount": 5.1,
+    "category": "Consultation"
+  },
+  {
+    "code": "K130",
+    "description": "Intradermal testing (TB, allergy, etc.)",
+    "howToUse": "add if Intradermal testing (TB, allergy, etc.) completed or performed during visit/encounter",
+    "amount": 4.75,
+    "category": "Consultation"
+  },
+  {
+    "code": "K200",
+    "description": "Minor procedural tray fee",
+    "howToUse": "add if Minor procedural tray fee completed or performed during visit/encounter",
+    "amount": 10,
+    "category": "Consultation"
+  },
+  {
+    "code": "K201",
+    "description": "Major procedural tray fee",
+    "howToUse": "add if Major procedural tray fee completed or performed during visit/encounter",
+    "amount": 20,
+    "category": "Consultation"
+  },
+  {
+    "code": "K222",
+    "description": "INR test (point of care)",
+    "howToUse": "add if INR test (point of care) completed or performed during visit/encounter",
+    "amount": 2,
+    "category": "Consultation"
+  },
+  {
+    "code": "F004",
+    "description": "Phalanx fracture – No reduction",
+    "howToUse": "add if Phalanx fracture – No reduction completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F008",
+    "description": "Metacarpal fracture – No reduction",
+    "howToUse": "add if Metacarpal fracture – No reduction completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F012",
+    "description": "Bennett’s fracture – No reduction",
+    "howToUse": "add if Bennett’s fracture – No reduction completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F018",
+    "description": "Scaphoid fracture – No reduction",
+    "howToUse": "add if Scaphoid fracture – No reduction completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F102",
+    "description": "Carpus fracture – No reduction",
+    "howToUse": "add if Carpus fracture – No reduction completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F027",
+    "description": "Distal Radius (Colles’, Smith’s, Barton’s) fracture – No reduction",
+    "howToUse": "add if Distal Radius (Colles’, Smith’s, Barton’s) fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.75,
+    "category": "Fracture"
+  },
+  {
+    "code": "F031",
+    "description": "Radius or Ulna fracture – No reduction",
+    "howToUse": "add if Radius or Ulna fracture – No reduction completed or performed during visit/encounter",
+    "amount": 81.3,
+    "category": "Fracture"
+  },
+  {
+    "code": "F024",
+    "description": "Radius or Ulna Shaft fracture – No reduction",
+    "howToUse": "add if Radius or Ulna Shaft fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.75,
+    "category": "Fracture"
+  },
+  {
+    "code": "F014",
+    "description": "Radius & Ulna (Monteggia) fracture – No reduction",
+    "howToUse": "add if Radius & Ulna (Monteggia) fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.75,
+    "category": "Fracture"
+  },
+  {
+    "code": "F034",
+    "description": "Olecranon fracture – No reduction",
+    "howToUse": "add if Olecranon fracture – No reduction completed or performed during visit/encounter",
+    "amount": 126.26,
+    "category": "Fracture"
+  },
+  {
+    "code": "F039",
+    "description": "Transcondylar or Condylar (Elbow) fracture – No reduction",
+    "howToUse": "add if Transcondylar or Condylar (Elbow) fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.75,
+    "category": "Fracture"
+  },
+  {
+    "code": "F029",
+    "description": "Epicondyle fracture – No reduction",
+    "howToUse": "add if Epicondyle fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.67,
+    "category": "Fracture"
+  },
+  {
+    "code": "F047",
+    "description": "Humeral Tuberosity fracture – No reduction",
+    "howToUse": "add if Humeral Tuberosity fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F053",
+    "description": "Humerus Neck (no dislocation) fracture – No reduction",
+    "howToUse": "add if Humerus Neck (no dislocation) fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F050",
+    "description": "Humerus Neck (with dislocation) fracture – No reduction",
+    "howToUse": "add if Humerus Neck (with dislocation) fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F042",
+    "description": "Humerus Shaft fracture – No reduction",
+    "howToUse": "add if Humerus Shaft fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F119",
+    "description": "Scapula fracture – No reduction",
+    "howToUse": "add if Scapula fracture – No reduction completed or performed during visit/encounter",
+    "amount": 67.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F005",
+    "description": "Phalanx fracture – reduction",
+    "howToUse": "add if Phalanx fracture – reduction completed or performed during visit/encounter",
+    "amount": 99.25,
+    "category": "Fracture"
+  },
+  {
+    "code": "E558",
+    "description": "Phalanx fracture reduction - each additional after the first",
+    "howToUse": "add if Phalanx fracture reduction - each additional after the first completed or performed during visit/encounter",
+    "amount": 22.25,
+    "category": "Premium"
+  },
+  {
+    "code": "F009",
+    "description": "Metacarpal fracture – reduction",
+    "howToUse": "add if Metacarpal fracture – reduction completed or performed during visit/encounter",
+    "amount": 99.25,
+    "category": "Fracture"
+  },
+  {
+    "code": "E504",
+    "description": "Metacarpal fracture reduction - each additional after the first",
+    "howToUse": "add if Metacarpal fracture reduction - each additional after the first completed or performed during visit/encounter",
+    "amount": 22.2,
+    "category": "Premium"
+  },
+  {
+    "code": "F013",
+    "description": "Bennett’s fracture – reduction",
+    "howToUse": "add if Bennett’s fracture – reduction completed or performed during visit/encounter",
+    "amount": 199.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F016",
+    "description": "Carpus fracture – reduction",
+    "howToUse": "add if Carpus fracture – reduction completed or performed during visit/encounter",
+    "amount": 115.1,
+    "category": "Fracture"
+  },
+  {
+    "code": "F028",
+    "description": "Distal Radius (Colles’, Smith’s, Barton’s) fracture – reduction with general anesthesia (+GA)",
+    "howToUse": "add if Distal Radius (Colles’, Smith’s, Barton’s) fracture – reduction with general anesthesia (+GA) completed or performed during visit/encounter",
+    "amount": 109.45,
+    "category": "Fracture"
+  },
+  {
+    "code": "F046",
+    "description": "Distal Radius (Colles’, Smith’s, Barton’s) fracture – reduction",
+    "howToUse": "add if Distal Radius (Colles’, Smith’s, Barton’s) fracture – reduction  completed or performed during visit/encounter",
+    "amount": 149.35,
+    "category": "Fracture"
+  },
+  {
+    "code": "F032",
+    "description": "Radius or Ulna fracture – reduction",
+    "howToUse": "add if Radius or Ulna fracture – reduction completed or performed during visit/encounter",
+    "amount": 117.85,
+    "category": "Fracture"
+  },
+  {
+    "code": "F025",
+    "description": "Radius or Ulna Shaft fracture – reduction",
+    "howToUse": "add if Radius or Ulna Shaft fracture – reduction completed or performed during visit/encounter",
+    "amount": 148.5,
+    "category": "Fracture"
+  },
+  {
+    "code": "F022",
+    "description": "Radius & Ulna (Monteggia) fracture – reduction",
+    "howToUse": "add if Radius & Ulna (Monteggia) fracture – reduction completed or performed during visit/encounter",
+    "amount": 144.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F035",
+    "description": "Olecranon fracture – reduction",
+    "howToUse": "add if Olecranon fracture – reduction completed or performed during visit/encounter",
+    "amount": 129,
+    "category": "Fracture"
+  },
+  {
+    "code": "F040",
+    "description": "Transcondylar or Condylar (Elbow) fracture – reduction",
+    "howToUse": "add if Transcondylar or Condylar (Elbow) fracture – reduction completed or performed during visit/encounter",
+    "amount": 298.35,
+    "category": "Fracture"
+  },
+  {
+    "code": "F037",
+    "description": "Epicondyle fracture – reduction",
+    "howToUse": "add if Epicondyle fracture – reduction completed or performed during visit/encounter",
+    "amount": 126.25,
+    "category": "Fracture"
+  },
+  {
+    "code": "F048",
+    "description": "Humeral Tuberosity fracture – reduction",
+    "howToUse": "add if Humeral Tuberosity fracture – reduction completed or performed during visit/encounter",
+    "amount": 117.85,
+    "category": "Fracture"
+  },
+  {
+    "code": "F054",
+    "description": "Humerus Neck (no dislocation) fracture – reduction",
+    "howToUse": "add if Humerus Neck (no dislocation) fracture – reduction completed or performed during visit/encounter",
+    "amount": 133.6,
+    "category": "Fracture"
+  },
+  {
+    "code": "F051",
+    "description": "Humerus Neck (with dislocation) fracture – reduction",
+    "howToUse": "add if Humerus Neck (with dislocation) fracture – reduction completed or performed during visit/encounter",
+    "amount": 183.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F043",
+    "description": "Humerus Shaft fracture – reduction",
+    "howToUse": "add if Humerus Shaft fracture – reduction completed or performed during visit/encounter",
+    "amount": 147.6,
+    "category": "Fracture"
+  },
+  {
+    "code": "F056",
+    "description": "Phalanx (toe) fracture - no reduction",
+    "howToUse": "add if Phalanx (toe) fracture - no reduction completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F066",
+    "description": "Tarsus (not including calcaneus) fracture - no reduction",
+    "howToUse": "add if Tarsus (not including calcaneus) fracture - no reduction completed or performed during visit/encounter",
+    "amount": 98.1,
+    "category": "Fracture"
+  },
+  {
+    "code": "F070",
+    "description": "Calcaneus fracture - no reduction",
+    "howToUse": "add if Calcaneus fracture - no reduction completed or performed during visit/encounter",
+    "amount": 97.35,
+    "category": "Fracture"
+  },
+  {
+    "code": "F061",
+    "description": "Metatarsus fracture managed with a boot",
+    "howToUse": "add if Metatarsus fracture managed with a boot completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F074",
+    "description": "Ankle fracture - no reduction",
+    "howToUse": "add if Ankle fracture - no reduction completed or performed during visit/encounter",
+    "amount": 67.76,
+    "category": "Fracture"
+  },
+  {
+    "code": "F082",
+    "description": "Fibula fracture - no reduction",
+    "howToUse": "add if Fibula fracture - no reduction completed or performed during visit/encounter",
+    "amount": 67.75,
+    "category": "Fracture"
+  },
+  {
+    "code": "F078",
+    "description": "Tibia +/- Fibula fracture - no reduction",
+    "howToUse": "add if Tibia +/- Fibula fracture - no reduction completed or performed during visit/encounter",
+    "amount": 115.95,
+    "category": "Fracture"
+  },
+  {
+    "code": "F085",
+    "description": "Patella fracture - no reduction",
+    "howToUse": "add if Patella fracture - no reduction completed or performed during visit/encounter",
+    "amount": 67.75,
+    "category": "Fracture"
+  },
+  {
+    "code": "F058",
+    "description": "Phalanx (toe) fracture - closed reduction",
+    "howToUse": "add if Phalanx (toe) fracture - closed reduction completed or performed during visit/encounter",
+    "amount": 72.35,
+    "category": "Fracture"
+  },
+  {
+    "code": "E560",
+    "description": "Phalanx (toe) fracture - other management",
+    "howToUse": "add if Phalanx (toe) fracture - other management completed or performed during visit/encounter",
+    "amount": 12.05,
+    "category": "Premium"
+  },
+  {
+    "code": "F067",
+    "description": "Tarsus (not including calcaneus) fracture - closed reduction",
+    "howToUse": "add if Tarsus (not including calcaneus) fracture - closed reduction completed or performed during visit/encounter",
+    "amount": 165.2,
+    "category": "Fracture"
+  },
+  {
+    "code": "F071",
+    "description": "Calcaneus fracture - closed reduction",
+    "howToUse": "add if Calcaneus fracture - closed reduction completed or performed during visit/encounter",
+    "amount": 161.45,
+    "category": "Fracture"
+  },
+  {
+    "code": "F063",
+    "description": "Metatarsus fracture - closed reduction",
+    "howToUse": "add if Metatarsus fracture - closed reduction completed or performed during visit/encounter",
+    "amount": 98.35,
+    "category": "Fracture"
+  },
+  {
+    "code": "F062",
+    "description": "Metatarsus fracture - managed with a cast",
+    "howToUse": "add if Metatarsus fracture - managed with a cast completed or performed during visit/encounter",
+    "amount": 67.75,
+    "category": "Fracture"
+  },
+  {
+    "code": "F075",
+    "description": "Ankle fracture - closed reduction",
+    "howToUse": "add if Ankle fracture - closed reduction completed or performed during visit/encounter",
+    "amount": 144.8,
+    "category": "Fracture"
+  },
+  {
+    "code": "F083",
+    "description": "Fibula fracture - closed reduction",
+    "howToUse": "add if Fibula fracture - closed reduction completed or performed during visit/encounter",
+    "amount": 101.25,
+    "category": "Fracture"
+  },
+  {
+    "code": "F079",
+    "description": "Tibia +/- Fibula fracture - closed reduction",
+    "howToUse": "add if Tibia +/- Fibula fracture - closed reduction completed or performed during visit/encounter",
+    "amount": 180.05,
+    "category": "Fracture"
+  },
+  {
+    "code": "F094",
+    "description": "Femur shaft fracture - closed reduction in a child <12 years old",
+    "howToUse": "add if Femur shaft fracture - closed reduction in a child <12 years old completed or performed during visit/encounter",
+    "amount": 258,
+    "category": "Fracture"
+  },
+  {
+    "code": "F095",
+    "description": "Femur shaft fracture - closed reduction in a person >12 years old",
+    "howToUse": "add if Femur shaft fracture - closed reduction in a person >12 years old completed or performed during visit/encounter",
+    "amount": 407.35,
+    "category": "Fracture"
+  },
+  {
+    "code": "P036",
+    "description": "Vaginal Laceration Repair Repair",
+    "howToUse": "add if Vaginal Laceration Repair Repair completed or performed during visit/encounter",
+    "amount": 54.4,
+    "category": "Obstetrics"
+  },
+  {
+    "code": "R024",
+    "description": "Earlobe Laceration Repair Repair",
+    "howToUse": "add if Earlobe Laceration Repair Repair completed or performed during visit/encounter",
+    "amount": 100.65,
+    "category": "Repair"
+  },
+  {
+    "code": "D001",
+    "description": "Finger Interphalangeal (IP Joint) dislocation",
+    "howToUse": "add if Finger Interphalangeal (IP Joint) dislocation completed or performed during visit/encounter",
+    "amount": 57.5,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D004",
+    "description": "Metacarpophalangeal (MCP) dislocation",
+    "howToUse": "add if Metacarpophalangeal (MCP) dislocation completed or performed during visit/encounter",
+    "amount": 57.5,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D007",
+    "description": "Carpal/wrist bone dislocation",
+    "howToUse": "add if Carpal/wrist bone dislocation completed or performed during visit/encounter",
+    "amount": 128.05,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D009",
+    "description": "Elbow dislocation",
+    "howToUse": "add if Elbow dislocation  completed or performed during visit/encounter",
+    "amount": 84.45,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D012",
+    "description": "Elbow (pulled) or radial head dislocation",
+    "howToUse": "add if Elbow (pulled) or radial head dislocation completed or performed during visit/encounter",
+    "amount": 39,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D015",
+    "description": "Shoulder dislocation",
+    "howToUse": "add if Shoulder dislocation completed or performed during visit/encounter",
+    "amount": 49.2,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D016",
+    "description": "Shoulder dislocation with general anesthesia",
+    "howToUse": "add if Shoulder dislocation with general anesthesia completed or performed during visit/encounter",
+    "amount": 111.4,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D014",
+    "description": "sternoclavicular (SC) joint or acromioclavicular (AC) dislocation",
+    "howToUse": "add if sternoclavicular (SC) joint or acromioclavicular (AC) dislocation completed or performed during visit/encounter",
+    "amount": 67.8,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D025",
+    "description": "sternoclavicular (SC) joint or acromioclavicular (AC) dislocation with general anesthesia",
+    "howToUse": "add if sternoclavicular (SC) joint or acromioclavicular (AC) dislocation with general anesthesia completed or performed during visit/encounter",
+    "amount": 134.55,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D027",
+    "description": "Toe interphalangeal (IP) Joint dislocation",
+    "howToUse": "add if Toe interphalangeal (IP) Joint dislocation completed or performed during visit/encounter",
+    "amount": 57.5,
+    "category": "Dislocation"
+  },
+  {
+    "code": "E578",
+    "description": "Toe interphalangeal (IP) Joint dislocation - each additional after the first one",
+    "howToUse": "add if Toe interphalangeal (IP) Joint dislocation - each additional after the first one completed or performed during visit/encounter",
+    "amount": 10.25,
+    "category": "Premium"
+  },
+  {
+    "code": "D030",
+    "description": "Metatarsophalangeal (MTP) dislocation",
+    "howToUse": "add if Metatarsophalangeal (MTP) dislocation completed or performed during visit/encounter",
+    "amount": 57.5,
+    "category": "Dislocation"
+  },
+  {
+    "code": "E579",
+    "description": "Metatarsophalangeal (MTP) dislocation - each additional after the first one",
+    "howToUse": "add if Metatarsophalangeal (MTP) dislocation - each additional after the first one completed or performed during visit/encounter",
+    "amount": 10.25,
+    "category": "Premium"
+  },
+  {
+    "code": "D035",
+    "description": "Ankle dislocation",
+    "howToUse": "add if Ankle dislocation completed or performed during visit/encounter",
+    "amount": 111.35,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D040",
+    "description": "Patella dislocation",
+    "howToUse": "add if Patella dislocation completed or performed during visit/encounter",
+    "amount": 62.2,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D031",
+    "description": "Patella dislocation with general anesthesia",
+    "howToUse": "add if Patella dislocation with general anesthesia completed or performed during visit/encounter",
+    "amount": 97.35,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D038",
+    "description": "Knee dislocation",
+    "howToUse": "add if Knee dislocation completed or performed during visit/encounter",
+    "amount": 207.9,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D042",
+    "description": "Hip dislocation",
+    "howToUse": "add if Hip dislocation completed or performed during visit/encounter",
+    "amount": 268.25,
+    "category": "Dislocation"
+  },
+  {
+    "code": "D062",
+    "description": "TMJ dislocation",
+    "howToUse": "add if TMJ dislocation completed or performed during visit/encounter",
+    "amount": 51.65,
+    "category": "Dislocation"
+  },
+  {
+    "code": "F136",
+    "description": "Nasal dislocation",
+    "howToUse": "add if Nasal dislocation completed or performed during visit/encounter",
+    "amount": 102.35,
+    "category": "Fracture"
+  }
+]
