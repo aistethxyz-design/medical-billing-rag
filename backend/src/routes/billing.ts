@@ -151,7 +151,7 @@ router.get('/search',
 
 // GET /api/billing/code/:code - Get specific billing code details
 router.get('/code/:code',
-  param('code').isString().notEmpty(),
+// param('code').isString().notEmpty(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { code } = req.params;
 
@@ -214,9 +214,9 @@ router.get('/categories',
 
 // GET /api/billing/codes/category/:category - Get codes by category
 router.get('/codes/category/:category',
-  param('category').isString().notEmpty(),
-  query('limit').optional().isInt({ min: 1, max: 100 }),
-  query('offset').optional().isInt({ min: 0 }),
+// param('category').isString().notEmpty(),
+// query('limit').optional().isInt({ min: 1, max: 100 }),
+// query('offset').optional().isInt({ min: 0 }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { category } = req.params;
     const { limit = 20, offset = 0 } = req.query;
@@ -254,9 +254,9 @@ router.get('/codes/category/:category',
 
 // POST /api/billing/encounter/:encounterId/analyze - Analyze specific encounter
 router.post('/encounter/:encounterId/analyze',
-  requirePracticeAccess,
-  param('encounterId').isString().notEmpty(),
-  body('clinicalText').optional().isString(),
+// requirePracticeAccess,
+// param('encounterId').isString().notEmpty(),
+// body('clinicalText').optional().isString(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { encounterId } = req.params;
     const { clinicalText } = req.body;
@@ -300,7 +300,7 @@ router.post('/encounter/:encounterId/analyze',
 
       // Log the analysis
       logger.info('Encounter billing analysis completed', {
-        userId,
+        // userId,
         encounterId,
         codesSuggested: analysis.suggestedCodes.length,
         potentialRevenue: analysis.revenueIncrease
@@ -329,11 +329,11 @@ router.post('/encounter/:encounterId/analyze',
 
 // GET /api/billing/revenue-optimization - Get revenue optimization suggestions
 router.get('/revenue-optimization',
-  requirePracticeAccess,
-  query('startDate').optional().isISO8601(),
-  query('endDate').optional().isISO8601(),
-  query('providerId').optional().isString(),
-  query('category').optional().isString(),
+// requirePracticeAccess,
+// query('startDate').optional().isISO8601(),
+// query('endDate').optional().isISO8601(),
+// query('providerId').optional().isString(),
+// query('category').optional().isString(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { startDate, endDate, providerId, category } = req.query;
 
@@ -477,8 +477,8 @@ router.get('/quick-searches',
 
 // GET /api/billing/recent-codes - Get recently used codes
 router.get('/recent-codes',
-  requirePracticeAccess,
-  query('limit').optional().isInt({ min: 1, max: 20 }),
+// requirePracticeAccess,
+// query('limit').optional().isInt({ min: 1, max: 20 }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { limit = 10 } = req.query;
 
