@@ -76,7 +76,7 @@ const Navbar: React.FC = () => {
               </div>
               
               <button
-                onClick={() => navigate('/settings')}
+                onClick={() => navigate('/000000vnox38/settings')}
                 className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 <Settings className="w-4 h-4" />

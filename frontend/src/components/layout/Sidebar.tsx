@@ -23,43 +23,43 @@ interface NavItem {
 const navigation: NavItem[] = [
   {
     name: 'Dashboard',
-    href: '/dashboard',
+    href: '/000000vnox38/dashboard',
     icon: LayoutDashboard,
     description: 'Overview and metrics'
   },
   {
     name: 'Upload Documents',
-    href: '/upload',
+    href: '/000000vnox38/upload',
     icon: Upload,
     description: 'Upload medical documents'
   },
   {
     name: 'AI Code Analysis',
-    href: '/coding',
+    href: '/000000vnox38/coding',
     icon: Brain,
     description: 'Review AI suggestions'
   },
   {
     name: 'Billing Assistant',
-    href: '/billing',
+    href: '/000000vnox38/billing',
     icon: DollarSign,
     description: 'Find optimal billing codes'
   },
   {
     name: 'Encounters',
-    href: '/encounters',
+    href: '/000000vnox38/encounters',
     icon: Users,
     description: 'Manage patient encounters'
   },
   {
     name: 'Analytics',
-    href: '/analytics',
+    href: '/000000vnox38/analytics',
     icon: BarChart3,
     description: 'Revenue and compliance'
   },
   {
     name: 'Settings',
-    href: '/settings',
+    href: '/000000vnox38/settings',
     icon: Settings,
     description: 'Application settings'
   }

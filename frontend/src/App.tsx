@@ -74,7 +74,7 @@ function App() {
             
             {/* Protected routes */}
             <Route
-              path="/dashboard"
+              path="/000000vnox38/dashboard"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -85,7 +85,7 @@ function App() {
             />
             
             <Route
-              path="/upload"
+              path="/000000vnox38/upload"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -96,7 +96,7 @@ function App() {
             />
             
             <Route
-              path="/coding"
+              path="/000000vnox38/coding"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -107,7 +107,7 @@ function App() {
             />
             
             <Route
-              path="/encounters"
+              path="/000000vnox38/encounters"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -118,7 +118,7 @@ function App() {
             />
             
             <Route
-              path="/analytics"
+              path="/000000vnox38/analytics"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -129,7 +129,7 @@ function App() {
             />
             
             <Route
-              path="/billing"
+              path="/000000vnox38/billing"
               element={
                 <AppLayout>
                   <BillingAssistant />
@@ -137,9 +137,9 @@ function App() {
               }
             />
 
-            {/* Secret RAG Route */}
+            {/* Secret RAG Route - redundant if billing is prefixed, but keeping logic consistent */}
             <Route
-              path="/RAG/000000vnox38"
+              path="/000000vnox38/RAG"
               element={
                 <AppLayout>
                   <BillingAssistant />
@@ -148,7 +148,7 @@ function App() {
             />
             
             <Route
-              path="/settings"
+              path="/000000vnox38/settings"
               element={
                 <ProtectedRoute>
                   <AppLayout>
