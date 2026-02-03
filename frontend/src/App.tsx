@@ -9,6 +9,7 @@ import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
 
 // Page components
+import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import Dashboard from '@/pages/Dashboard';
 import DocumentUpload from '@/pages/DocumentUpload';
@@ -67,63 +68,75 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            {/* Public routes - redirect to dashboard */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Public routes */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             
-            {/* Dashboard - accessible without auth for demo */}
+            {/* Protected routes - require login */}
             <Route
               path="/dashboard"
               element={
-                <AppLayout>
-                  <Dashboard />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
-            {/* Other routes - accessible without auth for demo */}
+            {/* Other protected routes */}
             <Route
               path="/upload"
               element={
-                <AppLayout>
-                  <DocumentUpload />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <DocumentUpload />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
             <Route
               path="/coding"
               element={
-                <AppLayout>
-                  <CodingAnalysis />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <CodingAnalysis />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
             <Route
               path="/encounters"
               element={
-                <AppLayout>
-                  <EncounterManagement />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <EncounterManagement />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
             <Route
               path="/analytics"
               element={
-                <AppLayout>
-                  <Analytics />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Analytics />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
             <Route
               path="/billing"
               element={
-                <AppLayout>
-                  <BillingAssistant />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <BillingAssistant />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
 
@@ -131,18 +144,22 @@ function App() {
             <Route
               path="/RAG/000000vnox38"
               element={
-                <AppLayout>
-                  <BillingAssistant />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <BillingAssistant />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
             <Route
               path="/settings"
               element={
-                <AppLayout>
-                  <Settings />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Settings />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
