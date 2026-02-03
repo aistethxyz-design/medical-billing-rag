@@ -1,3 +1,9 @@
 streamlit
 pandas
 numpy
+pymupdf
+openpyxl
+sentence-transformers
+pinecone-client
+anthropic
+python-dotenv

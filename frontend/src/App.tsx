@@ -64,24 +64,14 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router basename="/medical-billing-rag">
+      <Router>
         <div className="App">
           <Routes>
-            {/* Public routes */}
+            {/* Public routes - redirect to dashboard */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<LoginPage />} />
             
             {/* Protected routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Dashboard />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            
             <Route
               path="/dashboard"
               element={
@@ -140,11 +130,19 @@ function App() {
             <Route
               path="/billing"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <BillingAssistant />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <BillingAssistant />
+                </AppLayout>
+              }
+            />
+
+            {/* Secret RAG Route */}
+            <Route
+              path="/RAG/000000vnox38"
+              element={
+                <AppLayout>
+                  <BillingAssistant />
+                </AppLayout>
               }
             />
             
