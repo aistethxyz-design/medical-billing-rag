@@ -458,7 +458,6 @@ html {
   .revenue-impact-neutral {
     @apply text-gray-600;
   }
-}
 
 /* Loading and animation styles */
 @layer utilities {
