@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [location, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -54,7 +54,7 @@ export default function Header() {
               Contact
             </button>
             <button
-              onClick={() => setLocation('/login')}
+              onClick={() => navigate('/login')}
               className="!bg-blue-600 hover:!bg-blue-500 !text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl ml-4"
               data-testid="nav-login"
               style={{ 
@@ -109,7 +109,7 @@ export default function Header() {
               </button>
               <button
                 onClick={() => {
-                  setLocation('/login');
+                  navigate('/login');
                   setIsMobileMenuOpen(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors w-full shadow-sm"
