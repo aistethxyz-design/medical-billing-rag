@@ -71,59 +71,50 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<LoginPage />} />
             
-            {/* Protected routes */}
+            {/* Dashboard - accessible without auth for demo */}
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Dashboard />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
               }
             />
             
+            {/* Other routes - accessible without auth for demo */}
             <Route
               path="/upload"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <DocumentUpload />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <DocumentUpload />
+                </AppLayout>
               }
             />
             
             <Route
               path="/coding"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <CodingAnalysis />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <CodingAnalysis />
+                </AppLayout>
               }
             />
             
             <Route
               path="/encounters"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <EncounterManagement />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <EncounterManagement />
+                </AppLayout>
               }
             />
             
             <Route
               path="/analytics"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Analytics />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Analytics />
+                </AppLayout>
               }
             />
             
@@ -149,11 +140,9 @@ function App() {
             <Route
               path="/settings"
               element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Settings />
-                  </AppLayout>
-                </ProtectedRoute>
+                <AppLayout>
+                  <Settings />
+                </AppLayout>
               }
             />
             
