@@ -1,39 +1,11 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuthStore } from '@/stores/authStore';
+import { useLocation } from "wouter";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated, user } = useAuthStore();
-
-  const handleLoginClick = () => {
-    if (isAuthenticated) {
-      if (user?.email === 'demo@aisteth.com') {
-        navigate('/RAG/000000vnox38');
-      } else {
-        navigate('/billing');
-      }
-    } else {
-      navigate('/login');
-    }
-    setIsMobileMenuOpen(false);
-  };
+  const [location, setLocation] = useLocation();
 
   const scrollToSection = (sectionId: string) => {
-    // If we are not on the home page, go there first
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-      return;
-    }
-
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -82,7 +54,7 @@ export default function Header() {
               Contact
             </button>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => setLocation('/login')}
               className="!bg-blue-600 hover:!bg-blue-500 !text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl ml-4"
               data-testid="nav-login"
               style={{ 
@@ -137,7 +109,7 @@ export default function Header() {
               </button>
               <button
                 onClick={() => {
-                  navigate('/login');
+                  setLocation('/login');
                   setIsMobileMenuOpen(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors w-full shadow-sm"

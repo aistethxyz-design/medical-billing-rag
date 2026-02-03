@@ -54,21 +54,13 @@ class AIService {
 
   async initialize(): Promise<void> {
     try {
-      // Skip connection test for OpenRouter (it may not support models.list)
-      // Just verify API key is set
-      if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openrouter-api-key-here') {
-        logger.warn('OpenAI API key not configured. Please set OPENAI_API_KEY in .env file');
-        // Don't throw error, allow it to work if key is set later
-      }
+      // Test OpenAI connection
+      await this.openai.models.list();
       this.isInitialized = true;
-      logger.info('AI service initialized successfully', {
-        baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
-        model: process.env.OPENAI_MODEL || 'gpt-4'
-      });
+      logger.info('OpenAI service initialized successfully');
     } catch (error) {
-      logger.error('Failed to initialize AI service:', error);
-      // Don't throw - allow service to work even if initialization has issues
-      this.isInitialized = true;
+      logger.error('Failed to initialize OpenAI service:', error);
+      throw new Error('OpenAI initialization failed');
     }
   }
 

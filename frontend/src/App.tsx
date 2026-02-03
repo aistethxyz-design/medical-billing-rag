@@ -9,7 +9,6 @@ import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
 
 // Page components
-import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import Dashboard from '@/pages/Dashboard';
 import DocumentUpload from '@/pages/DocumentUpload';
@@ -65,16 +64,15 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
+      <Router basename="/medical-billing-rag">
         <div className="App">
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             
             {/* Protected routes */}
             <Route
-              path="/000000vnox38/dashboard"
+              path="/"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -85,7 +83,18 @@ function App() {
             />
             
             <Route
-              path="/000000vnox38/upload"
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/upload"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -96,7 +105,7 @@ function App() {
             />
             
             <Route
-              path="/000000vnox38/coding"
+              path="/coding"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -107,7 +116,7 @@ function App() {
             />
             
             <Route
-              path="/000000vnox38/encounters"
+              path="/encounters"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -118,7 +127,7 @@ function App() {
             />
             
             <Route
-              path="/000000vnox38/analytics"
+              path="/analytics"
               element={
                 <ProtectedRoute>
                   <AppLayout>
@@ -129,26 +138,18 @@ function App() {
             />
             
             <Route
-              path="/000000vnox38/billing"
+              path="/billing"
               element={
-                <AppLayout>
-                  <BillingAssistant />
-                </AppLayout>
-              }
-            />
-
-            {/* Secret RAG Route - redundant if billing is prefixed, but keeping logic consistent */}
-            <Route
-              path="/000000vnox38/RAG"
-              element={
-                <AppLayout>
-                  <BillingAssistant />
-                </AppLayout>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <BillingAssistant />
+                  </AppLayout>
+                </ProtectedRoute>
               }
             />
             
             <Route
-              path="/000000vnox38/settings"
+              path="/settings"
               element={
                 <ProtectedRoute>
                   <AppLayout>

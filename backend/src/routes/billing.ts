@@ -1,25 +1,47 @@
 import express from 'express';
-// import { PrismaClient } from '@prisma/client';
-// import { AuthenticatedRequest, requireRole, requirePracticeAccess } from '../middleware/auth';
+import { PrismaClient } from '@prisma/client';
+import { AuthenticatedRequest, requireRole, requirePracticeAccess } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { ragBillingAgent, RAGQuery, RAGResponse } from '../services/ragBillingAgent';
 import { billingCodeService, BillingCode } from '../services/billingCodeService';
 import { logger } from '../utils/logger';
-// import { body, param, query, validationResult } from 'express-validator';
+import { body, param, query, validationResult } from 'express-validator';
 
 const router = express.Router();
-// const prisma = new PrismaClient(); // Temporarily disabled
+const prisma = new PrismaClient();
 
-// Temporary type for requests without auth
-type AuthenticatedRequest = express.Request & {
-  user?: any;
-};
+// Validation middleware
+const validateBillingQuery = [
+  body('clinicalText').notEmpty().withMessage('Clinical text is required'),
+  body('encounterType').optional().isString(),
+  body('patientAge').optional().isString(),
+  body('timeOfDay').optional().isIn(['Day', 'Evening', 'Night', 'Weekend']),
+  body('specialty').optional().isString(),
+  body('existingCodes').optional().isArray(),
+  body('maxSuggestions').optional().isInt({ min: 1, max: 20 })
+];
+
+const validateCodeSearch = [
+  query('q').notEmpty().withMessage('Search query is required'),
+  query('category').optional().isString(),
+  query('minAmount').optional().isFloat({ min: 0 }),
+  query('maxAmount').optional().isFloat({ min: 0 }),
+  query('timeOfDay').optional().isIn(['Day', 'Evening', 'Night', 'Weekend'])
+];
 
 // POST /api/billing/analyze - Analyze clinical text for optimal billing codes
 router.post('/analyze',
-  // requirePracticeAccess, // Temporarily disabled
-  // validateBillingQuery, // Temporarily disabled for easier testing
-  asyncHandler(async (req: any, res) => {
+  requirePracticeAccess,
+  validateBillingQuery,
+  asyncHandler(async (req: AuthenticatedRequest, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: errors.array()
+      });
+    }
+
     const {
       clinicalText,
       encounterType = 'Emergency',
@@ -29,6 +51,8 @@ router.post('/analyze',
       existingCodes = [],
       maxSuggestions = 10
     } = req.body;
+
+    const userId = req.user!.id;
 
     try {
       const query: RAGQuery = {
@@ -45,6 +69,7 @@ router.post('/analyze',
 
       // Log the analysis for audit trail
       logger.info('Billing analysis completed', {
+        userId,
         encounterType,
         specialty,
         codesSuggested: response.suggestedCodes.length,
@@ -70,8 +95,16 @@ router.post('/analyze',
 
 // GET /api/billing/search - Search billing codes
 router.get('/search',
-  // validateCodeSearch, // Temporarily disabled for easier access
+  validateCodeSearch,
   asyncHandler(async (req: AuthenticatedRequest, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: errors.array()
+      });
+    }
+
     const {
       q: searchQuery,
       category,
@@ -113,7 +146,7 @@ router.get('/search',
 
 // GET /api/billing/code/:code - Get specific billing code details
 router.get('/code/:code',
-  // param('code').isString().notEmpty(),
+  param('code').isString().notEmpty(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { code } = req.params;
 
@@ -176,9 +209,9 @@ router.get('/categories',
 
 // GET /api/billing/codes/category/:category - Get codes by category
 router.get('/codes/category/:category',
-  // param('category').isString().notEmpty(),
-  // query('limit').optional().isInt({ min: 1, max: 100 }),
-  // query('offset').optional().isInt({ min: 0 }),
+  param('category').isString().notEmpty(),
+  query('limit').optional().isInt({ min: 1, max: 100 }),
+  query('offset').optional().isInt({ min: 0 }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { category } = req.params;
     const { limit = 20, offset = 0 } = req.query;
@@ -216,26 +249,34 @@ router.get('/codes/category/:category',
 
 // POST /api/billing/encounter/:encounterId/analyze - Analyze specific encounter
 router.post('/encounter/:encounterId/analyze',
-  // requirePracticeAccess,
-  // param('encounterId').isString().notEmpty(),
-  // body('clinicalText').optional().isString(),
+  requirePracticeAccess,
+  param('encounterId').isString().notEmpty(),
+  body('clinicalText').optional().isString(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { encounterId } = req.params;
     const { clinicalText } = req.body;
+    const userId = req.user!.id;
 
     try {
-      // Get encounter details - Temporarily disabled
-      const encounter = null; // Temporarily disabled
+      // Get encounter details
+      const encounter = await prisma.encounter.findFirst({
+        where: {
+          id: encounterId,
+          practiceId: req.user!.practiceId!
+        },
+        include: {
+          diagnoses: true,
+          procedures: true
+        }
+      });
 
       if (!encounter) {
-        // Mock encounter logic if needed or error
         return res.status(404).json({
           error: 'Encounter not found',
           message: 'Encounter not found or access denied'
         });
       }
 
-      /*
       // Use provided clinical text or encounter notes
       const textToAnalyze = clinicalText || encounter.notes || encounter.assessment || '';
 
@@ -251,6 +292,7 @@ router.post('/encounter/:encounterId/analyze',
 
       // Log the analysis
       logger.info('Encounter billing analysis completed', {
+        userId,
         encounterId,
         codesSuggested: analysis.suggestedCodes.length,
         potentialRevenue: analysis.revenueIncrease
@@ -266,8 +308,6 @@ router.post('/encounter/:encounterId/analyze',
         },
         analysis
       });
-      */
-     res.status(501).json({ error: 'Not implemented in simple server' });
 
     } catch (error) {
       logger.error('Encounter analysis failed:', error);
@@ -279,15 +319,100 @@ router.post('/encounter/:encounterId/analyze',
   })
 );
 
-// GET /api/billing/revenue-optimization
+// GET /api/billing/revenue-optimization - Get revenue optimization suggestions
 router.get('/revenue-optimization',
-  // requirePracticeAccess,
-  // query('startDate').optional().isISO8601(),
-  // query('endDate').optional().isISO8601(),
-  // query('providerId').optional().isString(),
-  // query('category').optional().isString(),
+  requirePracticeAccess,
+  query('startDate').optional().isISO8601(),
+  query('endDate').optional().isISO8601(),
+  query('providerId').optional().isString(),
+  query('category').optional().isString(),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    res.json({ success: true, optimizations: [], summary: {} });
+    const { startDate, endDate, providerId, category } = req.query;
+
+    try {
+      // Get encounters with low revenue
+      const dateFilter: any = {};
+      if (startDate) dateFilter.gte = new Date(startDate as string);
+      if (endDate) dateFilter.lte = new Date(endDate as string);
+
+      const encounters = await prisma.encounter.findMany({
+        where: {
+          practiceId: req.user!.practiceId!,
+          ...(providerId && { providerId: providerId as string }),
+          ...(Object.keys(dateFilter).length && { date: dateFilter })
+        },
+        include: {
+          procedures: true,
+          diagnoses: true,
+          provider: {
+            select: { id: true, firstName: true, lastName: true, npi: true }
+          }
+        }
+      });
+
+      // Analyze each encounter for optimization opportunities
+      const optimizations = [];
+      
+      for (const encounter of encounters) {
+        const clinicalText = encounter.notes || encounter.assessment || '';
+        if (!clinicalText) continue;
+
+        try {
+          const analysis = await billingCodeService.analyzeEncounter(encounter.id, clinicalText);
+          
+          if (analysis.revenueIncrease > 0) {
+            optimizations.push({
+              encounterId: encounter.id,
+              date: encounter.date,
+              provider: encounter.provider,
+              currentRevenue: analysis.totalRevenue,
+              potentialRevenue: analysis.potentialRevenue,
+              revenueIncrease: analysis.revenueIncrease,
+              suggestedCodes: analysis.suggestedCodes.slice(0, 3), // Top 3 suggestions
+              riskLevel: analysis.riskAssessment.overallRisk
+            });
+          }
+        } catch (error) {
+          logger.warn(`Failed to analyze encounter ${encounter.id}:`, error);
+        }
+      }
+
+      // Sort by revenue increase potential
+      optimizations.sort((a, b) => b.revenueIncrease - a.revenueIncrease);
+
+      // Filter by category if specified
+      const filteredOptimizations = category 
+        ? optimizations.filter(opt => 
+            opt.suggestedCodes.some(code => code.category === category)
+          )
+        : optimizations;
+
+      const summary = {
+        totalEncounters: encounters.length,
+        optimizedEncounters: filteredOptimizations.length,
+        totalCurrentRevenue: filteredOptimizations.reduce((sum, opt) => sum + opt.currentRevenue, 0),
+        totalPotentialRevenue: filteredOptimizations.reduce((sum, opt) => sum + opt.potentialRevenue, 0),
+        totalRevenueIncrease: filteredOptimizations.reduce((sum, opt) => sum + opt.revenueIncrease, 0),
+        byRiskLevel: {
+          LOW: filteredOptimizations.filter(opt => opt.riskLevel === 'LOW').length,
+          MEDIUM: filteredOptimizations.filter(opt => opt.riskLevel === 'MEDIUM').length,
+          HIGH: filteredOptimizations.filter(opt => opt.riskLevel === 'HIGH').length
+        }
+      };
+
+      res.json({
+        success: true,
+        summary,
+        optimizations: filteredOptimizations.slice(0, 50) // Limit to top 50
+      });
+
+    } catch (error) {
+      logger.error('Revenue optimization analysis failed:', error);
+      res.status(500).json({
+        error: 'Analysis failed',
+        message: 'Unable to complete revenue optimization analysis'
+      });
+    }
   })
 );
 
@@ -340,10 +465,52 @@ router.get('/quick-searches',
 
 // GET /api/billing/recent-codes - Get recently used codes
 router.get('/recent-codes',
-  // requirePracticeAccess,
-  // query('limit').optional().isInt({ min: 1, max: 20 }),
+  requirePracticeAccess,
+  query('limit').optional().isInt({ min: 1, max: 20 }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    res.json({ success: true, recentCodes: [] });
+    const { limit = 10 } = req.query;
+
+    try {
+      // Get recent code optimizations
+      const recentOptimizations = await prisma.codeOptimization.findMany({
+        where: {
+          encounter: {
+            practiceId: req.user!.practiceId!
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: parseInt(limit as string),
+        include: {
+          encounter: {
+            select: { id: true, date: true }
+          }
+        }
+      });
+
+      const recentCodes = recentOptimizations.map(opt => {
+        const code = billingCodeService.getCodeByCode(opt.suggestedCode);
+        return {
+          code: opt.suggestedCode,
+          description: code?.description || 'Code not found',
+          amount: code?.amount || 0,
+          usedAt: opt.createdAt,
+          encounterId: opt.encounterId,
+          encounterDate: opt.encounter.date
+        };
+      });
+
+      res.json({
+        success: true,
+        recentCodes
+      });
+
+    } catch (error) {
+      logger.error('Recent codes lookup failed:', error);
+      res.status(500).json({
+        error: 'Lookup failed',
+        message: 'Unable to get recent codes'
+      });
+    }
   })
 );
 

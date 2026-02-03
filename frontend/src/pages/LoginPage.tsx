@@ -39,7 +39,7 @@ const LoginPage: React.FC = () => {
       
       login(mockUser, mockToken);
       toast.success('Welcome to AISteth!');
-      navigate('/000000vnox38/dashboard');
+      navigate('/dashboard');
     } catch (err) {
       setError('Invalid email or password');
       toast.error('Login failed');

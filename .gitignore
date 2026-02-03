@@ -14,6 +14,11 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.production
+*secrets.env
+rag_secrets.env
+PAT.txt
+*.pem
+*.key
 
 # Logs
 logs

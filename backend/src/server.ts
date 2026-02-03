@@ -5,7 +5,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-// import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import Redis from 'redis';
 
 // Import routes
@@ -16,7 +16,7 @@ import encounterRoutes from './routes/encounters';
 import documentRoutes from './routes/documents';
 import codingRoutes from './routes/coding';
 import analyticsRoutes from './routes/analytics';
-import chatbotRoutes from './routes/chatbot-simple';
+import chatbotRoutes from './routes/chatbot';
 import billingRoutes from './routes/billing';
 
 // Import middleware
@@ -31,14 +31,14 @@ import { logger } from './utils/logger';
 // Load environment variables
 dotenv.config();
 
-// Initialize database and redis (temporarily disabled for compatibility)
-// const prisma = new PrismaClient();
-// const redis = Redis.createClient({
-//   url: process.env.REDIS_URL || 'redis://localhost:6379'
-// });
+// Initialize database and redis
+const prisma = new PrismaClient();
+const redis = Redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 
 // Trust proxy for rate limiting behind reverse proxy
 app.set('trust proxy', 1);
@@ -101,32 +101,47 @@ app.use('/api/coding/analyze', aiLimiter);
 app.use('/api/chatbot', aiLimiter);
 app.use('/api/billing/analyze', aiLimiter);
 
-// Audit logging middleware (HIPAA compliance) - temporarily disabled
-// app.use('/api/', auditMiddleware);
+// Audit logging middleware (HIPAA compliance)
+app.use('/api/', auditMiddleware);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    services: {
-      database: 'disabled',
-      redis: 'disabled',
-      ai: 'available'
-    }
-  });
+app.get('/health', async (req, res) => {
+  try {
+    // Check database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
+    // Check Redis connection
+    await redis.ping();
+    
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      services: {
+        database: 'connected',
+        redis: 'connected',
+        ai: 'available'
+      }
+    });
+  } catch (error) {
+    logger.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: 'Service dependency failure'
+    });
+  }
 });
 
 // API Routes
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', authenticate, userRoutes);
-// app.use('/api/practices', authenticate, practiceRoutes);
-// app.use('/api/encounters', authenticate, encounterRoutes);
-// app.use('/api/documents', authenticate, documentRoutes);
-// app.use('/api/coding', authenticate, codingRoutes);
-// app.use('/api/analytics', authenticate, analyticsRoutes);
-app.use('/api/chatbot', chatbotRoutes);
-app.use('/api/billing', billingRoutes); // Temporarily disabled auth
+app.use('/api/auth', authRoutes);
+app.use('/api/users', authenticate, userRoutes);
+app.use('/api/practices', authenticate, practiceRoutes);
+app.use('/api/encounters', authenticate, encounterRoutes);
+app.use('/api/documents', authenticate, documentRoutes);
+app.use('/api/coding', authenticate, codingRoutes);
+app.use('/api/analytics', authenticate, analyticsRoutes);
+app.use('/api/chatbot', authenticate, chatbotRoutes);
+app.use('/api/billing', authenticate, billingRoutes);
 
 // Medical Coding AI Features Demo Endpoint
 app.get('/api/demo/features', (req, res) => {
@@ -189,37 +204,44 @@ app.use('*', (req, res) => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   logger.info('SIGTERM received, shutting down gracefully');
-  process.exit(0);
+  
+  try {
+    await prisma.$disconnect();
+    await redis.disconnect();
+    logger.info('Database and Redis connections closed');
+    process.exit(0);
+  } catch (error) {
+    logger.error('Error during shutdown:', error);
+    process.exit(1);
+  }
 });
 
 // Start server
 async function startServer() {
   try {
-    // Initialize AI services (non-blocking - server will start even if AI fails)
-    try {
-      await initializeAI();
-      logger.info('✅ AI services initialized successfully');
-    } catch (aiError) {
-      logger.warn('⚠️  AI services initialization failed - server will run with limited functionality', aiError);
-      logger.warn('⚠️  Please check OPENAI_API_KEY environment variable');
-    }
+    // Connect to Redis
+    await redis.connect();
+    logger.info('Connected to Redis');
     
-    // Start server (always start, even if AI failed)
+    // Initialize AI services
+    await initializeAI();
+    logger.info('AI services initialized');
+    
+    // Start server
     app.listen(PORT, () => {
       logger.info(`🏥 CodeMax AI Backend Server running on port ${PORT}`);
       logger.info(`📊 Medical Coding Optimization API Ready`);
       logger.info(`🔒 HIPAA-compliant healthcare data processing enabled`);
-      logger.info(`🤖 AI-powered billing optimization ${process.env.OPENAI_API_KEY ? 'active' : 'disabled (missing API key)'}`);
-      logger.info(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`🤖 AI-powered billing optimization active`);
     });
   } catch (error) {
-    logger.error('❌ Failed to start server:', error);
+    logger.error('Failed to start server:', error);
     process.exit(1);
   }
 }
 
 startServer();
 
-export { app }; 
+export { app, prisma, redis }; 

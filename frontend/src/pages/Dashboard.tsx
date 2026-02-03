@@ -8,8 +8,10 @@ import {
   BarChart3,
   Users,
   Activity,
-  Send
+  Send,
+  Stethoscope
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface MetricCardProps {
   title: string;
@@ -154,6 +156,8 @@ const RecentOptimizations: React.FC = () => {
 };
 
 const QuickActions: React.FC = () => {
+  const navigate = useNavigate();
+  
   const actions = [
     {
       title: 'Upload Documents',
@@ -170,10 +174,10 @@ const QuickActions: React.FC = () => {
       color: 'bg-purple-50 hover:bg-purple-100'
     },
     {
-      title: 'View Analytics',
-      description: 'Revenue and compliance metrics',
-      icon: <TrendingUp className="w-6 h-6 text-green-600" />,
-      href: '/analytics',
+      title: 'Billing Assistant',
+      description: 'AI-powered billing code lookup',
+      icon: <DollarSign className="w-6 h-6 text-green-600" />,
+      href: '/billing',
       color: 'bg-green-50 hover:bg-green-100'
     },
     {
@@ -185,6 +189,10 @@ const QuickActions: React.FC = () => {
     }
   ];
 
+  const handleNavigation = (href: string) => {
+    navigate(href);
+  };
+
   return (
     <div className="medical-card">
       <div className="px-6 py-4 border-b border-gray-200">
@@ -194,10 +202,10 @@ const QuickActions: React.FC = () => {
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {actions.map((action, index) => (
-            <a
+            <button
               key={index}
-              href={action.href}
-              className={`block p-4 rounded-lg border border-gray-200 transition-colors ${action.color}`}
+              onClick={() => handleNavigation(action.href)}
+              className={`block p-4 rounded-lg border border-gray-200 transition-colors text-left ${action.color}`}
             >
               <div className="flex items-center space-x-3">
                 <div className="flex-shrink-0">
@@ -208,7 +216,7 @@ const QuickActions: React.FC = () => {
                   <p className="text-sm text-gray-600">{action.description}</p>
                 </div>
               </div>
-            </a>
+            </button>
           ))}
         </div>
       </div>

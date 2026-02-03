@@ -25,26 +25,6 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
-
-    /* Landing Page Variables */
-    --hero-gradient-from: 222.2 47.4% 11.2%;
-    --hero-gradient-via: 215 28% 17%;
-    --hero-gradient-to: 222.2 47.4% 11.2%;
-    --blue-50: 214 100% 97%;
-    --blue-100: 214 95% 93%;
-    --blue-500: 217 91% 60%;
-    --blue-600: 221 83% 53%;
-    --green-100: 149 80% 90%;
-    --green-500: 142 71% 45%;
-    --green-600: 142 76% 36%;
-    --green-800: 158 64% 52%;
-    --purple-100: 270 95% 94%;
-    --purple-600: 271 81% 56%;
-    --slate-200: 210 40% 80%;
-    --slate-300: 212 13% 65%;
-    --slate-400: 214 13% 47%;
-    --slate-700: 215 25% 27%;
-    --slate-800: 215 28% 17%;
   }
 
   .dark {
@@ -77,14 +57,6 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-  }
-  .bg-grid-pattern {
-    background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  .bg-hero-gradient {
-    background: linear-gradient(to bottom right, hsl(var(--hero-gradient-from)), hsl(var(--hero-gradient-via)), hsl(var(--hero-gradient-to)));
   }
 }
 
