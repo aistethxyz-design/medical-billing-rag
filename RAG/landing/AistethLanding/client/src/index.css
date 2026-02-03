@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,26 +28,8 @@
   --chart-3: hsl(197, 37%, 24%);
   --chart-4: hsl(43, 74%, 66%);
   --chart-5: hsl(27, 87%, 67%);
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --font-sans: 'Inter', system-ui, sans-serif;
-  --hero-gradient-from: hsl(222.2, 47.4%, 11.2%);
-  --hero-gradient-via: hsl(215, 28%, 17%);
-  --hero-gradient-to: hsl(222.2, 47.4%, 11.2%);
-  --blue-50: hsl(214, 100%, 97%);
-  --blue-100: hsl(214, 95%, 93%);
-  --blue-500: hsl(217, 91%, 60%);
-  --blue-600: hsl(221, 83%, 53%);
-  --green-100: hsl(149, 80%, 90%);
-  --green-500: hsl(142, 71%, 45%);
-  --green-600: hsl(142, 76%, 36%);
-  --green-800: hsl(158, 64%, 52%);
-  --purple-100: hsl(270, 95%, 94%);
-  --purple-600: hsl(271, 81%, 56%);
-  --slate-200: hsl(210, 40%, 80%);
-  --slate-300: hsl(212, 13%, 65%);
-  --slate-400: hsl(214, 13%, 47%);
-  --slate-700: hsl(215, 25%, 27%);
-  --slate-800: hsl(215, 28%, 17%);
 }
 
 .dark {
@@ -55,8 +37,6 @@
   --foreground: hsl(210, 40%, 98%);
   --card: hsl(222.2, 84%, 4.9%);
   --card-foreground: hsl(210, 40%, 98%);
-  --popover: hsl(222.2, 84%, 4.9%);
-  --popover-foreground: hsl(210, 40%, 98%);
   --primary: hsl(210, 40%, 98%);
   --primary-foreground: hsl(222.2, 84%, 4.9%);
   --secondary: hsl(217.2, 32.6%, 17.5%);
@@ -82,7 +62,214 @@
   }
 }
 
+/* ============================================
+   HERO GRADIENT BACKGROUNDS
+   ============================================ */
+
+.bg-hero-gradient {
+  background: linear-gradient(135deg, 
+    #1e3a8a 0%, 
+    #3730a3 20%, 
+    #7c3aed 40%, 
+    #db2777 60%, 
+    #1e3a8a 80%,
+    #1e3a8a 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.bg-mesh-gradient {
+  background: 
+    radial-gradient(at 40% 20%, hsla(250,100%,70%,0.4) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsla(189,100%,60%,0.3) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(340,100%,70%,0.3) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, hsla(260,100%,60%,0.4) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(220,100%,70%,0.3) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, hsla(280,100%,60%,0.3) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(300,100%,70%,0.3) 0px, transparent 50%);
+}
+
+/* ============================================
+   GLASSMORPHISM EFFECTS
+   ============================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   GRADIENT TEXT
+   ============================================ */
+
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-animated {
+  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c, #667eea);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientText 5s ease infinite;
+}
+
+/* ============================================
+   FLOATING ANIMATION
+   ============================================ */
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.float-delayed {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+/* ============================================
+   GRID PATTERN
+   ============================================ */
+
 .bg-grid-pattern {
-  background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* ============================================
+   CARD HOVER EFFECTS
+   ============================================ */
+
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(99, 102, 241, 0.15);
+}
+
+/* ============================================
+   SHADOW EFFECTS
+   ============================================ */
+
+.shadow-glow {
+  box-shadow: 
+    0 0 40px rgba(99, 102, 241, 0.3),
+    0 0 80px rgba(99, 102, 241, 0.1);
+}
+
+.shadow-glow-purple {
+  box-shadow: 
+    0 0 40px rgba(168, 85, 247, 0.3),
+    0 0 80px rgba(168, 85, 247, 0.1);
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradientText {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.8), 0 0 60px rgba(168, 85, 247, 0.4);
+  }
+}
+
+/* ============================================
+   ICON GRADIENTS
+   ============================================ */
+
+.icon-gradient-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+}
+
+.icon-gradient-green {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+}
+
+.icon-gradient-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+}
+
+.icon-gradient-orange {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #94a3b8, #64748b);
 }
