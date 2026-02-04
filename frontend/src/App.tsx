@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '@/stores/authStore';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 
 // Layout components
 import Navbar from '@/components/layout/Navbar';
@@ -65,9 +66,10 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <div className="App">
-          <Routes>
+      <TooltipProvider>
+        <Router>
+          <div className="App">
+            <Routes>
             {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -192,10 +194,11 @@ function App() {
               },
             }}
           />
-        </div>
-      </Router>
+          </div>
+        </Router>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
 
-export default App; 
+export default App;

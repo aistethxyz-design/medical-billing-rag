@@ -126,30 +126,4 @@ export default function Header() {
       </div>
     </header>
   );
-                Testimonials
-              </button>
-              <button 
-                onClick={() => scrollToSection('contact')}
-                className="text-muted-foreground hover:text-foreground transition-colors text-left"
-                data-testid="mobile-nav-contact"
-              >
-                Contact
-              </button>
-              <button
-                onClick={() => {
-                  navigate('/login');
-                  setIsMobileMenuOpen(false);
-                }}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors w-full shadow-sm"
-                data-testid="mobile-nav-login"
-                style={{ backgroundColor: 'hsl(221, 83%, 53%)' }}
-              >
-                Login
-              </button>
-            </nav>
-          </div>
-        )}
-      </div>
-    </header>
-  );
 }

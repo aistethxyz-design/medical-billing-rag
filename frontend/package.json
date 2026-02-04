@@ -21,6 +21,7 @@
     "@capacitor/share": "^7.0.2",
     "@capacitor/splash-screen": "^7.0.2",
     "@capacitor/status-bar": "^7.0.2",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-query": "^5.83.0",
     "@vitejs/plugin-react-swc": "^3.10.2",
     "lucide-react": "^0.294.0",

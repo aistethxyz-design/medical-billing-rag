@@ -166,60 +166,6 @@ export default function Hero() {
 
               {/* Dashboard View */}
               <div 
-                className={`absolute inset-0 transition-all duration-1000 ${currentView === 1 ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-8 pointer-events-none'}`}
-              >
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-orange-600 flex items-center">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full mr-1"></div>
-                        In Development
-                      </span>
-                      <span className="text-xs text-muted-foreground">3 pending</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-3 bg-secondary rounded-lg" data-testid="assistant-shift">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i className="fas fa-pills text-green-600"></i>
-                  </div>
-                  <div className="flex-1">
-                    <h5 className="font-medium text-sm">Look Something Up</h5>
-                    <p className="text-xs text-muted-foreground">Shift Assistant - Drug dosages, protocols</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-green-600 flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
-                        AI Ready
-                      </span>
-                      <span className="text-xs text-muted-foreground">Last used 2h ago</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 p-3 bg-secondary rounded-lg relative" data-testid="assistant-billing">
-                  <div className="absolute -top-1 -right-1 bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-medium">
-                    Free Trial
-                  </div>
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <i className="fas fa-file-invoice-dollar text-purple-600"></i>
-                  </div>
-                  <div className="flex-1">
-                    <h5 className="font-medium text-sm">Optimize OHIP Codes</h5>
-                    <p className="text-xs text-muted-foreground">Billing Assistant - Revenue optimization</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-green-600 flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
-                        AI Ready
-                      </span>
-                      <span className="text-xs text-muted-foreground">Try for free</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-              </div>
-
-              {/* Dashboard View */}
-              <div 
                 className={`absolute inset-0 transition-opacity duration-700 ${currentView === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               >
                 <div className="bg-card rounded-2xl shadow-2xl p-6 max-w-xl mx-auto">
