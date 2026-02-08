@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { logger } from '../utils/logger';
+import { pineconeService, VectorDocument } from './pineconeService';
+import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,6 +11,9 @@ export interface BillingCode {
   amount: number;
   category: string;
   timeOfDay?: string;
+  codeGroup?: string;
+  isPrimary?: boolean;
+  isAddOn?: boolean;
   modifiers?: string[];
   bundlingRules?: string[];
   exclusions?: string[];
@@ -30,6 +34,7 @@ export interface OptimizationSuggestion {
   confidence: number;
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
   documentation: string[];
+  codeRole: 'PRIMARY' | 'ADD_ON' | 'PREMIUM';
 }
 
 export interface EncounterAnalysis {
@@ -47,19 +52,229 @@ export interface EncounterAnalysis {
   };
 }
 
-class BillingCodeService {
-  private prisma: PrismaClient;
-  private billingCodes: Map<string, BillingCode> = new Map();
-  private codeIndex: Map<string, string[]> = new Map(); // keyword -> codes
+// ── TF-IDF Implementation for local semantic search fallback ──
+class TFIDFIndex {
+  private documents: Map<string, string> = new Map();
+  private idfScores: Map<string, number> = new Map();
+  private tfidfVectors: Map<string, Map<string, number>> = new Map();
 
-  constructor() {
-    this.prisma = new PrismaClient();
+  addDocument(id: string, text: string): void {
+    this.documents.set(id, text.toLowerCase());
   }
 
+  build(): void {
+    const N = this.documents.size;
+    const df: Map<string, number> = new Map();
+
+    for (const [, text] of this.documents) {
+      const uniqueTerms = new Set(this.tokenize(text));
+      for (const term of uniqueTerms) {
+        df.set(term, (df.get(term) || 0) + 1);
+      }
+    }
+
+    for (const [term, freq] of df) {
+      this.idfScores.set(term, Math.log((N + 1) / (freq + 1)) + 1);
+    }
+
+    for (const [id, text] of this.documents) {
+      const terms = this.tokenize(text);
+      const tf: Map<string, number> = new Map();
+      for (const term of terms) {
+        tf.set(term, (tf.get(term) || 0) + 1);
+      }
+
+      const tfidf: Map<string, number> = new Map();
+      for (const [term, count] of tf) {
+        const idf = this.idfScores.get(term) || 1;
+        tfidf.set(term, (count / terms.length) * idf);
+      }
+      this.tfidfVectors.set(id, tfidf);
+    }
+  }
+
+  search(query: string, topK: number = 10): Array<{ id: string; score: number }> {
+    const queryTerms = this.tokenize(query.toLowerCase());
+    const queryTF: Map<string, number> = new Map();
+    for (const term of queryTerms) {
+      queryTF.set(term, (queryTF.get(term) || 0) + 1);
+    }
+
+    const queryVector: Map<string, number> = new Map();
+    for (const [term, count] of queryTF) {
+      const idf = this.idfScores.get(term) || 1;
+      queryVector.set(term, (count / queryTerms.length) * idf);
+    }
+
+    const scores: Array<{ id: string; score: number }> = [];
+    for (const [id, docVector] of this.tfidfVectors) {
+      const score = this.cosineSimilarity(queryVector, docVector);
+      if (score > 0.01) {
+        scores.push({ id, score });
+      }
+    }
+
+    return scores.sort((a, b) => b.score - a.score).slice(0, topK);
+  }
+
+  private tokenize(text: string): string[] {
+    return text
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 1)
+      .map(w => w.toLowerCase());
+  }
+
+  private cosineSimilarity(a: Map<string, number>, b: Map<string, number>): number {
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+
+    for (const [term, val] of a) {
+      normA += val * val;
+      if (b.has(term)) {
+        dotProduct += val * b.get(term)!;
+      }
+    }
+    for (const [, val] of b) {
+      normB += val * val;
+    }
+
+    const denom = Math.sqrt(normA) * Math.sqrt(normB);
+    return denom > 0 ? dotProduct / denom : 0;
+  }
+}
+
+// ── Proper CSV parser that handles quoted fields with commas ──
+function parseCSVLine(line: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    const next = line[i + 1];
+
+    if (ch === '"' && inQuotes && next === '"') {
+      current += '"';
+      i++;
+    } else if (ch === '"') {
+      inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function parseAmount(amountStr: string): number {
+  if (!amountStr) return 0;
+  const cleaned = amountStr.replace(/[$,CAD\s]/g, '');
+  const match = cleaned.match(/(\d+\.?\d*)/);
+  return match ? parseFloat(match[1]) : 0;
+}
+
+// ── Time-of-day helpers ──
+export function getCurrentTimeSlot(): string {
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+
+  if (day === 0 || day === 6) return 'Weekend';
+  if (hour >= 0 && hour < 8) return 'Night';
+  if (hour >= 8 && hour < 17) return 'Day';
+  return 'Evening';
+}
+
+function extractTimeOfDay(howToUse: string, description: string): string | undefined {
+  const text = (howToUse + ' ' + description).toLowerCase();
+
+  if (/night|0000-0800|midnight/i.test(text)) return 'Night';
+  if (/weekend|holiday/i.test(text)) return 'Weekend';
+  if (/evening|1700-0000|mon-fri 17/i.test(text)) return 'Evening';
+  if (/mon-fri 0800-1700|0800-1700|weekday/i.test(text)) return 'Day';
+  return undefined;
+}
+
+function categorizeCode(code: string): string {
+  const prefix = code.charAt(0).toUpperCase();
+  const categories: Record<string, string> = {
+    A: 'Assessment',
+    H: 'Emergency',
+    G: 'Critical Care / Procedure',
+    K: 'Consultation / Forms',
+    E: 'Premium',
+    Z: 'Procedure / Surgery',
+    R: 'Repair',
+    F: 'Fracture',
+    D: 'Dislocation',
+    B: 'Telemedicine',
+    M: 'Major Surgery',
+    P: 'Obstetrics',
+    J: 'Imaging',
+  };
+  return categories[prefix] || 'Other';
+}
+
+function determineCodeRole(code: string): { isPrimary: boolean; isAddOn: boolean } {
+  const upper = code.toUpperCase().trim();
+  const prefix = upper.charAt(0);
+
+  // H-codes: H10x, H13x, H15x are primary assessment codes
+  if (prefix === 'H') {
+    if (/^H1[0-5]\d$/.test(upper) && !['H100', 'H105', 'H107', 'H109', 'H110', 'H113'].includes(upper)) {
+      return { isPrimary: true, isAddOn: false };
+    }
+    return { isPrimary: false, isAddOn: true };
+  }
+  // G-codes: critical care first/subsequent are primary
+  if (prefix === 'G' && /^G(521|523|522|395|391)$/.test(upper)) {
+    return { isPrimary: true, isAddOn: false };
+  }
+  // A-codes: assessments are primary
+  if (prefix === 'A' && !['A888', 'A901', 'A903', 'A771', 'A777'].includes(upper)) {
+    return { isPrimary: true, isAddOn: false };
+  }
+  return { isPrimary: false, isAddOn: true };
+}
+
+// ── H-code time variant groups ──
+const H_CODE_TIME_GROUPS: Record<string, Record<string, string>> = {
+  minor_assessment:   { Day: 'H101', Evening: 'H131', Weekend: 'H151', Night: 'H151' },
+  comprehensive:      { Day: 'H102', Evening: 'H132', Weekend: 'H152', Night: 'H152' },
+  multiple_systems:   { Day: 'H103', Evening: 'H133', Weekend: 'H153', Night: 'H153' },
+  reassessment:       { Day: 'H104', Evening: 'H134', Weekend: 'H154', Night: 'H154' },
+};
+
+export function getHCodeForTimeSlot(assessmentType: string, timeSlot?: string): string | undefined {
+  const slot = timeSlot || getCurrentTimeSlot();
+  const group = H_CODE_TIME_GROUPS[assessmentType];
+  return group ? group[slot] : undefined;
+}
+
+// ── Main Service ──
+class BillingCodeService {
+  private billingCodes: Map<string, BillingCode> = new Map();
+  private codesByCategory: Map<string, BillingCode[]> = new Map();
+  private tfidfIndex: TFIDFIndex = new TFIDFIndex();
+  private pineconeIndexed = false;
+  private initialized = false;
+
+  private searchCache: Map<string, { result: BillingCode[]; timestamp: number }> = new Map();
+  private readonly CACHE_TTL = 5 * 60 * 1000;
+
   async initialize(): Promise<void> {
+    if (this.initialized) return;
+
     try {
       await this.loadBillingCodes();
-      await this.buildSearchIndex();
+      this.buildTFIDFIndex();
+      await this.indexInPinecone();
+      this.initialized = true;
       logger.info('BillingCodeService initialized successfully');
     } catch (error) {
       logger.error('Failed to initialize BillingCodeService:', error);
@@ -68,560 +283,446 @@ class BillingCodeService {
   }
 
   private async loadBillingCodes(): Promise<void> {
-    try {
-      const csvPath = path.join(process.cwd(), 'Codes by class.csv');
-      const csvContent = fs.readFileSync(csvPath, 'utf-8');
-      const lines = csvContent.split('\n');
-
-      for (let i = 1; i < lines.length; i++) { // Skip header
-        const line = lines[i].trim();
-        if (!line || line.startsWith(',,,')) continue; // Skip empty lines
-
-        const [code, description, howToUse, amountStr] = line.split(',');
-        
-        if (!code || !description) continue;
-
-        const amount = this.parseAmount(amountStr);
-        const category = this.categorizeCode(code);
-        
-        const billingCode: BillingCode = {
-          code: code.trim(),
-          description: description.trim(),
-          howToUse: howToUse?.trim() || '',
-          amount,
-          category,
-          timeOfDay: this.extractTimeOfDay(howToUse),
-          modifiers: this.extractModifiers(howToUse),
-          bundlingRules: this.extractBundlingRules(howToUse),
-          exclusions: this.extractExclusions(howToUse)
-        };
-
-        this.billingCodes.set(code.trim(), billingCode);
-      }
-
-      logger.info(`Loaded ${this.billingCodes.size} billing codes`);
-    } catch (error) {
-      logger.error('Failed to load billing codes:', error);
-      throw error;
-    }
-  }
-
-  private parseAmount(amountStr: string): number {
-    if (!amountStr) return 0;
-    
-    // Remove currency symbols and extract numeric value
-    const cleanAmount = amountStr.replace(/[$,CAD]/g, '').trim();
-    const match = cleanAmount.match(/(\d+\.?\d*)/);
-    return match ? parseFloat(match[1]) : 0;
-  }
-
-  private categorizeCode(code: string): string {
-    if (code.startsWith('A')) return 'Assessment';
-    if (code.startsWith('H')) return 'Emergency';
-    if (code.startsWith('G')) return 'Procedure';
-    if (code.startsWith('K')) return 'Consultation';
-    if (code.startsWith('E')) return 'Premium';
-    if (code.startsWith('Z')) return 'Surgery';
-    if (code.startsWith('R')) return 'Repair';
-    if (code.startsWith('F')) return 'Fracture';
-    if (code.startsWith('D')) return 'Dislocation';
-    if (code.startsWith('B')) return 'Telemedicine';
-    if (code.startsWith('M')) return 'Major Surgery';
-    if (code.startsWith('P')) return 'Obstetrics';
-    return 'Other';
-  }
-
-  private extractTimeOfDay(howToUse: string): string | undefined {
-    if (!howToUse) return undefined;
-    
-    const timePatterns = [
-      { pattern: /Mon-Fri 0800-1700/i, time: 'Day' },
-      { pattern: /Mon-Fri 1700-0000/i, time: 'Evening' },
-      { pattern: /Weekend|Holiday/i, time: 'Weekend' },
-      { pattern: /Night|0000-0800/i, time: 'Night' }
+    const possiblePaths = [
+      path.join(process.cwd(), 'Codes by class.csv'),
+      path.join(process.cwd(), 'Codes_by_class.csv'),
+      path.join(process.cwd(), '..', 'Codes_by_class.csv'),
+      path.join(process.cwd(), '..', 'Codes by class.csv'),
     ];
 
-    for (const { pattern, time } of timePatterns) {
-      if (pattern.test(howToUse)) return time;
+    let csvContent = '';
+    for (const csvPath of possiblePaths) {
+      try {
+        csvContent = fs.readFileSync(csvPath, 'utf-8');
+        logger.info(`Loaded CSV from: ${csvPath}`);
+        break;
+      } catch { continue; }
     }
-    return undefined;
-  }
 
-  private extractModifiers(howToUse: string): string[] {
-    if (!howToUse) return [];
-    
-    const modifierPattern = /modifier\s*([A-Z0-9]+)/gi;
-    const matches = howToUse.match(modifierPattern);
-    return matches ? matches.map(m => m.replace(/modifier\s*/i, '')) : [];
-  }
+    if (!csvContent) {
+      throw new Error('Could not find billing codes CSV file');
+    }
 
-  private extractBundlingRules(howToUse: string): string[] {
-    if (!howToUse) return [];
-    
-    const bundlingPattern = /(?:cannot|can't|do not|don't)\s+bill\s+with\s+([A-Z0-9\s,]+)/gi;
-    const matches = howToUse.match(bundlingPattern);
-    return matches ? matches.map(m => m.replace(/(?:cannot|can't|do not|don't)\s+bill\s+with\s+/i, '').trim()) : [];
-  }
+    // Handle multi-line quoted fields
+    const rawLines = csvContent.split('\n');
+    const completeLines: string[] = [];
+    let currentLine = '';
+    let inQuotes = false;
 
-  private extractExclusions(howToUse: string): string[] {
-    if (!howToUse) return [];
-    
-    const exclusionPattern = /(?:except|unless|not\s+if)\s+([A-Z0-9\s,]+)/gi;
-    const matches = howToUse.match(exclusionPattern);
-    return matches ? matches.map(m => m.replace(/(?:except|unless|not\s+if)\s+/i, '').trim()) : [];
-  }
-
-  private async buildSearchIndex(): Promise<void> {
-    for (const [code, billingCode] of this.billingCodes) {
-      const keywords = this.extractKeywords(billingCode);
-      
-      for (const keyword of keywords) {
-        if (!this.codeIndex.has(keyword)) {
-          this.codeIndex.set(keyword, []);
+    for (const rawLine of rawLines) {
+      const quoteCount = (rawLine.match(/"/g) || []).length;
+      if (inQuotes) {
+        currentLine += '\n' + rawLine;
+        if (quoteCount % 2 !== 0) {
+          inQuotes = false;
+          completeLines.push(currentLine);
+          currentLine = '';
         }
-        this.codeIndex.get(keyword)!.push(code);
+      } else {
+        if (quoteCount % 2 !== 0) {
+          inQuotes = true;
+          currentLine = rawLine;
+        } else {
+          completeLines.push(rawLine);
+        }
+      }
+    }
+    if (currentLine) completeLines.push(currentLine);
+
+    let loadedCount = 0;
+    for (let i = 1; i < completeLines.length; i++) {
+      const line = completeLines[i].trim();
+      if (!line) continue;
+
+      const fields = parseCSVLine(line);
+      const code = fields[0]?.trim();
+      const description = fields[1]?.trim();
+      const howToUse = fields[2]?.trim() || '';
+      const amountStr = fields[3]?.trim() || '';
+
+      if (!code || !description) continue;
+      if (!code.match(/^[A-Za-z]/)) continue;
+
+      const amount = parseAmount(amountStr);
+      const category = categorizeCode(code);
+      const timeOfDay = extractTimeOfDay(howToUse, description);
+      const { isPrimary, isAddOn } = determineCodeRole(code);
+
+      const billingCode: BillingCode = {
+        code: code.toUpperCase().trim(),
+        description,
+        howToUse,
+        amount,
+        category,
+        timeOfDay,
+        isPrimary,
+        isAddOn,
+        modifiers: this.extractModifiers(howToUse),
+        bundlingRules: this.extractBundlingRules(howToUse),
+        exclusions: this.extractExclusions(howToUse),
+      };
+
+      const key = timeOfDay ? `${billingCode.code}-${timeOfDay}` : billingCode.code;
+      this.billingCodes.set(key, billingCode);
+
+      if (!this.billingCodes.has(billingCode.code) || !timeOfDay) {
+        this.billingCodes.set(billingCode.code, billingCode);
+      }
+
+      if (!this.codesByCategory.has(category)) {
+        this.codesByCategory.set(category, []);
+      }
+      this.codesByCategory.get(category)!.push(billingCode);
+
+      loadedCount++;
+    }
+
+    logger.info(`Loaded ${loadedCount} billing codes across ${this.codesByCategory.size} categories`);
+  }
+
+  private buildTFIDFIndex(): void {
+    const seen = new Set<string>();
+    for (const [key, code] of this.billingCodes) {
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      const searchText = [code.code, code.description, code.howToUse, code.category, code.timeOfDay || ''].join(' ');
+      this.tfidfIndex.addDocument(key, searchText);
+    }
+    this.tfidfIndex.build();
+    logger.info('TF-IDF index built');
+  }
+
+  private async indexInPinecone(): Promise<void> {
+    if (this.pineconeIndexed) return;
+
+    try {
+      await pineconeService.initialize();
+
+      if (!pineconeService.isPineconeAvailable()) {
+        logger.info('Pinecone not available, using TF-IDF only');
+        return;
+      }
+
+      const documents: VectorDocument[] = [];
+      const seen = new Set<string>();
+
+      for (const [key, code] of this.billingCodes) {
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        documents.push({
+          id: key,
+          text: `OHIP Code ${code.code}: ${code.description}. ${code.howToUse}. Category: ${code.category}. Amount: $${code.amount}`,
+          metadata: {
+            code: code.code,
+            description: code.description,
+            category: code.category,
+            amount: code.amount,
+            timeOfDay: code.timeOfDay || 'any',
+            isPrimary: code.isPrimary || false,
+            isAddOn: code.isAddOn || false,
+          },
+        });
+      }
+
+      await pineconeService.upsertDocuments(documents);
+      this.pineconeIndexed = true;
+      logger.info('Billing codes indexed in Pinecone');
+    } catch (error) {
+      logger.error('Failed to index in Pinecone, using TF-IDF:', error);
+    }
+  }
+
+  // ── Semantic search: Pinecone first, TF-IDF fallback ──
+  async semanticSearch(query: string, topK: number = 15, filter?: Record<string, any>): Promise<CodeMatch[]> {
+    const cacheKey = `${query}|${topK}|${JSON.stringify(filter || {})}`;
+    const cached = this.searchCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.result.map(code => ({
+        code,
+        confidence: 0.8,
+        reason: 'Cached result',
+        revenueImpact: code.amount,
+      }));
+    }
+
+    let results: CodeMatch[] = [];
+
+    if (pineconeService.isPineconeAvailable()) {
+      try {
+        const pineconeResults = await pineconeService.semanticSearch(query, topK, filter);
+        results = pineconeResults
+          .map(r => {
+            const code = this.billingCodes.get(r.id);
+            if (!code) return null;
+            return {
+              code,
+              confidence: r.score,
+              reason: `Semantic match (${Math.round(r.score * 100)}% similarity)`,
+              revenueImpact: code.amount,
+            };
+          })
+          .filter((r): r is CodeMatch => r !== null);
+
+        if (results.length > 0) {
+          this.searchCache.set(cacheKey, { result: results.map(r => r.code), timestamp: Date.now() });
+          return results;
+        }
+      } catch (error) {
+        logger.warn('Pinecone search failed, falling back to TF-IDF:', error);
       }
     }
 
-    logger.info(`Built search index with ${this.codeIndex.size} keywords`);
+    // Fallback: TF-IDF
+    const tfidfResults = this.tfidfIndex.search(query, topK);
+    results = tfidfResults
+      .map(r => {
+        const code = this.billingCodes.get(r.id);
+        if (!code) return null;
+        return {
+          code,
+          confidence: Math.min(r.score, 1),
+          reason: `TF-IDF match (${Math.round(Math.min(r.score, 1) * 100)}% relevance)`,
+          revenueImpact: code.amount,
+        };
+      })
+      .filter((r): r is CodeMatch => r !== null);
+
+    if (results.length > 0) {
+      this.searchCache.set(cacheKey, { result: results.map(r => r.code), timestamp: Date.now() });
+    }
+
+    return results;
   }
 
-  private extractKeywords(billingCode: BillingCode): string[] {
-    const keywords = new Set<string>();
-    
-    // Add code itself
-    keywords.add(billingCode.code.toLowerCase());
-    
-    // Add description words
-    const descWords = billingCode.description.toLowerCase()
-      .split(/\s+/)
-      .filter(word => word.length > 2)
-      .map(word => word.replace(/[^\w]/g, ''));
-    
-    descWords.forEach(word => keywords.add(word));
-    
-    // Add how to use keywords
-    const useWords = billingCode.howToUse.toLowerCase()
-      .split(/\s+/)
-      .filter(word => word.length > 2)
-      .map(word => word.replace(/[^\w]/g, ''));
-    
-    useWords.forEach(word => keywords.add(word));
-    
-    // Add medical terms
-    const medicalTerms = this.extractMedicalTerms(billingCode.description + ' ' + billingCode.howToUse);
-    medicalTerms.forEach(term => keywords.add(term));
-    
-    return Array.from(keywords);
-  }
-
-  private extractMedicalTerms(text: string): string[] {
-    const medicalTerms = [
-      'assessment', 'consultation', 'procedure', 'surgery', 'fracture', 'dislocation',
-      'laceration', 'repair', 'injection', 'aspiration', 'drainage', 'removal',
-      'reduction', 'anesthesia', 'critical', 'emergency', 'trauma', 'burn',
-      'cardiac', 'respiratory', 'neurological', 'orthopedic', 'dermatology',
-      'ophthalmology', 'otolaryngology', 'urology', 'gynecology', 'pediatric',
-      'geriatric', 'telemedicine', 'telehealth', 'ultrasound', 'xray', 'ct',
-      'mri', 'lab', 'blood', 'urine', 'stool', 'culture', 'biopsy'
-    ];
-    
-    const foundTerms = medicalTerms.filter(term => 
-      text.toLowerCase().includes(term)
-    );
-    
-    return foundTerms;
-  }
-
+  // ── Keyword search ──
   async searchCodes(query: string, filters?: {
     category?: string;
     minAmount?: number;
     maxAmount?: number;
     timeOfDay?: string;
   }): Promise<BillingCode[]> {
-    const queryWords = query.toLowerCase().split(/\s+/).filter(word => word.length > 2);
-    const matchingCodes = new Set<string>();
-    
-    // Find codes by keyword matching
-    for (const word of queryWords) {
-      for (const [keyword, codes] of this.codeIndex) {
-        if (keyword.includes(word) || word.includes(keyword)) {
-          codes.forEach(code => matchingCodes.add(code));
-        }
+    const queryLower = query.toLowerCase();
+    const seen = new Set<string>();
+    let results: BillingCode[] = [];
+
+    for (const [, code] of this.billingCodes) {
+      const uniqueKey = code.code + (code.timeOfDay || '');
+      if (seen.has(uniqueKey)) continue;
+      seen.add(uniqueKey);
+
+      const text = `${code.code} ${code.description} ${code.howToUse} ${code.category}`.toLowerCase();
+      if (text.includes(queryLower) || queryLower.split(/\s+/).some(w => w.length > 2 && text.includes(w))) {
+        results.push(code);
       }
     }
-    
-    // Convert to BillingCode objects and apply filters
-    let results = Array.from(matchingCodes)
-      .map(code => this.billingCodes.get(code))
-      .filter((code): code is BillingCode => code !== undefined);
-    
-    // Apply filters
+
     if (filters) {
-      if (filters.category) {
-        results = results.filter(code => code.category === filters.category);
-      }
-      if (filters.minAmount !== undefined) {
-        results = results.filter(code => code.amount >= filters.minAmount!);
-      }
-      if (filters.maxAmount !== undefined) {
-        results = results.filter(code => code.amount <= filters.maxAmount!);
-      }
-      if (filters.timeOfDay) {
-        results = results.filter(code => code.timeOfDay === filters.timeOfDay);
-      }
+      if (filters.category) results = results.filter(c => c.category.toLowerCase().includes(filters.category!.toLowerCase()));
+      if (filters.minAmount !== undefined) results = results.filter(c => c.amount >= filters.minAmount!);
+      if (filters.maxAmount !== undefined) results = results.filter(c => c.amount <= filters.maxAmount!);
+      if (filters.timeOfDay) results = results.filter(c => c.timeOfDay === filters.timeOfDay || !c.timeOfDay);
     }
-    
-    // Sort by relevance (exact matches first, then by amount)
-    results.sort((a, b) => {
-      const aExact = queryWords.some(word => 
-        a.description.toLowerCase().includes(word) || 
-        a.code.toLowerCase().includes(word)
-      );
-      const bExact = queryWords.some(word => 
-        b.description.toLowerCase().includes(word) || 
-        b.code.toLowerCase().includes(word)
-      );
-      
-      if (aExact && !bExact) return -1;
-      if (!aExact && bExact) return 1;
-      
-      return b.amount - a.amount; // Higher amounts first
-    });
-    
-    return results.slice(0, 20); // Limit results
+
+    results.sort((a, b) => b.amount - a.amount);
+    return results.slice(0, 30);
   }
 
-  async findOptimalCodes(clinicalText: string, encounterType: string = 'Emergency'): Promise<OptimizationSuggestion[]> {
-    const suggestions: OptimizationSuggestion[] = [];
-    
-    // Extract key clinical terms
-    const clinicalTerms = this.extractClinicalTerms(clinicalText);
-    
-    // Search for relevant codes
-    const searchQuery = clinicalTerms.join(' ');
-    const matchingCodes = await this.searchCodes(searchQuery);
-    
-    // Analyze each code for optimization potential
-    for (const code of matchingCodes) {
-      const confidence = this.calculateConfidence(clinicalText, code);
-      const revenueImpact = this.calculateRevenueImpact(code, encounterType);
-      
-      if (confidence > 0.3) { // Only suggest codes with reasonable confidence
-        suggestions.push({
-          suggestedCode: code,
-          reason: this.generateReason(clinicalText, code),
-          revenueImpact,
-          confidence,
-          riskLevel: this.assessRisk(code, clinicalText),
-          documentation: this.getRequiredDocumentation(code)
-        });
-      }
-    }
-    
-    // Sort by revenue impact and confidence
-    suggestions.sort((a, b) => {
-      const scoreA = a.revenueImpact * a.confidence;
-      const scoreB = b.revenueImpact * b.confidence;
-      return scoreB - scoreA;
-    });
-    
-    return suggestions.slice(0, 10); // Top 10 suggestions
-  }
-
-  private extractClinicalTerms(text: string): string[] {
-    const terms = new Set<string>();
-    
-    // Common medical terms
-    const medicalTerms = [
-      'chest pain', 'shortness of breath', 'abdominal pain', 'headache', 'fever',
-      'nausea', 'vomiting', 'diarrhea', 'constipation', 'dizziness', 'syncope',
-      'seizure', 'stroke', 'heart attack', 'pneumonia', 'asthma', 'copd',
-      'hypertension', 'diabetes', 'infection', 'trauma', 'fracture', 'laceration',
-      'burn', 'allergic reaction', 'anaphylaxis', 'shock', 'cardiac arrest',
-      'respiratory distress', 'altered mental status', 'confusion', 'delirium'
-    ];
-    
-    const lowerText = text.toLowerCase();
-    medicalTerms.forEach(term => {
-      if (lowerText.includes(term)) {
-        terms.add(term);
-      }
-    });
-    
-    // Extract individual words
-    const words = text.toLowerCase()
-      .split(/\s+/)
-      .filter(word => word.length > 3)
-      .map(word => word.replace(/[^\w]/g, ''));
-    
-    words.forEach(word => terms.add(word));
-    
-    return Array.from(terms);
-  }
-
-  private calculateConfidence(clinicalText: string, code: BillingCode): number {
-    let confidence = 0;
-    const text = clinicalText.toLowerCase();
-    const description = code.description.toLowerCase();
-    const howToUse = code.howToUse.toLowerCase();
-    
-    // Check description match
-    const descWords = description.split(/\s+/);
-    const matchingDescWords = descWords.filter(word => 
-      text.includes(word) && word.length > 3
-    );
-    confidence += (matchingDescWords.length / descWords.length) * 0.4;
-    
-    // Check how to use match
-    const useWords = howToUse.split(/\s+/);
-    const matchingUseWords = useWords.filter(word => 
-      text.includes(word) && word.length > 3
-    );
-    confidence += (matchingUseWords.length / useWords.length) * 0.3;
-    
-    // Check for specific medical conditions
-    const conditions = this.extractMedicalTerms(description + ' ' + howToUse);
-    const matchingConditions = conditions.filter(condition => 
-      text.includes(condition)
-    );
-    confidence += (matchingConditions.length / conditions.length) * 0.3;
-    
-    return Math.min(confidence, 1);
-  }
-
-  private calculateRevenueImpact(code: BillingCode, encounterType: string): number {
-    let baseAmount = code.amount;
-    
-    // Apply time-based multipliers
-    if (code.timeOfDay === 'Evening') baseAmount *= 1.2;
-    if (code.timeOfDay === 'Weekend') baseAmount *= 1.5;
-    if (code.timeOfDay === 'Night') baseAmount *= 1.8;
-    
-    // Apply encounter type multipliers
-    if (encounterType === 'Emergency') baseAmount *= 1.3;
-    if (encounterType === 'Trauma') baseAmount *= 1.5;
-    
-    return baseAmount;
-  }
-
-  private generateReason(clinicalText: string, code: BillingCode): string {
-    const reasons = [];
-    
-    // Check for specific conditions mentioned
-    const conditions = this.extractMedicalTerms(clinicalText);
-    const matchingConditions = conditions.filter(condition => 
-      code.description.toLowerCase().includes(condition) ||
-      code.howToUse.toLowerCase().includes(condition)
-    );
-    
-    if (matchingConditions.length > 0) {
-      reasons.push(`Clinical presentation matches: ${matchingConditions.join(', ')}`);
-    }
-    
-    // Check for procedure indicators
-    if (code.category === 'Procedure' && this.hasProcedureIndicators(clinicalText)) {
-      reasons.push('Procedure performed as documented');
-    }
-    
-    // Check for assessment level
-    if (code.category === 'Assessment' && this.hasAssessmentIndicators(clinicalText)) {
-      reasons.push('Assessment level appropriate for complexity');
-    }
-    
-    // Check for time-based billing
-    if (code.timeOfDay && this.isTimeAppropriate(code.timeOfDay)) {
-      reasons.push(`Time-based billing appropriate for ${code.timeOfDay.toLowerCase()} encounter`);
-    }
-    
-    return reasons.join('; ') || 'Code matches clinical documentation';
-  }
-
-  private hasProcedureIndicators(text: string): boolean {
-    const procedureKeywords = [
-      'performed', 'completed', 'administered', 'injected', 'aspirated',
-      'drained', 'removed', 'repaired', 'sutured', 'casted', 'splinted'
-    ];
-    
-    return procedureKeywords.some(keyword => 
-      text.toLowerCase().includes(keyword)
-    );
-  }
-
-  private hasAssessmentIndicators(text: string): boolean {
-    const assessmentKeywords = [
-      'examined', 'assessed', 'evaluated', 'reviewed', 'analyzed',
-      'comprehensive', 'detailed', 'thorough', 'extensive'
-    ];
-    
-    return assessmentKeywords.some(keyword => 
-      text.toLowerCase().includes(keyword)
-    );
-  }
-
-  private isTimeAppropriate(timeOfDay: string): boolean {
-    const now = new Date();
-    const hour = now.getHours();
-    
-    switch (timeOfDay) {
-      case 'Day': return hour >= 8 && hour < 17;
-      case 'Evening': return hour >= 17 && hour < 24;
-      case 'Night': return hour >= 0 && hour < 8;
-      case 'Weekend': return now.getDay() === 0 || now.getDay() === 6;
-      default: return true;
-    }
-  }
-
-  private assessRisk(code: BillingCode, clinicalText: string): 'LOW' | 'MEDIUM' | 'HIGH' {
-    let riskScore = 0;
-    
-    // High-value codes have higher risk
-    if (code.amount > 200) riskScore += 2;
-    else if (code.amount > 100) riskScore += 1;
-    
-    // Time-based billing increases risk
-    if (code.timeOfDay) riskScore += 1;
-    
-    // Premium codes have higher risk
-    if (code.category === 'Premium') riskScore += 2;
-    
-    // Critical care codes have higher risk
-    if (code.description.toLowerCase().includes('critical')) riskScore += 2;
-    
-    // Check for documentation requirements
-    const docRequirements = this.getRequiredDocumentation(code);
-    if (docRequirements.length > 3) riskScore += 1;
-    
-    if (riskScore >= 4) return 'HIGH';
-    if (riskScore >= 2) return 'MEDIUM';
-    return 'LOW';
-  }
-
-  private getRequiredDocumentation(code: BillingCode): string[] {
-    const requirements = [];
-    
-    // Time-based documentation
-    if (code.timeOfDay) {
-      requirements.push(`Document time of encounter (${code.timeOfDay})`);
-    }
-    
-    // Procedure documentation
-    if (code.category === 'Procedure') {
-      requirements.push('Document procedure performed');
-      requirements.push('Document indication for procedure');
-    }
-    
-    // Assessment documentation
-    if (code.category === 'Assessment') {
-      requirements.push('Document assessment level');
-      requirements.push('Document complexity of case');
-    }
-    
-    // Critical care documentation
-    if (code.description.toLowerCase().includes('critical')) {
-      requirements.push('Document critical care time');
-      requirements.push('Document interventions performed');
-    }
-    
-    // Modifier documentation
-    if (code.modifiers && code.modifiers.length > 0) {
-      requirements.push(`Document justification for modifiers: ${code.modifiers.join(', ')}`);
-    }
-    
-    return requirements;
-  }
-
-  async analyzeEncounter(encounterId: string, clinicalText: string): Promise<EncounterAnalysis> {
-    const encounter = await this.prisma.encounter.findUnique({
-      where: { id: encounterId },
-      include: {
-        diagnoses: true,
-        procedures: true
-      }
-    });
-
-    if (!encounter) {
-      throw new Error('Encounter not found');
-    }
-
-    // Find optimal codes
-    const optimizations = await this.findOptimalCodes(clinicalText, encounter.type);
-    
-    // Calculate current revenue
-    const currentRevenue = encounter.procedures.reduce((sum, proc) => 
-      sum + (proc.chargeAmount || 0), 0
-    );
-    
-    // Calculate potential revenue
-    const potentialRevenue = optimizations.reduce((sum, opt) => 
-      sum + opt.revenueImpact, 0
-    );
-    
-    // Assess risk
-    const highRiskCodes = optimizations
-      .filter(opt => opt.riskLevel === 'HIGH')
-      .map(opt => opt.suggestedCode.code);
-    
-    const complianceIssues = this.identifyComplianceIssues(optimizations);
-    
-    return {
-      encounterId,
-      clinicalText,
-      suggestedCodes: optimizations.map(opt => opt.suggestedCode),
-      optimizations,
-      totalRevenue: currentRevenue,
-      potentialRevenue,
-      revenueIncrease: potentialRevenue - currentRevenue,
-      riskAssessment: {
-        overallRisk: highRiskCodes.length > 2 ? 'HIGH' : 
-                    highRiskCodes.length > 0 ? 'MEDIUM' : 'LOW',
-        highRiskCodes,
-        complianceIssues
-      }
+  // ── Smart time-of-day H-code selection ──
+  getTimeAppropriateHCode(assessmentLevel: 'minor' | 'comprehensive' | 'multiple_systems' | 'reassessment', timeSlot?: string): BillingCode | undefined {
+    const slot = timeSlot || getCurrentTimeSlot();
+    const groupMap: Record<string, string> = {
+      minor: 'minor_assessment',
+      comprehensive: 'comprehensive',
+      multiple_systems: 'multiple_systems',
+      reassessment: 'reassessment',
     };
+
+    const targetCode = getHCodeForTimeSlot(groupMap[assessmentLevel], slot);
+    if (!targetCode) return undefined;
+
+    const key = `${targetCode}-${slot}`;
+    return this.billingCodes.get(key) || this.billingCodes.get(targetCode);
   }
 
-  private identifyComplianceIssues(optimizations: OptimizationSuggestion[]): string[] {
-    const issues = [];
-    
-    // Check for bundling issues
-    const codes = optimizations.map(opt => opt.suggestedCode.code);
-    for (let i = 0; i < codes.length; i++) {
-      for (let j = i + 1; j < codes.length; j++) {
-        const code1 = this.billingCodes.get(codes[i]);
-        const code2 = this.billingCodes.get(codes[j]);
-        
-        if (code1 && code2) {
-          // Check if codes have bundling restrictions
-          if (code1.bundlingRules?.some(rule => 
-            code2.description.toLowerCase().includes(rule.toLowerCase())
-          )) {
-            issues.push(`Potential bundling issue: ${code1.code} and ${code2.code}`);
-          }
+  // ── Primary + Add-on suggestion ──
+  async suggestPrimaryAndAddOns(clinicalText: string, timeSlot?: string): Promise<{
+    primary: BillingCode | null;
+    addOns: BillingCode[];
+    premiums: BillingCode[];
+  }> {
+    const slot = timeSlot || getCurrentTimeSlot();
+    const matches = await this.semanticSearch(clinicalText, 20);
+
+    let primary: BillingCode | null = null;
+    const addOns: BillingCode[] = [];
+    const premiums: BillingCode[] = [];
+
+    for (const match of matches) {
+      const code = match.code;
+
+      if (code.isPrimary && !primary) {
+        if (code.code.startsWith('H') && /^H1[0-5]\d$/.test(code.code)) {
+          const level = this.getAssessmentLevel(code);
+          const timeCode = this.getTimeAppropriateHCode(level, slot);
+          primary = timeCode || code;
+        } else {
+          primary = code;
         }
+      } else if (code.category === 'Premium' || code.code.startsWith('E4') || code.code.startsWith('H11') || code.code.startsWith('H96') || code.code.startsWith('H98')) {
+        premiums.push(code);
+      } else if (code.isAddOn) {
+        addOns.push(code);
       }
     }
-    
-    // Check for high-risk combinations
-    const highRiskCodes = optimizations.filter(opt => opt.riskLevel === 'HIGH');
-    if (highRiskCodes.length > 3) {
-      issues.push('Multiple high-risk codes may increase audit probability');
+
+    if ((slot === 'Evening' || slot === 'Weekend' || slot === 'Night')) {
+      const premium = this.getTimePremium(slot);
+      if (premium && !premiums.some(p => p.code === premium.code)) {
+        premiums.push(premium);
+      }
     }
-    
-    return issues;
+
+    return { primary, addOns: addOns.slice(0, 8), premiums: premiums.slice(0, 4) };
+  }
+
+  private getAssessmentLevel(code: BillingCode): 'minor' | 'comprehensive' | 'multiple_systems' | 'reassessment' {
+    const c = code.code;
+    if (c.endsWith('01') || c.endsWith('31') || c.endsWith('51')) return 'minor';
+    if (c.endsWith('03') || c.endsWith('33') || c.endsWith('53')) return 'multiple_systems';
+    if (c.endsWith('04') || c.endsWith('34') || c.endsWith('54')) return 'reassessment';
+    return 'comprehensive';
+  }
+
+  private getTimePremium(timeSlot: string): BillingCode | undefined {
+    const map: Record<string, string> = { Evening: 'E412', Weekend: 'E412', Night: 'E413' };
+    return map[timeSlot] ? this.billingCodes.get(map[timeSlot]) : undefined;
   }
 
   getCodeByCode(code: string): BillingCode | undefined {
-    return this.billingCodes.get(code);
+    return this.billingCodes.get(code.toUpperCase().trim());
   }
 
   getAllCodes(): BillingCode[] {
-    return Array.from(this.billingCodes.values());
+    const seen = new Set<string>();
+    const codes: BillingCode[] = [];
+    for (const [, code] of this.billingCodes) {
+      const key = code.code + (code.timeOfDay || '');
+      if (!seen.has(key)) {
+        seen.add(key);
+        codes.push(code);
+      }
+    }
+    return codes;
   }
 
   getCodesByCategory(category: string): BillingCode[] {
-    return Array.from(this.billingCodes.values())
-      .filter(code => code.category === category);
+    return this.codesByCategory.get(category) || [];
+  }
+
+  private extractModifiers(howToUse: string): string[] {
+    if (!howToUse) return [];
+    const matches = howToUse.match(/modifier\s*([A-Z0-9]+)/gi);
+    return matches ? matches.map(m => m.replace(/modifier\s*/i, '')) : [];
+  }
+
+  private extractBundlingRules(howToUse: string): string[] {
+    if (!howToUse) return [];
+    const matches = howToUse.match(/(?:cannot|can't|do not|don't|Can NOT)\s+bill\s+(?:with|in addition to)\s+([^.]+)/gi);
+    return matches ? matches.map(m => m.trim()) : [];
+  }
+
+  private extractExclusions(howToUse: string): string[] {
+    if (!howToUse) return [];
+    const matches = howToUse.match(/(?:except|unless|not\s+if)\s+([^.]+)/gi);
+    return matches ? matches.map(m => m.trim()) : [];
+  }
+
+  // ── Encounter analysis (used by billing routes) ──
+  async analyzeEncounter(encounterId: string, clinicalText: string): Promise<EncounterAnalysis> {
+    const prisma = new PrismaClient();
+    try {
+      const encounter = await prisma.encounter.findUnique({
+        where: { id: encounterId },
+        include: { diagnoses: true, procedures: true },
+      });
+
+      if (!encounter) {
+        throw new Error('Encounter not found');
+      }
+
+      // Find optimal codes via semantic search
+      const optimizations = await this.findOptimalCodes(clinicalText, encounter.type);
+
+      // Calculate current revenue
+      const currentRevenue = encounter.procedures.reduce(
+        (sum: number, proc: any) => sum + (proc.chargeAmount || 0),
+        0
+      );
+
+      // Calculate potential revenue
+      const potentialRevenue = optimizations.reduce((sum, opt) => sum + opt.revenueImpact, 0);
+
+      // Assess risk
+      const highRiskCodes = optimizations
+        .filter((opt) => opt.riskLevel === 'HIGH')
+        .map((opt) => opt.suggestedCode.code);
+
+      const complianceIssues = this.identifyComplianceIssues(optimizations);
+
+      return {
+        encounterId,
+        clinicalText,
+        suggestedCodes: optimizations.map((opt) => opt.suggestedCode),
+        optimizations,
+        totalRevenue: currentRevenue,
+        potentialRevenue,
+        revenueIncrease: potentialRevenue - currentRevenue,
+        riskAssessment: {
+          overallRisk:
+            highRiskCodes.length > 2 ? 'HIGH' : highRiskCodes.length > 0 ? 'MEDIUM' : 'LOW',
+          highRiskCodes,
+          complianceIssues,
+        },
+      };
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+
+  async findOptimalCodes(clinicalText: string, encounterType?: string): Promise<OptimizationSuggestion[]> {
+    await this.initialize();
+    const matches = await this.semanticSearch(clinicalText, 10);
+
+    return matches.map((match) => {
+      const role = determineCodeRole(match.code.code);
+      const codeRole: 'PRIMARY' | 'ADD_ON' | 'PREMIUM' = role.isPrimary ? 'PRIMARY'
+        : match.code.code.startsWith('E') ? 'PREMIUM' : 'ADD_ON';
+
+      return {
+        suggestedCode: match.code,
+        reason: `Matched "${match.code.description}" with ${Math.round(match.confidence * 100)}% relevance`,
+        revenueImpact: match.code.amount,
+        confidence: match.confidence,
+        riskLevel: match.confidence > 0.8 ? 'LOW' as const : match.confidence > 0.5 ? 'MEDIUM' as const : 'HIGH' as const,
+        documentation: [],
+        codeRole,
+      };
+    });
+  }
+
+  private identifyComplianceIssues(optimizations: OptimizationSuggestion[]): string[] {
+    const issues: string[] = [];
+    const codes = optimizations.map((opt) => opt.suggestedCode.code);
+
+    // Check for multiple primary codes
+    const primaryCodes = codes.filter((c) => /^H1\d{2}/.test(c) || /^G\d{3}/.test(c) || /^A\d{3}/.test(c));
+    if (primaryCodes.length > 1) {
+      issues.push(`Multiple primary codes billed: ${primaryCodes.join(', ')} — only one primary assessment per encounter`);
+    }
+
+    return issues;
   }
 }
 

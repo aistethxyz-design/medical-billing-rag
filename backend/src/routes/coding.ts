@@ -326,24 +326,24 @@ router.get('/validate/:code',
     let details: any = {};
 
     switch (codeType) {
-      case 'CPT':
-        isValid = CodeValidationService.validateCPTCode(code);
-        break;
-      case 'ICD10':
-        isValid = CodeValidationService.validateICD10Code(code);
-        break;
-      case 'HCPCS':
-        isValid = CodeValidationService.validateHCPCSCode(code);
-        break;
-      case 'MODIFIER':
-        isValid = CodeValidationService.validateModifierCode(code);
+      case 'EMERGENCY_ASSESSMENT':
+      case 'CRITICAL_CARE':
+      case 'ASSESSMENT':
+      case 'PROCEDURE':
+      case 'CONSULTATION':
+      case 'PREMIUM':
+      case 'FRACTURE':
+      case 'DISLOCATION':
+      case 'TELEMEDICINE':
+      case 'REPAIR':
+        isValid = CodeValidationService.validateOHIPCode(code);
         break;
       default:
         isValid = false;
     }
 
-    // Check for bundling rules if it's a CPT code
-    if (codeType === 'CPT') {
+    // Check for bundling rules
+    if (codeType !== 'UNKNOWN') {
       details.mutuallyExclusive = NCCIService.getMutuallyExclusiveCodes(code);
     }
 
