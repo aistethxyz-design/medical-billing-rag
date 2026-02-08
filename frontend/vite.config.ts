@@ -34,35 +34,17 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: true
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-    chunkSizeWarningLimit: 1600,
-  }
-})
-
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react(), cloudflareSpaPatch()],
-  base: '/',
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  server: {
-    port: 3000,
+    open: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3002',
+        target: 'http://localhost:3001',
         changeOrigin: true,
       },
     },
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-  },
+    sourcemap: false,
+    chunkSizeWarningLimit: 1600,
+  }
 }) 
