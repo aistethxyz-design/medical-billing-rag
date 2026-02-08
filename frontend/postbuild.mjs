@@ -52,14 +52,17 @@ try {
   copyDirSync(appTemp, appFinalDir);
   console.log('✓ Frontend app copied to dist/app/');
 
-  // 5. Create 404.html from landing page for SPA
-  const landingIndex = path.join(appDist, 'index.html');
-  if (existsSync(landingIndex)) {
-    writeFileSync(path.join(appDist, '404.html'), readFileSync(landingIndex, 'utf-8'));
-    console.log('✓ Created 404.html from landing page');
+  // 5. Create app/404.html from app's index.html for SPA routing under /app/
+  const appIndexHtml = path.join(appFinalDir, 'index.html');
+  if (existsSync(appIndexHtml)) {
+    writeFileSync(path.join(appFinalDir, '404.html'), readFileSync(appIndexHtml, 'utf-8'));
+    console.log('✓ Created app/404.html for SPA routing under /app/');
   }
 
-  // 6. Create _redirects for Cloudflare Pages SPA routing
+  // 6. Do NOT create a root 404.html - Cloudflare Pages enables SPA mode
+  //    when no 404.html exists, routing all unmatched paths to /index.html
+
+  // 7. Create _redirects for Cloudflare Pages SPA routing (additional safety)
   const redirects = '/app/* /app/index.html 200\n/* /index.html 200\n';
   writeFileSync(path.join(appDist, '_redirects'), redirects);
   console.log('✓ Created _redirects for SPA routing');
