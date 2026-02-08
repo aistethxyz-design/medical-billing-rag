@@ -67,7 +67,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Router>
+        <Router basename="/app">
           <div className="App">
             <Routes>
             {/* Public routes */}
