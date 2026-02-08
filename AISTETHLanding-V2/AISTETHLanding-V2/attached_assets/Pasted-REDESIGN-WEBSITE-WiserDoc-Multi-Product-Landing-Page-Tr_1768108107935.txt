@@ -1,0 +1,145 @@
+REDESIGN WEBSITE: WiserDoc Multi-Product Landing Page
+
+Transform this AISTETH-focused landing page into a comprehensive WiserDoc company website showcasing three main product lines. Create a modern, single-page scrolling website with the following structure:
+
+NAVIGATION MENU (Sticky Header)
+
+Logo: "WiserDoc" (left side)
+
+Menu Items: Home | Customer Service | Employee Training | Healthcare (AISTETH)
+
+CTA Button: "Start Free Trial" (right side)
+
+SECTION 1: HERO/HOME
+
+Company name: WiserDoc
+
+Headline: "AI-Powered Solutions for Modern Businesses"
+
+Subheadline: "Empower your business with cutting-edge RAG AI technology for customer service, employee training, and healthcare. Control everything with your own documents and information."
+
+Two CTAs: "Start Free Trial" (primary) | "See How It Works" (secondary)
+
+Background: Modern gradient or clean design
+
+SECTION 2: CUSTOMER SERVICE AGENT (id="customer-service")
+
+Headline: "24/7 Customer Service AI Agent"
+
+Subheadline: "Transform customer experience with instant, accurate responses"
+
+Key Features (3 columns):
+
+QR Code Access - Customers scan and chat instantly at your concierge or any location
+
+Unlimited Conversations - No message limits, continuous learning from common queries
+
+Multi-Platform - Text/SMS, WhatsApp, not just Telegram
+
+Pricing Card:
+
+FREE TRIAL: 20 customer queries on Telegram + QR sticker delivered
+
+PREMIUM PLAN: $13.99/month per agent
+
+Unlimited messages
+
+Works via text/SMS (not just Telegram)
+
+Continuously improving AI responses
+
+Custom knowledge base from your documents
+
+QR code stickers included
+
+Visual: Show mockup of QR code sticker and chat interface
+
+CTA: "Start Your Free Trial"
+
+SECTION 3: EMPLOYEE TRAINING (id="employee-training")
+
+Headline: "AI-Powered Employee Training Platform"
+
+Subheadline: "Onboard faster, train smarter with document-enabled AI"
+
+Key Features (3 columns):
+
+Custom Knowledge Base - Upload your training manuals, SOPs, and policies
+
+24/7 Access - Employees get instant answers anytime
+
+Track Progress - Analytics on training engagement and knowledge gaps
+
+Use Cases:
+
+New employee onboarding
+
+Ongoing skills development
+
+Policy and compliance training
+
+CTA: "Request Demo"
+
+SECTION 4: HEALTHCARE - AISTETH (id="healthcare")
+
+Keep the existing AISTETH section from the current design
+
+Headline: "AISTETH: AI Assistant for Physicians"
+
+Subheadline: "Smarter Practice for the Modern Physician"
+
+Features: Keep the existing AI Assistants (Admin Agent, Shift Agent, Billing Assistant)
+
+Maintain the physician-focused messaging
+
+CTA: "Try on Telegram" | "Contact Us"
+
+SECTION 5: HOW IT WORKS
+
+3-step process:
+
+Upload Your Documents - Training manuals, FAQs, business info
+
+Customize Your AI - Set tone, branding, response parameters
+
+Deploy Instantly - QR codes, links, or integrations
+
+Visual: Simple diagram or animation
+
+SECTION 6: CTA / FOOTER
+
+Main CTA: "Ready to Transform Your Business?"
+
+Free trial reminder: "Start with 20 free queries - No credit card required"
+
+CTA Button: "Start Free Trial"
+
+Footer: Contact info, social links, privacy/terms
+
+DESIGN REQUIREMENTS:
+
+Modern, clean design with WiserDoc branding
+
+Smooth scroll navigation with anchor links
+
+Mobile responsive
+
+Use cards/sections with distinct backgrounds to separate products
+
+Professional color scheme (blues, whites, accent colors)
+
+Include relevant icons for features
+
+Keep the current AISTETH assistant cards in the Healthcare section
+
+TECHNICAL NOTES:
+
+Single HTML page with sections using IDs for anchor navigation
+
+Smooth scroll behavior for menu clicks
+
+Sticky navigation bar that highlights current section
+
+Responsive breakpoints for mobile/tablet/desktop
+
+Can you redesign the entire landing page following this structure?

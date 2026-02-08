@@ -1,0 +1,63 @@
+Build a **production-ready React landing page** for a company called **AISTETH**, accessible at **aisteth.xyz**. AISTETH provides AI-powered assistants for physicians that help them save time, reduce admin costs, and increase billing revenue — all while integrating into the tools they already use.
+
+The target audience is Ontario-based physicians and similar healthcare professionals who are forward-thinking and tech-savvy.
+
+**Deployment/Code Requirements:**
+
+- Use **React with functional components**
+- Use **Tailwind CSS** for all styling
+- **Avoid deprecated, unstable, or beta tools/APIs**
+- Do **not** use experimental frameworks, and ensure compatibility with platforms like **Replit**, **Vercel**, or **Netlify**
+- Should be easily deployable as a single-page app
+
+### Sections to Include:
+
+### 1. Hero Section
+
+- **Headline**: “Smarter Practice for the Modern Physician”
+- **Subheadline**: “AI assistants to save you time, reduce admin costs, and optimize billing — all through tools you already use.”
+- **Call-to-Action Options** (include both):
+    - Option A: A **voice agent placeholder** (simulate a button or icon that will trigger a voice interaction powered by **Eleven Labs**) — include text like: *“Talk to our AI agent now”*
+    - Option B: A **“Contact Me” button** that opens the user's email client with a mailto link (e.g., mailto:spaceont@gmail.com)
+
+### 2. Value Proposition Section
+
+- Focus on how AISTETH saves **hundreds to thousands of dollars** by reducing admin overhead and capturing missed billing opportunities
+- Emphasize seamless integration with physicians’ existing **mobile and messaging apps**
+
+### 3. Features Section (3 Cards/Columns)
+
+- **Admin Agent**: Handles scheduling, inboxes, and coordination tasks
+- **Shift Agent**: Offers dose guidance, specialty-specific reference, and medical knowledge access during shifts
+- **Billing Agent** *(Free Trial Available)*: You give it a description of a service encounters and recommends optimal OHIP billing codes
+
+### 4. Pricing Section
+
+- **Free Trial** for Billing Agent
+- $49.99 one-time setup **per agent**
+- $9.99/month for ongoing maintenance and updates
+
+### 5. Security & Infrastructure Section
+
+- Hosted on **Hetzner** with **Cloudflare R2** backups
+- Each client gets isolated data (API keys and workflows remain private)
+- No data is ever resold or shared without consent
+
+### 6. Final CTA Section
+
+- Encourage users to **“Start a Conversation”** with an example AI agent (via Eleven Labs)
+- Also provide a **simple email button** as a fallback (mailto:spaceont@gmail.com)
+
+### 7. Footer
+
+- Placeholder for contact info
+- Links for Terms of Service and Privacy Policy (placeholders)
+
+### Design Notes:
+
+- Clean, medical-tech aesthetic using **Tailwind CSS**
+- Color scheme: soft blues, white, neutral gray, intermitent ‘pops’ of colour
+- Icons can be used for features or CTAs (use placeholder SVGs or open-source icons)
+- Mobile responsive: layout with Flexbox or Grid
+
+Structure the project so it can be deployed as a **static single-page app** with React and Tailwind.

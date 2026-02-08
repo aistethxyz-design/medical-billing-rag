@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     // Load billing codes statistics
-    const billingData = await BillingCodesService.getStats();
+    const billingData = BillingCodesService.getStats();
     setBillingStats(billingData);
 
     // Set role-specific stats

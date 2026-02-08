@@ -4,23 +4,25 @@
 
 # Stage 1: Build Frontend
 FROM node:20-alpine AS frontend-builder
-
 WORKDIR /app/frontend
-
-# Copy frontend package files
 COPY frontend/package*.json ./
-
-# Install frontend dependencies
 RUN npm install --prefer-offline --no-audit
-
-# Copy frontend source code
 COPY frontend/ ./
+# Build frontend for /app base path (should be configured in vite.config.ts)
+RUN npm run build
 
-# Build frontend for production
+# Stage 1.5: Build Landing Page
+FROM node:20-alpine AS landing-builder
+WORKDIR /app/landing
+# Copy nested structure correctly
+COPY AISTETHLanding-V2/AISTETHLanding-V2/package*.json ./
+RUN npm install --prefer-offline --no-audit
+COPY AISTETHLanding-V2/AISTETHLanding-V2/ ./
 RUN npm run build
 
 # Stage 2: Build Backend
 FROM node:20-alpine AS backend-builder
+
 
 WORKDIR /app/backend
 
@@ -54,6 +56,9 @@ WORKDIR /app
 
 # Copy built frontend from builder
 COPY --from=frontend-builder --chown=nodejs:nodejs /app/frontend/dist ./frontend/dist
+
+# Copy built landing from builder
+COPY --from=landing-builder --chown=nodejs:nodejs /app/landing/dist ./landing/dist
 
 # Copy built backend from builder
 COPY --from=backend-builder --chown=nodejs:nodejs /app/backend/dist ./backend/dist

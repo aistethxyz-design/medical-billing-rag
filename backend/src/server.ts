@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import Redis from 'redis';
+import path from 'path';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -142,6 +143,27 @@ app.use('/api/coding', authenticate, codingRoutes);
 app.use('/api/analytics', authenticate, analyticsRoutes);
 app.use('/api/chatbot', authenticate, chatbotRoutes);
 app.use('/api/billing', authenticate, billingRoutes);
+
+// Serve Frontend App (Protected Dashboard)
+app.use('/app', express.static(path.join(__dirname, '../../frontend/dist')));
+app.get('/app/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+});
+
+// Serve Public Landing Page (Root)
+app.use(express.static(path.join(__dirname, '../../landing/dist')));
+app.get('*', (req, res) => {
+  // Check if request is for API
+  if (req.path.startsWith('/api')) {
+    // Let 404 handler handle API 404s
+    return res.status(404).json({
+      error: 'Endpoint not found',
+      message: 'The requested resource does not exist'
+    });
+  }
+  // Otherwise serve landing page
+  res.sendFile(path.join(__dirname, '../../landing/dist/index.html'));
+});
 
 // Medical Coding AI Features Demo Endpoint
 app.get('/api/demo/features', (req, res) => {
