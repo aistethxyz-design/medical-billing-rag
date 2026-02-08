@@ -5,9 +5,11 @@
   "private": true,
   "workspaces": [
     "frontend",
-    "backend"
+    "backend",
+    "AISTETHLanding-V2/AISTETHLanding-V2"
   ],
   "scripts": {
+    "build:production": "node build-production.js",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
