@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   Search, 
   DollarSign, 
@@ -45,6 +46,7 @@ interface QuickSearch {
 }
 
 const BillingAssistant: React.FC = () => {
+  const location = useLocation();
   const [clinicalText, setClinicalText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<BillingCode[]>([]);
@@ -81,6 +83,29 @@ const BillingAssistant: React.FC = () => {
     const interval = setInterval(detectTimeSlot, 60000); // Update every minute
     return () => clearInterval(interval);
   }, []);
+
+  // Handle incoming search from Navbar / NavbarAIAgent
+  useEffect(() => {
+    const state = location.state as { searchQuery?: string } | null;
+    if (state?.searchQuery) {
+      setSearchQuery(state.searchQuery);
+      setActiveTab('search');
+      // Trigger search
+      (async () => {
+        setIsSearching(true);
+        try {
+          const results = await searchBillingCodes({ q: state.searchQuery! });
+          setSearchResults(results);
+        } catch (err: any) {
+          setError(err.message);
+        } finally {
+          setIsSearching(false);
+        }
+      })();
+      // Clear state so re-visits don't re-trigger
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const detectTimeSlot = () => {
     const now = new Date();
@@ -461,7 +486,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                           Risk Factors
                         </div>
                         <ul className="text-sm text-yellow-600 list-disc list-inside">
-                          {analysis.riskAssessment.riskFactors.map((f, i) => <li key={i}>{f}</li>)}
+                          {analysis.riskAssessment.riskFactors.map((f: string, i: number) => <li key={i}>{f}</li>)}
                         </ul>
                       </div>
                     )}
@@ -520,7 +545,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                       <div>
                         <h4 className="text-md font-semibold text-gray-900 mb-3">Required Documentation</h4>
                         <div className="space-y-2">
-                          {analysis.documentation.required.map((doc, i) => (
+                          {analysis.documentation.required.map((doc: string, i: number) => (
                             <div key={i} className="flex items-center text-sm text-gray-700">
                               <FileText className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
                               {doc}

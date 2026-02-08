@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Bell, User, LogOut, Settings } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useNavigate } from 'react-router-dom';
@@ -7,10 +7,19 @@ import NavbarAIAgent from '@/components/NavbarAIAgent';
 const Navbar: React.FC = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState('');
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchValue.trim()) {
+      navigate('/billing', { state: { searchQuery: searchValue.trim() } });
+      setSearchValue('');
+    }
   };
 
   return (
@@ -27,16 +36,18 @@ const Navbar: React.FC = () => {
 
       {/* Search Bar */}
       <div className="flex-1 max-w-lg mx-8">
-        <div className="relative">
+        <form onSubmit={handleSearchSubmit} className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="w-5 h-5 text-gray-400" />
           </div>
           <input
             type="text"
-            placeholder="Search medical codes, procedures..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder="Search OHIP codes, procedures... (Enter to search)"
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
-        </div>
+        </form>
       </div>
 
       {/* Right side actions */}
