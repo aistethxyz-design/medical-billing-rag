@@ -93,7 +93,7 @@ const Settings: React.FC = () => {
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">Code suggestions</span>
+              <span className="text-sm text-gray-700">Billing suggestions</span>
               <input type="checkbox" defaultChecked className="rounded" />
             </div>
             <div className="flex items-center justify-between">

@@ -27,27 +27,27 @@ export class MockApiService {
     // Mock billing codes based on query
     const mockCodes = [
       {
-        code: '99213',
-        type: 'CPT',
-        description: 'Office or other outpatient visit for the evaluation and management of an established patient',
-        category: 'Evaluation and Management',
-        reimbursement: '$95.00',
+        code: 'A003',
+        type: 'OHIP',
+        description: 'Minor assessment — new or existing patient',
+        category: 'Assessment',
+        reimbursement: '$33.70',
         confidence: 95
       },
       {
-        code: '99214',
-        type: 'CPT', 
-        description: 'Office or other outpatient visit for the evaluation and management of an established patient, moderate complexity',
-        category: 'Evaluation and Management',
-        reimbursement: '$135.00',
+        code: 'A004',
+        type: 'OHIP', 
+        description: 'General assessment — comprehensive evaluation',
+        category: 'Assessment',
+        reimbursement: '$77.20',
         confidence: 88
       },
       {
-        code: 'Z00.00',
-        type: 'ICD-10',
-        description: 'Encounter for general adult medical examination without abnormal findings',
-        category: 'Factors influencing health status',
-        reimbursement: '$85.00',
+        code: 'A007',
+        type: 'OHIP',
+        description: 'General re-assessment — follow-up evaluation',
+        category: 'Assessment',
+        reimbursement: '$33.70',
         confidence: 92
       }
     ];
@@ -72,9 +72,9 @@ export class MockApiService {
         averageReimbursement: 389.50,
         rejectionRate: 3.2,
         topCodes: [
-          { code: '99213', usage: 89, revenue: 8455 },
-          { code: '99214', usage: 67, revenue: 9045 },
-          { code: '99212', usage: 54, revenue: 4320 }
+          { code: 'A003', usage: 89, revenue: 8455 },
+          { code: 'A004', usage: 67, revenue: 9045 },
+          { code: 'H101', usage: 54, revenue: 4320 }
         ],
         monthlyTrend: [
           { month: 'Jan', revenue: 42500 },
@@ -94,11 +94,11 @@ export class MockApiService {
     return {
       success: true,
       optimization: {
-        currentCodes: ['99213'],
-        suggestedCodes: ['99214', '99213'],
-        potentialIncrease: '$40.00',
+        currentCodes: ['A003'],
+        suggestedCodes: ['A004', 'K998'],
+        potentialIncrease: '$43.50',
         confidence: 87,
-        reasoning: 'Based on the complexity of the visit documented, upgrading to 99214 would be appropriate and could increase reimbursement.',
+        reasoning: 'Based on the complexity of the visit documented, upgrading to A004 (general assessment) would be appropriate and adding K998 (telephone consultation) could increase reimbursement.',
         complianceNotes: 'Ensure documentation supports the higher level of service.'
       }
     };

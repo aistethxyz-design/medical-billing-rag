@@ -13,7 +13,7 @@ const ChatBot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hello! I'm AISteth, your AI medical assistant. I can help you with medical coding, clinical guidelines, OHIP billing, dose calculators, and practice management. How can I assist you today?",
+      text: "Hello! I'm AISteth, your AI medical assistant. I can help you with OHIP billing, clinical guidelines, billing optimization, dose calculators, and practice management. How can I assist you today?",
       isBot: true,
       timestamp: new Date()
     }
@@ -51,27 +51,27 @@ const ChatBot: React.FC = () => {
   const getBotResponse = (userInput: string): string => {
     const input = userInput.toLowerCase();
     
-    if (input.includes('99213') || input.includes('99214')) {
-      return "99213 and 99214 are evaluation and management codes for established patients. 99213 is typically for low to moderate complexity visits (15-20 minutes), while 99214 is for moderate to high complexity visits (25-30 minutes). The difference often comes down to medical decision making complexity and time spent with the patient.";
+    if (input.includes('a003') || input.includes('a004') || input.includes('99213') || input.includes('99214')) {
+      return "A003 (minor assessment) and A004 (general assessment) are common OHIP billing codes. A003 covers focused visits, while A004 is for comprehensive evaluations requiring more clinical decision-making. The key difference is the scope and complexity of the assessment documented.";
     }
     
     if (input.includes('modifier') || input.includes('-25') || input.includes('-59')) {
-      return "Medical coding modifiers provide additional information about procedures. Modifier -25 indicates a significant, separately identifiable E/M service by the same physician on the same day as a procedure. Modifier -59 indicates distinct procedural services. Always ensure proper documentation supports modifier usage to avoid claim denials.";
+      return "Billing modifiers provide additional information about procedures. Modifier -25 indicates a significant, separately identifiable E/M service by the same physician on the same day as a procedure. Modifier -59 indicates distinct procedural services. Always ensure proper documentation supports modifier usage to avoid claim denials.";
     }
     
     if (input.includes('icd') || input.includes('diagnosis')) {
-      return "ICD-10 codes describe diagnoses and conditions. Make sure to code to the highest level of specificity supported by the documentation. Always use the most current ICD-10-CM guidelines and check for any new updates or changes that might affect your coding.";
+      return "ICD-10 codes describe diagnoses and conditions. Make sure to bill to the highest level of specificity supported by the documentation. Always use the most current ICD-10-CM guidelines and check for any new updates or changes that might affect your billing.";
     }
     
     if (input.includes('billing') || input.includes('revenue') || input.includes('ohip')) {
-      return "For OHIP billing optimization, I can help you choose the appropriate fee codes based on your clinical documentation. I can assist with complex visit assessments, procedure billing, and ensuring proper documentation supports your billing choices to maximize revenue while maintaining compliance.";
+      return "For OHIP billing optimization, I can help you choose the appropriate fee codes based on your clinical documentation. I can assist with complex visit assessments, procedure billing, and ensuring proper documentation supports your billing claims to maximize reimbursement while maintaining compliance.";
     }
     
     if (input.includes('dose') || input.includes('calculator') || input.includes('medication')) {
       return "I can help you with medication dosing calculations based on patient weight, age, kidney function, and other clinical factors. I can provide dosing guidelines for common medications and help you adjust doses for special populations like pediatric or geriatric patients.";
     }
 
-    return "I'm AISteth, your comprehensive medical AI assistant. I can help with medical coding (CPT, ICD-10), OHIP billing optimization, clinical guidelines, dose calculators, practice management, and administrative tasks. Feel free to ask me anything about your medical practice!";
+    return "I'm AISteth, your comprehensive medical AI assistant. I can help with OHIP billing optimization, billing analysis, clinical guidelines, dose calculators, practice management, and administrative tasks. Feel free to ask me anything about your medical practice!";
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -153,7 +153,7 @@ const ChatBot: React.FC = () => {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask about medical coding, OHIP billing, or clinical guidelines..."
+            placeholder="Ask about OHIP billing, billing optimization, or clinical guidelines..."
             className="flex-1 resize-none border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             rows={2}
           />
@@ -166,7 +166,7 @@ const ChatBot: React.FC = () => {
           </button>
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          Ask me about medical coding, OHIP billing, clinical guidelines, dose calculators, and practice management.
+          Ask me about OHIP billing, billing optimization, clinical guidelines, dose calculators, and practice management.
         </p>
       </div>
     </div>

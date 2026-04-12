@@ -34,16 +34,16 @@ const navigation: NavItem[] = [
     description: 'Upload medical documents'
   },
   {
-    name: 'AI Code Analysis',
+    name: 'AI Billing Analysis',
     href: '/coding',
     icon: Brain,
-    description: 'Review AI suggestions'
+    description: 'Review billing suggestions'
   },
   {
     name: 'Billing Assistant',
     href: '/billing',
     icon: DollarSign,
-    description: 'Find optimal billing codes'
+    description: 'OHIP billing lookup'
   },
   {
     name: 'Encounters',
@@ -110,7 +110,7 @@ const Sidebar: React.FC = () => {
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center space-x-2">
                 <DollarSign className="w-4 h-4 text-green-500" />
-                <span className="text-gray-600">Revenue Impact</span>
+                <span className="text-gray-600">Billing Impact</span>
               </div>
               <span className="font-semibold text-green-600">+$12.4K</span>
             </div>
@@ -139,7 +139,7 @@ const Sidebar: React.FC = () => {
             <MessageSquare className="w-5 h-5" />
             <div className="text-left">
               <div className="text-sm font-medium">AI Assistant</div>
-              <div className="text-xs opacity-90">Ask coding questions</div>
+              <div className="text-xs opacity-90">Ask billing questions</div>
             </div>
           </button>
         </div>

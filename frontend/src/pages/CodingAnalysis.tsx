@@ -7,9 +7,9 @@ const CodingAnalysis: React.FC = () => {
       <div className="bg-white border-b border-gray-200 px-6 py-4 rounded-lg shadow-sm">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center">
           <Brain className="w-8 h-8 text-blue-600 mr-3" />
-          AI Code Analysis
+          AI Billing Analysis
         </h1>
-        <p className="text-gray-600">Review and approve AI-powered coding suggestions</p>
+        <p className="text-gray-600">Review and approve AI-powered billing suggestions</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -34,24 +34,24 @@ const CodingAnalysis: React.FC = () => {
         <div className="medical-card p-6">
           <div className="flex items-center space-x-2 mb-4">
             <DollarSign className="w-6 h-6 text-blue-500" />
-            <h3 className="text-lg font-semibold">Revenue Impact</h3>
+            <h3 className="text-lg font-semibold">Billing Impact</h3>
           </div>
           <div className="text-2xl font-bold text-blue-600">$2,840</div>
-          <p className="text-sm text-gray-600">This week's optimization</p>
+          <p className="text-sm text-gray-600">This week's billing optimization</p>
         </div>
       </div>
 
       <div className="medical-card p-6">
-        <h2 className="text-xl font-semibold mb-4">Recent Coding Suggestions</h2>
+        <h2 className="text-xl font-semibold mb-4">Recent Billing Suggestions</h2>
         <div className="space-y-4">
           {[1, 2, 3].map((item) => (
             <div key={item} className="border border-gray-200 rounded-lg p-4">
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className="code-badge code-badge-cpt">99213</span>
+                    <span className="code-badge code-badge-cpt">A003</span>
                     <span className="text-gray-400">→</span>
-                    <span className="code-badge code-badge-cpt">99214</span>
+                    <span className="code-badge code-badge-cpt">A004</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     Suggested upgrade based on complexity and time documented

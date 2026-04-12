@@ -154,7 +154,7 @@ export default function Hero() {
                       </div>
                       <div className="flex-1">
                         <h5 className="font-semibold text-sm">Billing Optimizer</h5>
-                        <p className="text-xs text-muted-foreground">Revenue optimization</p>
+                        <p className="text-xs text-muted-foreground">Billing optimization</p>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="badge-success text-xs px-2 py-1">AI Ready</span>
                         </div>
@@ -229,14 +229,14 @@ export default function Hero() {
 
                   {/* Recent Optimizations */}
                   <div>
-                    <h4 className="font-semibold text-foreground mb-3 text-sm">Recent Code Optimizations</h4>
+                    <h4 className="font-semibold text-foreground mb-3 text-sm">Recent Billing Optimizations</h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs font-medium bg-blue-100 text-blue-600 px-2 py-1 rounded">99213</span>
+                            <span className="text-xs font-medium bg-blue-100 text-blue-600 px-2 py-1 rounded">A003</span>
                             <i className="fas fa-arrow-right text-muted-foreground text-xs"></i>
-                            <span className="text-xs font-medium bg-green-100 text-green-600 px-2 py-1 rounded">99214</span>
+                            <span className="text-xs font-medium bg-green-100 text-green-600 px-2 py-1 rounded">A004</span>
                           </div>
                           <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
                         </div>
@@ -245,9 +245,9 @@ export default function Hero() {
                       <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs font-medium bg-blue-100 text-blue-600 px-2 py-1 rounded">99212</span>
+                            <span className="text-xs font-medium bg-blue-100 text-blue-600 px-2 py-1 rounded">H101</span>
                             <i className="fas fa-arrow-right text-muted-foreground text-xs"></i>
-                            <span className="text-xs font-medium bg-green-100 text-green-600 px-2 py-1 rounded">99213</span>
+                            <span className="text-xs font-medium bg-green-100 text-green-600 px-2 py-1 rounded">H102</span>
                           </div>
                           <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">Approved</span>
                         </div>

@@ -68,8 +68,8 @@ const RecentOptimizations: React.FC = () => {
     {
       id: 1,
       encounterId: 'ENC-001',
-      originalCode: '99213',
-      suggestedCode: '99214',
+      originalCode: 'A003',
+      suggestedCode: 'A004',
       potentialGain: 45.00,
       status: 'pending',
       provider: 'Dr. Smith',
@@ -78,8 +78,8 @@ const RecentOptimizations: React.FC = () => {
     {
       id: 2,
       encounterId: 'ENC-002',
-      originalCode: '99212',
-      suggestedCode: '99213',
+      originalCode: 'A007',
+      suggestedCode: 'A004',
       potentialGain: 32.00,
       status: 'approved',
       provider: 'Dr. Johnson',
@@ -88,8 +88,8 @@ const RecentOptimizations: React.FC = () => {
     {
       id: 3,
       encounterId: 'ENC-003',
-      originalCode: '99214',
-      suggestedCode: '99215',
+      originalCode: 'H101',
+      suggestedCode: 'H102',
       potentialGain: 67.00,
       status: 'pending',
       provider: 'Dr. Brown',
@@ -114,9 +114,9 @@ const RecentOptimizations: React.FC = () => {
   return (
     <div className="medical-card">
       <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Recent Code Optimizations</h3>
-        <p className="text-sm text-gray-600">Latest AI-powered coding suggestions</p>
-        <p className="text-xs text-gray-500 mt-1">old code to suggested codes(may be more than one)</p>
+        <h3 className="text-lg font-semibold text-gray-900">Recent Billing Optimizations</h3>
+        <p className="text-sm text-gray-600">Latest AI-powered billing suggestions</p>
+        <p className="text-xs text-gray-500 mt-1">Original OHIP claim → Optimized OHIP claim(s)</p>
       </div>
       <div className="divide-y divide-gray-200">
         {optimizations.map((opt) => (
@@ -167,15 +167,15 @@ const QuickActions: React.FC = () => {
       color: 'bg-blue-50 hover:bg-blue-100'
     },
     {
-      title: 'Analyze Codes',
-      description: 'Review AI coding suggestions',
+      title: 'Billing Analysis',
+      description: 'Review AI billing suggestions',
       icon: <BarChart3 className="w-6 h-6 text-purple-600" />,
       href: '/coding',
       color: 'bg-purple-50 hover:bg-purple-100'
     },
     {
       title: 'Billing Assistant',
-      description: 'AI-powered billing code lookup',
+      description: 'AI-powered OHIP billing lookup',
       icon: <DollarSign className="w-6 h-6 text-green-600" />,
       href: '/billing',
       color: 'bg-green-50 hover:bg-green-100'
@@ -246,15 +246,15 @@ const Dashboard: React.FC = () => {
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
-          title="Monthly Revenue Impact"
+          title="Monthly Billing Impact"
           value="$12,450"
           change="+15.3%"
           changeType="positive"
           icon={<DollarSign className="w-6 h-6 text-green-600" />} 
-          description="From AI optimizations"
+          description="From billing optimizations"
         />
         <MetricCard
-          title="Billing Codes Processed"
+          title="OHIP Claims Processed"
           value="247"
           change="+8.2%"
           changeType="positive"
@@ -267,7 +267,7 @@ const Dashboard: React.FC = () => {
           change="+5.1%"
           changeType="positive"
           icon={<TrendingUp className="w-6 h-6 text-purple-600" />} 
-          description="Codes improved"
+          description="Claims optimized"
         />
       </div>
 
@@ -287,10 +287,10 @@ const Dashboard: React.FC = () => {
           <AlertTriangle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" />
           <div>
             <h3 className="text-sm font-semibold text-yellow-800">
-              Pending Code Reviews
+              Pending Billing Reviews
             </h3>
             <p className="text-sm text-yellow-700 mt-1">
-              You have 3 code optimizations waiting for review. 
+              You have 3 billing optimizations waiting for review. 
               <a href="/coding" className="font-medium underline hover:no-underline ml-1">
                 Review now
               </a>
@@ -305,13 +305,13 @@ const Dashboard: React.FC = () => {
           <div className="flex-1">
             <h3 className="text-lg font-semibold">AISteth Assistant</h3>
             <p className="text-purple-100 mt-1">
-              Ask me anything about medical coding, billing optimization, or clinical guidelines.
+              Ask me anything about medical billing, OHIP claims, or clinical guidelines.
             </p>
           </div>
           <div className="flex items-center space-x-3">
             <input
               type="text"
-              placeholder="Ask about medical coding, OHIP billing, or clinical guidelines..."
+              placeholder="Ask about medical billing, OHIP claims, or clinical guidelines..."
               className="flex-1 px-4 py-2 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
             />
             <button className="bg-white text-purple-600 p-2 rounded-lg hover:bg-purple-50 transition-colors">

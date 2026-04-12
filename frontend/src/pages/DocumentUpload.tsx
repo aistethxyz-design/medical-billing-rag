@@ -85,8 +85,8 @@ const DocumentUpload: React.FC = () => {
                       progress: 100,
                       extractedText: 'Sample clinical text extracted from document...',
                       analyzedCodes: [
-                        { code: '99214', type: 'CPT', description: 'Office visit, established patient' },
-                        { code: 'M79.89', type: 'ICD-10', description: 'Other specified soft tissue disorders' }
+                        { code: 'A004', type: 'OHIP', description: 'General assessment' },
+                        { code: 'K998', type: 'OHIP', description: 'Telephone consultation' }
                       ]
                     }
                   : f
@@ -157,7 +157,7 @@ const DocumentUpload: React.FC = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4 rounded-lg shadow-sm">
         <h1 className="text-2xl font-bold text-gray-900">Document Upload</h1>
-        <p className="text-gray-600">Upload medical documents for AI-powered code analysis</p>
+        <p className="text-gray-600">Upload medical documents for AI-powered billing analysis</p>
       </div>
 
       {/* Upload Zone */}
@@ -275,7 +275,7 @@ const DocumentUpload: React.FC = () => {
                 {file.status === 'completed' && file.analyzedCodes && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                      Extracted Medical Codes
+                      Extracted OHIP Billing Codes
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {file.analyzedCodes.map((code, index) => (
@@ -312,7 +312,7 @@ const DocumentUpload: React.FC = () => {
               <p className="text-sm text-green-700 mt-1">
                 {files.filter(f => f.status === 'completed').length} documents have been analyzed. 
                 <a href="/coding" className="font-medium underline hover:no-underline ml-1">
-                  Review coding suggestions
+                  Review billing suggestions
                 </a>
               </p>
             </div>

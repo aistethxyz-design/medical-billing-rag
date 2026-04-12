@@ -72,7 +72,7 @@ export default function Features() {
             </div>
             <h3 className="text-2xl font-bold mb-4">Billing Agent</h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
-              Describe a service encounter and get optimal OHIP billing code recommendations to maximize revenue.
+              Describe a service encounter and get optimal OHIP billing recommendations to maximize reimbursement.
             </p>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-center space-x-2">
@@ -81,11 +81,11 @@ export default function Features() {
               </li>
               <li className="flex items-center space-x-2">
                 <i className="fas fa-check text-green-500"></i>
-                <span>Revenue maximization</span>
+                <span>Billing optimization</span>
               </li>
               <li className="flex items-center space-x-2">
                 <i className="fas fa-check text-green-500"></i>
-                <span>Billing compliance</span>
+                <span>OHIP compliance</span>
               </li>
             </ul>
           </div>

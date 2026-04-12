@@ -32,7 +32,7 @@ const LoginPage: React.FC = () => {
         role: 'PROVIDER' as const,
         practiceId: 'practice-1',
         npi: '1234567890',
-        specialty: 'Internal Medicine'
+        province: 'Ontario'
       };
 
       const mockToken = 'mock-jwt-token';
@@ -186,14 +186,14 @@ const LoginPage: React.FC = () => {
           <div className="grid grid-cols-3 gap-4 text-xs text-gray-600">
             <div>
               <div className="font-semibold">AI-Powered</div>
-              <div>Code Analysis</div>
+              <div>Billing Analysis</div>
             </div>
             <div>
               <div className="font-semibold">HIPAA</div>
               <div>Compliant</div>
             </div>
             <div>
-              <div className="font-semibold">Revenue</div>
+              <div className="font-semibold">Billing</div>
               <div>Optimization</div>
             </div>
           </div>

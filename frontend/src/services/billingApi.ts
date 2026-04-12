@@ -75,7 +75,7 @@ export interface AnalyzeRequest {
   encounterType?: string;
   patientAge?: string;
   timeOfDay?: string;
-  specialty?: string;
+  province?: string;
   existingCodes?: string[];
   maxSuggestions?: number;
 }

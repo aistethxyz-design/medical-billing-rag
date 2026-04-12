@@ -38,7 +38,7 @@ const EncounterManagement: React.FC = () => {
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Coded
                   </span>
-                  <div className="text-sm text-gray-500 mt-1">99214, M79.89</div>
+                  <div className="text-sm text-gray-500 mt-1">A004, K998</div>
                 </div>
               </div>
             </div>

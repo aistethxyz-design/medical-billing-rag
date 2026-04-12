@@ -9,7 +9,7 @@ export interface User {
   role: 'ADMIN' | 'PRACTICE_MANAGER' | 'PROVIDER' | 'CODER' | 'BILLER';
   practiceId?: string;
   npi?: string;
-  specialty?: string;
+  province?: string;
 }
 
 interface AuthState {

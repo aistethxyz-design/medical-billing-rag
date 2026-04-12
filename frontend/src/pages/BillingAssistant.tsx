@@ -13,7 +13,7 @@ import {
   Edit2,
   Save,
   X,
-  ShoppingCart,
+  ClipboardList,
   Zap,
   Shield,
   Sun,
@@ -158,7 +158,7 @@ const BillingAssistant: React.FC = () => {
         clinicalText,
         encounterType: 'Emergency',
         timeOfDay: timeOfDay || autoTimeSlot || undefined,
-        specialty: 'Emergency Medicine',
+        province: 'Ontario',
         maxSuggestions: 10,
       });
       setAnalysis(result);
@@ -313,7 +313,7 @@ const BillingAssistant: React.FC = () => {
                 onClick={() => setShowCart(!showCart)}
                 className="relative flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                <ShoppingCart className="h-5 w-5 mr-2" />
+                <ClipboardList className="h-5 w-5 mr-2" />
                 <span className="font-medium">{formatCurrency(totalAmount)}</span>
                 {selectedCodes.length > 0 && (
                   <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -493,7 +493,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
 
                     {/* Suggested Codes with role badges */}
                     <div>
-                      <h4 className="text-md font-semibold text-gray-900 mb-3">Suggested Codes</h4>
+                      <h4 className="text-md font-semibold text-gray-900 mb-3">Suggested Billing Codes</h4>
                       <div className="space-y-3">
                         {analysis.optimizations.map((opt: OptimizationSuggestion, index: number) => (
                           <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
@@ -612,8 +612,8 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
               <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
                 <div className="bg-green-600 px-4 py-3 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-white flex items-center">
-                    <ShoppingCart className="h-5 w-5 mr-2" />
-                    Selected Codes
+                    <ClipboardList className="h-5 w-5 mr-2" />
+                    Claim Summary
                   </h3>
                   <button onClick={() => setShowCart(false)} className="text-white/80 hover:text-white" title="Close cart">
                     <X className="h-5 w-5" />
@@ -622,8 +622,8 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                 <div className="p-4">
                   {selectedCodes.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
-                      <ShoppingCart className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                      <p>No codes selected</p>
+                      <ClipboardList className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      <p>No billing codes selected</p>
                       <p className="text-sm">Click "Add" on any code to add it here</p>
                     </div>
                   ) : (

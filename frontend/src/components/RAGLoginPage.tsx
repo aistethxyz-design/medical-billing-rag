@@ -42,7 +42,7 @@ const RAGLoginPage: React.FC = () => {
         role: user.role.toUpperCase() as 'ADMIN' | 'PRACTICE_MANAGER' | 'PROVIDER' | 'CODER' | 'BILLER',
         practiceId: 'medical-billing-rag',
         npi: undefined,
-        specialty: user.role === 'doctor' ? 'Emergency Medicine' : undefined
+        province: user.role === 'doctor' ? 'Ontario' : undefined
       };
 
       login(authUser, 'mock-jwt-token');

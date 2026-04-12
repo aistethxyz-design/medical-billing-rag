@@ -50,8 +50,8 @@ export default function ValueProposition() {
             <div className="w-20 h-20 icon-container-gradient rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
               <i className="fas fa-chart-line text-purple-600 text-3xl"></i>
             </div>
-            <h3 className="text-2xl font-bold mb-4 gradient-text">Revenue Optimization</h3>
-            <p className="text-gray-600 leading-relaxed mb-4">Capture missed billing opportunities and optimize OHIP code selection.</p>
+            <h3 className="text-2xl font-bold mb-4 gradient-text">Billing Optimization</h3>
+            <p className="text-gray-600 leading-relaxed mb-4">Capture missed billing opportunities and optimize OHIP billing claims.</p>
             <div className="bg-purple-50 rounded-2xl p-4 border border-purple-100">
               <div className="text-3xl font-bold text-purple-600 mb-1">$15K+</div>
               <div className="text-sm text-purple-700 font-medium">Monthly Revenue Boost</div>
@@ -80,7 +80,7 @@ export default function ValueProposition() {
                   <span className="text-2xl font-bold text-blue-600">$75/hour</span>
                 </div>
                 <div className="flex justify-between items-center p-4 bg-white rounded-2xl border border-gray-100">
-                  <span className="font-medium text-gray-700">Monthly billing optimization</span>
+                  <span className="font-medium text-gray-700">Monthly billing boost</span>
                   <span className="text-2xl font-bold text-purple-600">$8,500</span>
                 </div>
               </div>
