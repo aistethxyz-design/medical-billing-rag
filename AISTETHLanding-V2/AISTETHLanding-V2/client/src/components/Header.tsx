@@ -93,7 +93,7 @@ const Header = () => {
               Sign In
             </a>
             <a 
-              href="https://zcal.co/aisteth/30min"
+              href="https://zcal.co/wiserdoc/30min"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-primary/90 transition shadow-lg shadow-primary/20"
@@ -129,7 +129,7 @@ const Header = () => {
               Sign In
             </a>
             <a 
-              href="https://zcal.co/aisteth/30min"
+              href="https://zcal.co/wiserdoc/30min"
               target="_blank"
               rel="noopener noreferrer"
               className="py-3 rounded-xl bg-primary text-white font-bold text-sm text-center"
