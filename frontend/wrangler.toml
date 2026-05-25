@@ -1,0 +1,7 @@
+# Alternative config when deploying from frontend/: npx wrangler deploy
+name = "aisteth"
+compatibility_date = "2024-05-24"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"

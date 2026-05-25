@@ -107,6 +107,9 @@ MANIFEST
 # Local dev runtime data (users, encounters)
 backend/data/
 
+# Wrangler local state
+.wrangler/
+
 # Android
 *.iml
 .gradle
