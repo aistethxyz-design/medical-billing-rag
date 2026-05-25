@@ -1,7 +1,8 @@
-# Cloudflare Workers static assets — deploy from repo root with: npx wrangler deploy
-name = "aisteth"
+# Cloudflare Workers — deploy from repo root: npx wrangler deploy
+name = "medical-billing-rag"
+main = "worker.js"
 compatibility_date = "2024-05-24"
 
 [assets]
 directory = "frontend/dist"
-not_found_handling = "single-page-application"
+binding = "ASSETS"

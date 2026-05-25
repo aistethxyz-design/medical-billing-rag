@@ -52,22 +52,17 @@ try {
   copyDirSync(appTemp, appFinalDir);
   console.log('✓ Frontend app copied to dist/app/');
 
-  // 5. Create app/404.html from app's index.html for SPA routing under /app/
+  // 6. SPA routing for /app/ — app/404.html (Pages) + worker.js (Workers)
   const appIndexHtml = path.join(appFinalDir, 'index.html');
   if (existsSync(appIndexHtml)) {
     writeFileSync(path.join(appFinalDir, '404.html'), readFileSync(appIndexHtml, 'utf-8'));
     console.log('✓ Created app/404.html for SPA routing under /app/');
   }
 
-  // 6. Do NOT create a root 404.html - Cloudflare Pages enables SPA mode
-  //    when no 404.html exists, routing all unmatched paths to /index.html
+  // 7. Do NOT write _redirects — Cloudflare Workers rejects rewrite rules that loop.
+  //    SPA fallback is handled by worker.js + wrangler.toml at repo root.
 
-  // 7. Create _redirects for Cloudflare Pages SPA routing (additional safety)
-  const redirects = '/app/* /app/index.html 200\n/* /index.html 200\n';
-  writeFileSync(path.join(appDist, '_redirects'), redirects);
-  console.log('✓ Created _redirects for SPA routing');
-
-  // 7. Cleanup temp
+  // 8. Cleanup temp
   rmSync(appTemp, { recursive: true, force: true });
   console.log('\n✅ Combined build complete! dist/ contains landing + app\n');
 } catch (e) {
