@@ -81,31 +81,51 @@ const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
 };
 
 const SetupInstructions: React.FC = () => {
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3002';
+  const isLocal = /localhost|127\.0\.0\.1/.test(origin);
 
   return (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-    <div className="max-w-md w-full bg-white py-8 px-6 shadow-lg rounded-lg text-center space-y-4">
-      <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
-      <h2 className="text-xl font-semibold text-gray-900">Google sign-in not configured</h2>
-      <p className="text-sm text-gray-600 text-left">
-        Add your OAuth Client ID to <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">backend/.env</code>:
-      </p>
-      <pre className="text-left text-xs bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com</pre>
-      <p className="text-xs text-slate-500 text-left">
-        Create credentials at{' '}
-        <a
-          href="https://console.cloud.google.com/apis/credentials"
-          target="_blank"
-          rel="noreferrer"
-          className="text-blue-600 hover:underline"
-        >
+    <div className="max-w-lg w-full bg-white py-8 px-6 shadow-lg rounded-lg space-y-4">
+      <div className="text-center">
+        <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
+        <h2 className="text-xl font-semibold text-gray-900 mt-2">Google sign-in not configured</h2>
+        <p className="text-sm text-gray-600 mt-1">
+          The app needs a Google OAuth Client ID at build time{isLocal ? ' and a running backend' : ' and a deployed API'}.
+        </p>
+      </div>
+
+      {isLocal ? (
+        <>
+          <p className="text-sm text-gray-600">
+            Add to <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">backend/.env</code> and{' '}
+            <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">frontend/.env</code>:
+          </p>
+          <pre className="text-xs bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">{`GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com\nVITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com`}</pre>
+          <p className="text-xs text-slate-500">Then restart: <span className="font-mono">npm run dev:auth</span> (backend) and <span className="font-mono">npm run dev</span> (frontend)</p>
+        </>
+      ) : (
+        <>
+          <p className="text-sm text-gray-600 font-medium">Cloudflare / production build</p>
+          <p className="text-sm text-gray-600">
+            In your Cloudflare Workers build settings, add environment variables and redeploy:
+          </p>
+          <pre className="text-xs bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">{`VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com\nVITE_API_URL=https://your-api-host.example.com`}</pre>
+          <p className="text-sm text-gray-600">
+            Your API server also needs <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">GOOGLE_CLIENT_ID</code> set
+            (same value) and must allow CORS from this site.
+          </p>
+        </>
+      )}
+
+      <p className="text-xs text-slate-500">
+        In{' '}
+        <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
           Google Cloud Console
         </a>
-        . Add this as an <strong>Authorized JavaScript origin</strong>:
+        , add this <strong>Authorized JavaScript origin</strong>:
       </p>
-      <pre className="text-left text-xs bg-slate-100 text-slate-800 p-2 rounded font-mono">{origin}</pre>
-      <p className="text-xs text-slate-500">Then restart the backend: <span className="font-mono">npm run dev:auth</span></p>
+      <pre className="text-xs bg-slate-100 text-slate-800 p-2 rounded font-mono">{origin}</pre>
     </div>
   </div>
   );
@@ -120,7 +140,8 @@ const LoginPage: React.FC = () => {
 
     authApi.getAuthConfig()
       .then((config) => {
-        setClientId(config.googleClientId || envClientId || '');
+        // Prefer build-time env (static Cloudflare deploy); API config when backend is reachable
+        setClientId(envClientId || config.googleClientId || '');
       })
       .catch(() => {
         setClientId(envClientId || '');
