@@ -1,4 +1,4 @@
-# Cloudflare Workers — deploy from repo root: npx wrangler deploy
+# Cloudflare Worker — site + API on same domain (no separate backend URL)
 name = "medical-billing-rag"
 main = "worker.js"
 compatibility_date = "2024-05-24"
@@ -6,3 +6,7 @@ compatibility_date = "2024-05-24"
 [assets]
 directory = "frontend/dist"
 binding = "ASSETS"
+
+# Required for login + encounters data persistence.
+# Cloudflare dashboard → Worker → Settings → Bindings → KV namespace → Variable name: AISTETH_KV
+# Then redeploy. Create namespace first: Workers → KV → Create namespace "aisteth-data"

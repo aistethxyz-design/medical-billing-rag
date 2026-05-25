@@ -17,6 +17,8 @@ export async function initRuntimeConfig(): Promise<void> {
     const data = (await res.json()) as { apiUrl?: string; googleClientId?: string };
     if (data.apiUrl && !data.apiUrl.includes('YOUR-BACKEND')) {
       apiUrl = data.apiUrl.replace(/\/$/, '');
+    } else if (typeof window !== 'undefined') {
+      apiUrl = window.location.origin;
     }
     if (data.googleClientId) {
       googleClientId = data.googleClientId;

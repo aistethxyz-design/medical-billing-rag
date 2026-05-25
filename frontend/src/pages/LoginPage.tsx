@@ -110,13 +110,16 @@ const SetupInstructions: React.FC = () => {
           <p className="text-sm text-gray-600">
             In Workers → Settings → <strong>Variables and Secrets</strong>, set:
           </p>
-          <pre className="text-xs bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">{`VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com\nVITE_API_URL=https://your-real-api-url.com`}</pre>
+          <pre className="text-xs bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">{`VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com\nJWT_SECRET=<long-random-string>`}</pre>
+          <p className="text-sm text-gray-600">
+            Also add a <strong>KV namespace</strong> binding named <code className="text-xs bg-slate-100 px-1 rounded">AISTETH_KV</code> (Workers → KV → Create → Bind in Settings).
+          </p>
           <p className="text-sm text-amber-700">
-            Replace <code className="text-xs bg-amber-50 px-1 rounded">YOUR-BACKEND-URL</code> with your live API URL, then redeploy the worker.
+            You can remove <code className="text-xs bg-amber-50 px-1 rounded">VITE_API_URL</code> — the API now runs on the same domain as the app.
           </p>
           <p className="text-sm text-gray-600">
             Your API server also needs <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">GOOGLE_CLIENT_ID</code> set
-            (same value) and must allow CORS from this site.
+            (same value) when using a separate backend host.
           </p>
         </>
       )}

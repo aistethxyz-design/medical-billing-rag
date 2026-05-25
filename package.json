@@ -19,6 +19,7 @@
     "build:pages": "cd frontend && npm run build",
     "deploy": "wrangler deploy",
     "deploy:frontend": "wrangler deploy --config frontend/wrangler.toml",
+    "cf:kv:create": "wrangler kv namespace create AISTETH_KV",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
     "setup": "npm run install:all && npm run setup:prisma && npm run setup:frontend",
     "setup:prisma": "cd backend && $env:PRISMA_CLIENT_ENGINE_TYPE='wasm'; npx prisma generate",
@@ -52,6 +53,7 @@
     "@mermaid-js/mermaid-cli": "^11.6.0",
     "@types/node": "^24.1.0",
     "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6"
+    "@types/react-dom": "^19.1.6",
+    "jose": "^6.2.3"
   }
 }
