@@ -8,6 +8,7 @@
     "dev:auth": "nodemon src/devServer.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "start:api": "node dist/devServer.js",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",

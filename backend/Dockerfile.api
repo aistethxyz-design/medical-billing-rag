@@ -1,0 +1,28 @@
+# Minimal API server (file auth, no Prisma).
+# Build from repo root:
+#   docker build -f backend/Dockerfile.api -t aisteth-api .
+#
+# Railway: set Dockerfile path to backend/Dockerfile.api, root directory = /
+
+FROM node:20-alpine
+RUN apk add --no-cache wget
+WORKDIR /app/backend
+
+COPY backend/package*.json ./
+RUN npm ci --omit=dev
+
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
+RUN npm install typescript --no-save && npx tsc && npm uninstall typescript
+
+COPY RAG/Codes_by_class.json /app/RAG/Codes_by_class.json
+RUN mkdir -p data/users
+
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV USE_FILE_AUTH=true
+
+EXPOSE 3001
+HEALTHCHECK CMD wget -qO- http://127.0.0.1:3001/health || exit 1
+
+CMD ["node", "dist/devServer.js"]
