@@ -1,5 +1,5 @@
 # Cloudflare Worker — site + API on same domain (no separate backend URL)
-name = "medical-billing-rag"
+name = "wiserdoc"
 main = "worker.js"
 compatibility_date = "2024-05-24"
 
