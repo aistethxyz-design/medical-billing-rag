@@ -7,7 +7,7 @@ export interface DocumentCodeMatch {
   score: number;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+import { getApiBase } from '@/services/runtimeConfig';
 
 export async function analyzeDocument(token: string, file: File): Promise<{
   fileName: string;
@@ -17,7 +17,7 @@ export async function analyzeDocument(token: string, file: File): Promise<{
   const form = new FormData();
   form.append('file', file);
 
-  const res = await fetch(`${API_BASE}/api/documents/analyze`, {
+  const res = await fetch(`${getApiBase()}/api/documents/analyze`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: form,

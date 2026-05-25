@@ -106,11 +106,14 @@ const SetupInstructions: React.FC = () => {
         </>
       ) : (
         <>
-          <p className="text-sm text-gray-600 font-medium">Cloudflare / production build</p>
+          <p className="text-sm text-gray-600 font-medium">Cloudflare Worker variables</p>
           <p className="text-sm text-gray-600">
-            In your Cloudflare Workers build settings, add environment variables and redeploy:
+            In Workers → Settings → <strong>Variables and Secrets</strong>, set:
           </p>
-          <pre className="text-xs bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">{`VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com\nVITE_API_URL=https://your-api-host.example.com`}</pre>
+          <pre className="text-xs bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto">{`VITE_GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com\nVITE_API_URL=https://your-real-api-url.com`}</pre>
+          <p className="text-sm text-amber-700">
+            Replace <code className="text-xs bg-amber-50 px-1 rounded">YOUR-BACKEND-URL</code> with your live API URL, then redeploy the worker.
+          </p>
           <p className="text-sm text-gray-600">
             Your API server also needs <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">GOOGLE_CLIENT_ID</code> set
             (same value) and must allow CORS from this site.

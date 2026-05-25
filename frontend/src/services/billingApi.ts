@@ -7,7 +7,7 @@
  * and performs TF-IDF search + time-of-day logic entirely in the browser.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+import { getApiBase } from '@/services/runtimeConfig';
 
 function getAuthHeaders(): Record<string, string> {
   const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
@@ -401,7 +401,7 @@ function buildExplanation(codes: BillingCode[], timeSlot: string, totalRevenue: 
 export async function analyzeClinicalText(request: AnalyzeRequest): Promise<BillingAnalysis> {
   // Try backend first
   try {
-    const res = await fetch(`${API_BASE}/api/billing/analyze`, {
+    const res = await fetch(`${getApiBase()}/api/billing/analyze`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(request),
@@ -429,7 +429,7 @@ export async function searchBillingCodes(params: SearchRequest): Promise<Billing
     if (params.maxAmount) query.set('maxAmount', String(params.maxAmount));
     if (params.timeOfDay) query.set('timeOfDay', params.timeOfDay);
 
-    const res = await fetch(`${API_BASE}/api/billing/search?${query.toString()}`, {
+    const res = await fetch(`${getApiBase()}/api/billing/search?${query.toString()}`, {
       headers: getAuthHeaders(),
       signal: AbortSignal.timeout(5000),
     });
@@ -447,7 +447,7 @@ export async function searchBillingCodes(params: SearchRequest): Promise<Billing
 
 export async function getCategories(): Promise<Array<{ name: string; count: number; avgAmount: number }>> {
   try {
-    const res = await fetch(`${API_BASE}/api/billing/categories`, {
+    const res = await fetch(`${getApiBase()}/api/billing/categories`, {
       headers: getAuthHeaders(),
       signal: AbortSignal.timeout(5000),
     });
@@ -475,7 +475,7 @@ export async function getCategories(): Promise<Array<{ name: string; count: numb
 
 export async function getCodeDetails(code: string): Promise<BillingCode | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/billing/code/${encodeURIComponent(code)}`, {
+    const res = await fetch(`${getApiBase()}/api/billing/code/${encodeURIComponent(code)}`, {
       headers: getAuthHeaders(),
       signal: AbortSignal.timeout(5000),
     });

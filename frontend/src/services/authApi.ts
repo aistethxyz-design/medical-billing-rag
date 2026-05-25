@@ -1,6 +1,5 @@
 import type { User } from '@/stores/authStore';
-
-const API_BASE = import.meta.env.VITE_API_URL || '';
+import { getApiBase, getGoogleClientId } from '@/services/runtimeConfig';
 
 export interface LoginResponse {
   success: boolean;
@@ -68,7 +67,7 @@ async function fetchWithTimeout(url: string, init: RequestInit, ms = 12000): Pro
 }
 
 export async function login(email: string, password: string): Promise<{ user: User; token: string; practice?: LoginResponse['practice'] }> {
-  const res = await fetchWithTimeout(`${API_BASE}/api/auth/login`, {
+  const res = await fetchWithTimeout(`${getApiBase()}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -83,7 +82,7 @@ export async function login(email: string, password: string): Promise<{ user: Us
 }
 
 export async function getMe(token: string): Promise<{ user: User; practice?: LoginResponse['practice'] }> {
-  const res = await fetchWithTimeout(`${API_BASE}/api/auth/me`, {
+  const res = await fetchWithTimeout(`${getApiBase()}/api/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
   }, 8000);
 
@@ -102,7 +101,7 @@ export async function register(data: {
   lastName: string;
   specialty?: string;
 }): Promise<{ user: User; token: string }> {
-  const res = await fetchWithTimeout(`${API_BASE}/api/auth/register`, {
+  const res = await fetchWithTimeout(`${getApiBase()}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...data, role: 'PROVIDER' }),
@@ -117,7 +116,12 @@ export async function register(data: {
 }
 
 export async function getAuthConfig(): Promise<{ googleClientId: string; googleConfigured: boolean }> {
-  const res = await fetchWithTimeout(`${API_BASE}/api/auth/config`, {}, 5000);
+  const runtimeId = getGoogleClientId();
+  if (runtimeId) {
+    return { googleClientId: runtimeId, googleConfigured: true };
+  }
+
+  const res = await fetchWithTimeout(`${getApiBase()}/api/auth/config`, {}, 5000);
   if (!res.ok) {
     return { googleClientId: '', googleConfigured: false };
   }
@@ -129,7 +133,7 @@ export async function getAuthConfig(): Promise<{ googleClientId: string; googleC
 }
 
 export async function loginWithGoogle(credential: string): Promise<{ user: User; token: string; practice?: LoginResponse['practice'] }> {
-  const res = await fetchWithTimeout(`${API_BASE}/api/auth/google`, {
+  const res = await fetchWithTimeout(`${getApiBase()}/api/auth/google`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ credential }),
@@ -146,7 +150,7 @@ export async function loginWithGoogle(credential: string): Promise<{ user: User;
 export async function logout(token?: string): Promise<void> {
   if (!token) return;
   try {
-    await fetch(`${API_BASE}/api/auth/logout`, {
+    await fetch(`${getApiBase()}/api/auth/logout`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     });

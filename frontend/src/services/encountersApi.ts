@@ -1,3 +1,5 @@
+import { getApiBase } from '@/services/runtimeConfig';
+
 export interface BillingLine {
   code: string;
   description: string;
@@ -46,14 +48,12 @@ export interface BillingSummary {
   uniquePatients: number;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
-
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 }
 
 async function authFetch(path: string, token: string, init?: RequestInit) {
-  const res = await fetch(`${API_BASE}${path}`, { ...init, headers: { ...authHeaders(token), ...init?.headers } });
+  const res = await fetch(`${getApiBase()}${path}`, { ...init, headers: { ...authHeaders(token), ...init?.headers } });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || 'Request failed');

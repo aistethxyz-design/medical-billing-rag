@@ -1,12 +1,31 @@
-/** SPA fallback for landing (/) and React app (/app/) on Cloudflare Workers. */
+/** SPA + runtime config for Cloudflare Workers (landing / + React app /app/). */
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+
+    if (url.pathname === '/app/runtime-config.json') {
+      const googleClientId = env.VITE_GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID || '';
+      const apiUrl = env.VITE_API_URL || '';
+      return Response.json(
+        {
+          googleClientId,
+          apiUrl,
+          googleConfigured: Boolean(googleClientId),
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+        },
+      );
+    }
+
     const response = await env.ASSETS.fetch(request);
     if (response.status !== 404) {
       return response;
     }
 
-    const url = new URL(request.url);
     const fallback = url.pathname.startsWith('/app')
       ? new URL('/app/index.html', url.origin)
       : new URL('/index.html', url.origin);

@@ -1,6 +1,5 @@
 import type { User } from '@/stores/authStore';
-
-const API_BASE = import.meta.env.VITE_API_URL || '';
+import { getApiBase } from '@/services/runtimeConfig';
 
 function authHeaders(token: string): Record<string, string> {
   return {
@@ -32,7 +31,7 @@ export interface DashboardSummary {
 
 export async function fetchDashboard(token: string): Promise<DashboardSummary | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/analytics/dashboard`, {
+    const res = await fetch(`${getApiBase()}/api/analytics/dashboard`, {
       headers: authHeaders(token),
     });
     if (!res.ok) return null;
