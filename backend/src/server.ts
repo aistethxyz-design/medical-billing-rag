@@ -243,15 +243,20 @@ process.on('SIGTERM', async () => {
 // Start server
 async function startServer() {
   try {
-    // Connect to Redis
-    await redis.connect();
-    logger.info('Connected to Redis');
-    
-    // Initialize AI services
+    // Redis is optional for local dev — don't block API startup if it's down
+    try {
+      await Promise.race([
+        redis.connect(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Redis connect timeout')), 3000)),
+      ]);
+      logger.info('Connected to Redis');
+    } catch (redisError) {
+      logger.warn('Redis unavailable — API will run without cache', { redisError });
+    }
+
     await initializeAI();
     logger.info('AI services initialized');
-    
-    // Start server
+
     app.listen(PORT, () => {
       logger.info(`🏥 CodeMax AI Backend Server running on port ${PORT}`);
       logger.info(`📊 Medical Coding Optimization API Ready`);

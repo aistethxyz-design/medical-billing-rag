@@ -3,13 +3,15 @@ import { Search, Bell, User, LogOut, Settings } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useNavigate } from 'react-router-dom';
 import NavbarAIAgent from '@/components/NavbarAIAgent';
+import * as authApi from '@/services/authApi';
 
 const Navbar: React.FC = () => {
-  const { user, logout } = useAuthStore();
+  const { user, logout, token } = useAuthStore();
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await authApi.logout(token);
     logout();
     navigate('/login');
   };

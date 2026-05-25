@@ -19,9 +19,12 @@ import {
   Sun,
   Moon,
   Sunset,
-  Calendar
+  Calendar,
+  UserPlus,
 } from 'lucide-react';
 import BillingCodeExtractor from '@/components/BillingCodeExtractor';
+import AddToEncounterModal from '@/components/AddToEncounterModal';
+import { useAuthStore } from '@/stores/authStore';
 import {
   analyzeClinicalText,
   searchBillingCodes,
@@ -47,6 +50,7 @@ interface QuickSearch {
 
 const BillingAssistant: React.FC = () => {
   const location = useLocation();
+  const { token } = useAuthStore();
   const [clinicalText, setClinicalText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<BillingCode[]>([]);
@@ -62,6 +66,8 @@ const BillingAssistant: React.FC = () => {
   // Selected billing codes state (for total calculation)
   const [selectedCodes, setSelectedCodes] = useState<SelectedCode[]>([]);
   const [showCart, setShowCart] = useState(true);
+  const [showAddToEncounter, setShowAddToEncounter] = useState(false);
+  const [codesForEncounter, setCodesForEncounter] = useState<Array<{ code: string; description: string; amount: number; timeOfDay?: string }>>([]);
 
   // Auto-detected time slot
   const [autoTimeSlot, setAutoTimeSlot] = useState('');
@@ -265,6 +271,11 @@ const BillingAssistant: React.FC = () => {
         howToUse: code.reason || ''
       });
     });
+  };
+
+  const openAddToEncounter = (codes: Array<{ code: string; description: string; amount: number; timeOfDay?: string }>) => {
+    setCodesForEncounter(codes);
+    setShowAddToEncounter(true);
   };
 
   const totalAmount = selectedCodes.reduce((sum, code) => sum + code.amount, 0);
@@ -527,13 +538,22 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                                   )}
                                 </div>
                               </div>
+                              <div className="ml-4 flex flex-col gap-2">
                               <button
-                                onClick={() => addCodeToSelected(opt.suggestedCode)}
-                                className="ml-4 flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                                onClick={() => addCodeToSelected(code)}
+                                className="flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
                               >
                                 <Plus className="h-4 w-4 mr-1" />
-                                Add
+                                Cart
                               </button>
+                              <button
+                                onClick={() => openAddToEncounter([{ code: code.code, description: code.description, amount: code.amount, timeOfDay: code.timeOfDay }])}
+                                className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                              >
+                                <UserPlus className="h-4 w-4 mr-1" />
+                                Patient
+                              </button>
+                            </div>
                             </div>
                           </div>
                         ))}
@@ -588,13 +608,22 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                               <p className="text-sm text-gray-600 mb-2">{code.howToUse}</p>
                               <div className="text-green-600 font-medium">{formatCurrency(code.amount)}</div>
                             </div>
-                            <button
-                              onClick={() => addCodeToSelected(code)}
-                              className="ml-4 flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add
-                            </button>
+                            <div className="ml-4 flex flex-col gap-2">
+                              <button
+                                onClick={() => addCodeToSelected(code)}
+                                className="flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Cart
+                              </button>
+                              <button
+                                onClick={() => openAddToEncounter([{ code: code.code, description: code.description, amount: code.amount, timeOfDay: code.timeOfDay }])}
+                                className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                              >
+                                <UserPlus className="h-4 w-4 mr-1" />
+                                Patient
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -664,7 +693,15 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                         </div>
                         <p className="text-sm text-gray-500 mt-1">{selectedCodes.length} code{selectedCodes.length !== 1 ? 's' : ''} selected</p>
                       </div>
-                      <button onClick={() => setSelectedCodes([])} className="mt-3 w-full text-sm text-red-600 hover:text-red-700 py-2">Clear All</button>
+                      <button
+                        onClick={() => openAddToEncounter(selectedCodes.map((c) => ({ code: c.code, description: c.description, amount: c.amount, timeOfDay: c.timeOfDay })))}
+                        disabled={selectedCodes.length === 0}
+                        className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        <UserPlus className="h-4 w-4" />
+                        Add all to patient encounter
+                      </button>
+                      <button onClick={() => setSelectedCodes([])} className="mt-2 w-full text-sm text-red-600 hover:text-red-700 py-2">Clear All</button>
                     </>
                   )}
                 </div>
@@ -735,6 +772,16 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
           </div>
         </div>
       </div>
+
+      {token && (
+        <AddToEncounterModal
+          open={showAddToEncounter}
+          onClose={() => setShowAddToEncounter(false)}
+          token={token}
+          codes={codesForEncounter}
+          onSaved={() => setSelectedCodes([])}
+        />
+      )}
     </div>
   );
 };

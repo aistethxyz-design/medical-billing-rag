@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '@/stores/authStore';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
+import { AuthBootstrap } from '@/components/AuthBootstrap';
 
 // Layout components
 import Navbar from '@/components/layout/Navbar';
@@ -14,7 +15,6 @@ import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import Dashboard from '@/pages/Dashboard';
 import DocumentUpload from '@/pages/DocumentUpload';
-import CodingAnalysis from '@/pages/CodingAnalysis';
 import EncounterManagement from '@/pages/EncounterManagement';
 import Analytics from '@/pages/Analytics';
 import Settings from '@/pages/Settings';
@@ -67,7 +67,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Router basename="/app">
+        <AuthBootstrap>
+          <Router basename="/app">
           <div className="App">
             <Routes>
             {/* Public routes */}
@@ -93,17 +94,6 @@ function App() {
                 <ProtectedRoute>
                   <AppLayout>
                     <DocumentUpload />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route
-              path="/coding"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <CodingAnalysis />
                   </AppLayout>
                 </ProtectedRoute>
               }
@@ -196,6 +186,7 @@ function App() {
           />
           </div>
         </Router>
+        </AuthBootstrap>
       </TooltipProvider>
     </QueryClientProvider>
   );

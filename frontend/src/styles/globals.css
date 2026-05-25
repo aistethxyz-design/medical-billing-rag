@@ -421,43 +421,45 @@ html {
   .revenue-impact-neutral {
     @apply text-gray-600;
   }
+
+  /* ── Dashboard polish ── */
+  .stat-card {
+    @apply relative bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden;
+  }
+
+  .stat-card-accent {
+    @apply absolute top-0 left-0 right-0 h-1;
+  }
+
+  .stat-icon {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center;
+  }
+
+  .panel {
+    @apply bg-white border border-gray-200 rounded-xl shadow-sm;
+  }
+
+  .panel-header {
+    @apply px-6 py-4 border-b border-gray-100 flex items-center justify-between;
+  }
+
+  .nav-link {
+    @apply relative flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150;
+  }
+
+  .nav-link-active {
+    @apply text-blue-700 bg-blue-50;
+  }
+
+  .nav-link-active::before {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-gradient-to-b from-blue-500 to-purple-600;
+  }
+
+  .nav-link-inactive {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-50;
+  }
 }
-
-  .risk-badge-critical {
-    @apply bg-red-200 text-red-900 border border-red-300;
-  }
-
-  .optimization-card {
-    @apply medical-card p-6 space-y-4;
-  }
-
-  .optimization-card-approved {
-    @apply border-green-200 bg-green-50;
-  }
-
-  .optimization-card-pending {
-    @apply border-yellow-200 bg-yellow-50;
-  }
-
-  .optimization-card-rejected {
-    @apply border-red-200 bg-red-50;
-  }
-
-  .ai-thinking {
-    @apply animate-pulse bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg p-4;
-  }
-
-  .revenue-impact-positive {
-    @apply text-green-600 font-semibold;
-  }
-
-  .revenue-impact-negative {
-    @apply text-red-600 font-semibold;
-  }
-
-  .revenue-impact-neutral {
-    @apply text-gray-600;
-  }
 
 /* Loading and animation styles */
 @layer utilities {

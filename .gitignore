@@ -104,6 +104,9 @@ MANIFEST
 *.sqlite
 *.sqlite3
 
+# Local dev runtime data (users, encounters)
+backend/data/
+
 # Android
 *.iml
 .gradle
@@ -140,3 +143,4 @@ deploy_package/
 *.pem
 *.key
 *.cert
+*.bak

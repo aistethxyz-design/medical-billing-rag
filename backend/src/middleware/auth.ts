@@ -1,11 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { SignOptions, Secret, JwtPayload } from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { logger } from '../utils/logger';
 import rateLimit from 'express-rate-limit';
 
-const prisma = new PrismaClient();
+import { fileGetUser, isFileAuthEnabled } from '../services/fileAuthService';
+
+// Lazy Prisma — only loaded when file auth is disabled
+async function getPrismaUser(userId: string) {
+  const { PrismaClient } = await import('@prisma/client');
+  const prisma = new PrismaClient();
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, role: true, practiceId: true, firstName: true, lastName: true },
+  });
+}
 
 // Type definitions for roles
 type UserRole = 'ADMIN' | 'PRACTICE_MANAGER' | 'PROVIDER' | 'CODER' | 'BILLER';
@@ -113,20 +122,29 @@ export const authenticate = async (req: AuthenticatedRequest, res: Response, nex
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
     
     // Verify the token
-    const decoded = verifyToken(token);
-    
-    // Fetch user from database
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        practiceId: true,
-        firstName: true,
-        lastName: true
+    const decoded = verifyToken(token) as JwtPayload & { id?: string; userId?: string };
+    const userId = decoded.id || decoded.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Access denied. Invalid token.', code: 'INVALID_TOKEN' });
+    }
+
+    // File-based auth (local dev when Prisma is unavailable)
+    if (isFileAuthEnabled()) {
+      const fileUser = fileGetUser(userId);
+      if (fileUser) {
+        req.user = {
+          id: fileUser.user.id,
+          email: fileUser.user.email,
+          role: fileUser.user.role as UserRole,
+          practiceId: fileUser.user.practiceId,
+        };
+        return next();
       }
-    });
+    }
+
+    // Fetch user from database (skipped when file auth handles the user)
+    const user = await getPrismaUser(userId);
 
     if (!user) {
       return res.status(401).json({

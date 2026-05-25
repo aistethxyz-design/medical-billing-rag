@@ -6,4 +6,8 @@ openpyxl
 sentence-transformers
 pinecone-client
 anthropic
+cohere
 python-dotenv
+rank-bm25
+scikit-learn
+rich

@@ -14,11 +14,12 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
-    open: true,
+    port: 3002,
+    strictPort: true,
+    open: '/app/login',
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
       },
     },

@@ -1,154 +1,93 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Upload, 
-  Brain, 
-  Users, 
-  BarChart3, 
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Upload,
+  Users,
+  BarChart3,
   Settings,
-  FileText,
-  MessageSquare,
+  DollarSign,
   Shield,
-  DollarSign
+  LogOut,
 } from 'lucide-react';
+import { useAuthStore } from '@/stores/authStore';
+import * as authApi from '@/services/authApi';
 
 interface NavItem {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  description: string;
 }
 
 const navigation: NavItem[] = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-    description: 'Overview and metrics'
-  },
-  {
-    name: 'Upload Documents',
-    href: '/upload',
-    icon: Upload,
-    description: 'Upload medical documents'
-  },
-  {
-    name: 'AI Billing Analysis',
-    href: '/coding',
-    icon: Brain,
-    description: 'Review billing suggestions'
-  },
-  {
-    name: 'Billing Assistant',
-    href: '/billing',
-    icon: DollarSign,
-    description: 'OHIP billing lookup'
-  },
-  {
-    name: 'Encounters',
-    href: '/encounters',
-    icon: Users,
-    description: 'Manage patient encounters'
-  },
-  {
-    name: 'Analytics',
-    href: '/analytics',
-    icon: BarChart3,
-    description: 'Revenue and compliance'
-  },
-  {
-    name: 'Settings',
-    href: '/settings',
-    icon: Settings,
-    description: 'Application settings'
-  }
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Upload Documents', href: '/upload', icon: Upload },
+  { name: 'Billing Assistant', href: '/billing', icon: DollarSign },
+  { name: 'Encounters', href: '/encounters', icon: Users },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, token, practiceName, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await authApi.logout(token);
+    logout();
+    navigate('/login');
+  };
 
   return (
     <nav className="bg-white w-64 min-h-screen border-r border-gray-200 fixed left-0 top-16 z-30">
       <div className="flex flex-col h-full">
-        {/* Navigation Links */}
-        <div className="flex-1 px-4 py-6 space-y-2">
+        <div className="flex-1 px-3 py-5 space-y-1">
           {navigation.map((item) => {
             const isActive = location.pathname === item.href;
+            const Icon = item.icon;
             return (
               <NavLink
                 key={item.name}
                 to={item.href}
-                className={`group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className={`group nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`}
               >
-                <item.icon
-                  className={`mr-3 flex-shrink-0 h-5 w-5 ${
-                    isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'
-                  }`}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="truncate">{item.name}</div>
-                  <div className="text-xs text-gray-500 truncate">
-                    {item.description}
-                  </div>
-                </div>
+                <Icon className={`mr-3 flex-shrink-0 h-5 w-5 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                <span className="truncate">{item.name}</span>
               </NavLink>
             );
           })}
         </div>
 
-        {/* Quick Stats */}
-        <div className="p-4 border-t border-gray-200">
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Quick Stats
-          </h3>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-2">
-                <DollarSign className="w-4 h-4 text-green-500" />
-                <span className="text-gray-600">Billing Impact</span>
-              </div>
-              <span className="font-semibold text-green-600">+$12.4K</span>
+        {/* Signed-in user — replaces duplicate quick stats */}
+        {user && (
+          <div className="px-4 py-4 border-t border-gray-100">
+            <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
+              <p className="text-sm font-semibold text-gray-900 truncate">
+                {user.firstName} {user.lastName}
+              </p>
+              <p className="text-xs text-gray-500 truncate capitalize">
+                {user.role.toLowerCase().replace('_', ' ')}
+                {user.province ? ` · ${user.province}` : ''}
+              </p>
+              {practiceName && (
+                <p className="text-xs text-gray-400 truncate mt-1">{practiceName}</p>
+              )}
             </div>
-            
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-blue-500" />
-                <span className="text-gray-600">Documents</span>
-              </div>
-              <span className="font-semibold text-gray-900">247</span>
-            </div>
-            
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-2">
-                <Shield className="w-4 h-4 text-purple-500" />
-                <span className="text-gray-600">Compliance</span>
-              </div>
-              <span className="font-semibold text-purple-600">94%</span>
-            </div>
+            <button
+              onClick={handleLogout}
+              className="mt-3 w-full flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-red-600 py-2 rounded-lg hover:bg-red-50 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign out
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* AI Assistant Shortcut */}
-        <div className="p-4 border-t border-gray-200">
-          <button className="w-full flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
-            <MessageSquare className="w-5 h-5" />
-            <div className="text-left">
-              <div className="text-sm font-medium">AI Assistant</div>
-              <div className="text-xs opacity-90">Ask billing questions</div>
-            </div>
-          </button>
-        </div>
-
-        {/* Version Info */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="text-xs text-gray-500 text-center">
-            <div>AISteth v1.0.0</div>
-            <div className="mt-1">HIPAA Compliant</div>
+        <div className="px-4 py-3 border-t border-gray-100">
+          <div className="text-[11px] text-gray-400 text-center inline-flex items-center justify-center gap-1 w-full">
+            <Shield className="w-3 h-3" />
+            <span>HIPAA compliant · v1.0</span>
           </div>
         </div>
       </div>
@@ -156,4 +95,4 @@ const Sidebar: React.FC = () => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

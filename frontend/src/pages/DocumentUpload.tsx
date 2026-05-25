@@ -1,15 +1,16 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { 
-  Upload, 
-  FileText, 
-  CheckCircle, 
-  AlertCircle, 
-  Loader, 
-  Eye,
-  Download,
-  Trash2
+import {
+  Upload,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  Loader,
+  Trash2,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '@/stores/authStore';
+import { analyzeDocument, type DocumentCodeMatch } from '@/services/documentsApi';
 
 interface UploadedFile {
   id: string;
@@ -18,87 +19,59 @@ interface UploadedFile {
   type: string;
   status: 'uploading' | 'processing' | 'completed' | 'error';
   progress: number;
-  extractedText?: string;
-  analyzedCodes?: any[];
+  extractedPreview?: string;
+  analyzedCodes?: DocumentCodeMatch[];
   errorMessage?: string;
 }
 
 const DocumentUpload: React.FC = () => {
+  const { token } = useAuthStore();
   const [files, setFiles] = useState<UploadedFile[]>([]);
 
+  const processFile = async (fileId: string, file: File) => {
+    if (!token) {
+      setFiles((prev) => prev.map((f) => f.id === fileId ? { ...f, status: 'error', errorMessage: 'Not signed in' } : f));
+      return;
+    }
+    setFiles((prev) => prev.map((f) => f.id === fileId ? { ...f, status: 'processing', progress: 50 } : f));
+    try {
+      const result = await analyzeDocument(token, file);
+      setFiles((prev) => prev.map((f) =>
+        f.id === fileId
+          ? {
+              ...f,
+              status: 'completed',
+              progress: 100,
+              extractedPreview: result.extractedPreview,
+              analyzedCodes: result.codes,
+            }
+          : f
+      ));
+      toast.success(`Found ${result.codes.length} applicable OHIP codes`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Analysis failed';
+      setFiles((prev) => prev.map((f) => f.id === fileId ? { ...f, status: 'error', errorMessage: msg } : f));
+      toast.error(msg);
+    }
+  };
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles: UploadedFile[] = acceptedFiles.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      status: 'uploading',
-      progress: 0
-    }));
-
-    setFiles(prev => [...prev, ...newFiles]);
-    
-    // Simulate file upload and processing
-    newFiles.forEach(file => {
-      simulateFileProcessing(file.id);
+    acceptedFiles.forEach((file) => {
+      const id = Math.random().toString(36).slice(2, 11);
+      setFiles((prev) => [...prev, {
+        id,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        status: 'uploading',
+        progress: 0,
+      }]);
+      setTimeout(() => {
+        setFiles((prev) => prev.map((f) => f.id === id ? { ...f, status: 'processing', progress: 30 } : f));
+        processFile(id, file);
+      }, 300);
     });
-  }, []);
-
-  const simulateFileProcessing = (fileId: string) => {
-    // Simulate upload progress
-    const uploadInterval = setInterval(() => {
-      setFiles(prev => prev.map(file => {
-        if (file.id === fileId && file.status === 'uploading') {
-          const newProgress = Math.min(file.progress + 10, 100);
-          if (newProgress === 100) {
-            clearInterval(uploadInterval);
-            setTimeout(() => {
-              setFiles(prev => prev.map(f => 
-                f.id === fileId 
-                  ? { ...f, status: 'processing', progress: 0 }
-                  : f
-              ));
-              simulateAIProcessing(fileId);
-            }, 500);
-          }
-          return { ...file, progress: newProgress };
-        }
-        return file;
-      }));
-    }, 200);
-  };
-
-  const simulateAIProcessing = (fileId: string) => {
-    // Simulate AI processing
-    const processingInterval = setInterval(() => {
-      setFiles(prev => prev.map(file => {
-        if (file.id === fileId && file.status === 'processing') {
-          const newProgress = Math.min(file.progress + 8, 100);
-          if (newProgress === 100) {
-            clearInterval(processingInterval);
-            setTimeout(() => {
-              setFiles(prev => prev.map(f => 
-                f.id === fileId 
-                  ? { 
-                      ...f, 
-                      status: 'completed', 
-                      progress: 100,
-                      extractedText: 'Sample clinical text extracted from document...',
-                      analyzedCodes: [
-                        { code: 'A004', type: 'OHIP', description: 'General assessment' },
-                        { code: 'K998', type: 'OHIP', description: 'Telephone consultation' }
-                      ]
-                    }
-                  : f
-              ));
-            }, 500);
-          }
-          return { ...file, progress: newProgress };
-        }
-        return file;
-      }));
-    }, 300);
-  };
+  }, [token]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -157,7 +130,7 @@ const DocumentUpload: React.FC = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4 rounded-lg shadow-sm">
         <h1 className="text-2xl font-bold text-gray-900">Document Upload</h1>
-        <p className="text-gray-600">Upload medical documents for AI-powered billing analysis</p>
+        <p className="text-gray-600">Upload a PDF or document to find applicable OHIP billing codes</p>
       </div>
 
       {/* Upload Zone */}
@@ -232,16 +205,6 @@ const DocumentUpload: React.FC = () => {
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    {file.status === 'completed' && (
-                      <>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 rounded-md">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 rounded-md">
-                          <Download className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
                     <button 
                       onClick={() => removeFile(file.id)}
                       className="p-2 text-gray-400 hover:text-red-600 rounded-md"
@@ -275,23 +238,25 @@ const DocumentUpload: React.FC = () => {
                 {file.status === 'completed' && file.analyzedCodes && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                      Extracted OHIP Billing Codes
+                      Applicable OHIP codes ({file.analyzedCodes.length})
                     </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {file.analyzedCodes.map((code, index) => (
-                        <span
-                          key={index}
-                          className={`code-badge ${
-                            code.type === 'CPT' ? 'code-badge-cpt' : 'code-badge-icd'
-                          }`}
-                        >
-                          {code.code} - {code.description}
-                        </span>
+                    <ul className="space-y-2">
+                      {file.analyzedCodes.map((code) => (
+                        <li key={code.code} className="flex justify-between items-start text-sm border-b border-gray-100 pb-2">
+                          <div>
+                            <span className="font-mono font-bold text-blue-700">{code.code}</span>
+                            <span className="text-gray-700 ml-2">{code.description}</span>
+                            {code.howToUse && <p className="text-xs text-gray-500 mt-0.5">{code.howToUse}</p>}
+                          </div>
+                          <span className="font-medium text-green-700 whitespace-nowrap ml-2">
+                            ${code.amount.toFixed(2)}
+                          </span>
+                        </li>
                       ))}
-                    </div>
-                    <button className="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium">
-                      View full analysis →
-                    </button>
+                    </ul>
+                    {file.extractedPreview && (
+                      <p className="text-xs text-gray-500 mt-3 line-clamp-2">{file.extractedPreview}…</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -310,10 +275,7 @@ const DocumentUpload: React.FC = () => {
                 Documents Processed Successfully
               </h3>
               <p className="text-sm text-green-700 mt-1">
-                {files.filter(f => f.status === 'completed').length} documents have been analyzed. 
-                <a href="/coding" className="font-medium underline hover:no-underline ml-1">
-                  Review billing suggestions
-                </a>
+                {files.filter(f => f.status === 'completed').length} document(s) analyzed for OHIP codes.
               </p>
             </div>
           </div>
