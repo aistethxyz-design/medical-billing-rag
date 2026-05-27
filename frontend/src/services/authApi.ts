@@ -41,13 +41,24 @@ function mapUser(raw: LoginResponse['user']): User {
 }
 
 async function parseError(res: Response): Promise<string> {
+  const contentType = res.headers.get('content-type') || '';
   try {
+    if (!contentType.includes('application/json')) {
+      if (res.status === 404 || res.status === 405) {
+        return 'Sign-in API is not available on this site yet. Redeploy the latest Cloudflare Worker (medical-billing-rag) and bind AISTETH_KV.';
+      }
+      return `Authentication failed (HTTP ${res.status})`;
+    }
     const data = await res.json();
     if (typeof data.error === 'string') return data.error;
     if (Array.isArray(data.details) && data.details[0]?.msg) return data.details[0].msg;
     return 'Authentication failed';
   } catch {
-    return res.status === 401 ? 'Invalid email or password' : 'Authentication failed';
+    if (res.status === 401) return 'Invalid email or password';
+    if (res.status === 404 || res.status === 405) {
+      return 'Sign-in API is not available on this site yet. Redeploy the latest Cloudflare Worker (medical-billing-rag) and bind AISTETH_KV.';
+    }
+    return 'Authentication failed';
   }
 }
 

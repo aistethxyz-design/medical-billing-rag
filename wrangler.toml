@@ -1,12 +1,19 @@
-# Cloudflare Worker — site + API on same domain (no separate backend URL)
-name = "medical-billing-rag"
+# Cloudflare Worker — wiserdoc.com (site + API)
+#
+# Workers Builds settings:
+#   Build command:  npm ci && npm run build:pages
+#   Deploy command: npx wrangler deploy          ← NOT "wrangler versions upload"
+#
+# After deploy, bind AISTETH_KV and set VITE_GOOGLE_CLIENT_ID + JWT_SECRET on this Worker.
+# Attach custom domain wiserdoc.com here and remove it from the Pages project.
+name = "wiserdoc"
 main = "worker.js"
 compatibility_date = "2024-05-24"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build:pages"
 
 [assets]
 directory = "frontend/dist"
 binding = "ASSETS"
-
-# Required for login + encounters data persistence.
-# Cloudflare dashboard → Worker → Settings → Bindings → KV namespace → Variable name: AISTETH_KV
-# Then redeploy. Create namespace first: Workers → KV → Create namespace "aisteth-data"

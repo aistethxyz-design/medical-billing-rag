@@ -1,7 +1,8 @@
-# Deploy from frontend/: npx wrangler deploy
-name = "medical-billing-rag"
+# Deploy from frontend/: npm run build && npx wrangler deploy
+name = "wiserdoc"
 main = "../worker.js"
 compatibility_date = "2024-05-24"
+compatibility_flags = ["nodejs_compat"]
 
 [assets]
 directory = "./dist"
