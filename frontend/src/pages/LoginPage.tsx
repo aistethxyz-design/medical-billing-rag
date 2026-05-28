@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Stethoscope, AlertCircle, Loader2 } from 'lucide-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuthStore } from '@/stores/authStore';
@@ -12,6 +12,7 @@ const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuthStore();
 
   const handleGoogleSuccess = async (credential: string) => {
@@ -22,7 +23,9 @@ const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
       const { user, token, practice } = await authApi.loginWithGoogle(credential);
       login(user, token, practice?.name);
       toast.success(`Welcome, ${user.firstName}!`);
-      navigate('/dashboard');
+      const redirect = new URLSearchParams(location.search).get('redirect');
+      const safeRedirect = redirect && redirect.startsWith('/') ? redirect : null;
+      navigate(safeRedirect ?? '/dashboard', { replace: true });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Google sign-in failed';
       setError(message);

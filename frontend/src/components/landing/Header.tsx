@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -55,13 +57,13 @@ export default function Header() {
                 Contact
               </button>
               <button
-                onClick={() => navigate('/login')}
+                onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login?redirect=/dashboard')}
                 className="btn-fancy bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl glow-blue"
                 data-testid="nav-login"
               >
                 <span className="flex items-center gap-2">
                   <i className="fas fa-sign-in-alt"></i>
-                  Login
+                  {isAuthenticated ? 'Dashboard' : 'Sign in'}
                 </span>
               </button>
             </nav>
@@ -108,7 +110,7 @@ export default function Header() {
                 </button>
                 <button
                   onClick={() => {
-                    navigate('/login');
+                    navigate(isAuthenticated ? '/dashboard' : '/login?redirect=/dashboard');
                     setIsMobileMenuOpen(false);
                   }}
                   className="btn-fancy bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all w-full shadow-lg mt-4"
@@ -116,7 +118,7 @@ export default function Header() {
                 >
                   <span className="flex items-center justify-center gap-2">
                     <i className="fas fa-sign-in-alt"></i>
-                    Login
+                    {isAuthenticated ? 'Dashboard' : 'Sign in'}
                   </span>
                 </button>
               </nav>

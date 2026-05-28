@@ -87,7 +87,7 @@ const Header = () => {
           
           <div className="hidden md:flex items-center space-x-4">
             <a 
-              href="/app/login"
+              href="/app/login?redirect=/dashboard"
               className="text-slate-600 hover:text-primary font-bold text-sm"
             >
               Sign In
@@ -123,7 +123,7 @@ const Header = () => {
           <a href="#footer" onClick={(e) => { e.preventDefault(); handleNavLinkClick('footer'); }} className="block font-bold text-slate-900">Contact</a>
           <div className="pt-4 grid grid-cols-2 gap-4">
             <a 
-              href="/app/login"
+              href="/app/login?redirect=/dashboard"
               className="py-3 rounded-xl border border-slate-200 font-bold text-sm text-center"
             >
               Sign In
