@@ -11,7 +11,6 @@ import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
 
 // Page components
-import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import Dashboard from '@/pages/Dashboard';
 import DocumentUpload from '@/pages/DocumentUpload';
@@ -50,6 +49,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
+const AppHome: React.FC = () => {
+  const { isAuthenticated } = useAuthStore();
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <Navigate to="/login?redirect=/dashboard" replace />;
+};
+
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,7 +81,7 @@ function App() {
           <div className="App">
             <Routes>
             {/* Public routes */}
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<AppHome />} />
             <Route path="/login" element={<LoginPage />} />
             
             {/* Protected routes - require login */}
@@ -158,7 +165,7 @@ function App() {
             />
             
             {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/login?redirect=/dashboard" replace />} />
           </Routes>
           
           {/* Global toast notifications */}

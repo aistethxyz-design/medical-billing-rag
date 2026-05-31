@@ -13,7 +13,14 @@ const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuthStore();
+  const { login, isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const redirect = new URLSearchParams(location.search).get('redirect');
+    const safeRedirect = redirect && redirect.startsWith('/') ? redirect : null;
+    navigate(safeRedirect ?? '/dashboard', { replace: true });
+  }, [isAuthenticated, location.search, navigate]);
 
   const handleGoogleSuccess = async (credential: string) => {
     setIsLoading(true);
