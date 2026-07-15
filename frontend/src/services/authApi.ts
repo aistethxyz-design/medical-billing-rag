@@ -12,6 +12,7 @@ export interface LoginResponse {
     practiceId?: string;
     npi?: string;
     specialty?: string;
+    emCopilot?: boolean;
   };
   token: string;
   practice?: {
@@ -37,6 +38,7 @@ function mapUser(raw: LoginResponse['user']): User {
     practiceId: raw.practiceId,
     npi: raw.npi,
     province: raw.specialty || undefined,
+    emCopilot: raw.emCopilot === true,
   };
 }
 

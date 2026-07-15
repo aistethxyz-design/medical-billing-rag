@@ -10,7 +10,18 @@ import {
   createEncounterWithPatient,
   appendCodesToEncounter,
   getProviderDashboard,
+  isAllowed,
+  getAllowlist,
+  addAllowed,
+  removeAllowed,
 } from './store.js';
+
+// Owner(s) who may edit the copilot allowlist. Comma-separated ADMIN_EMAILS env
+// var, plus a hardcoded fallback so the owner is never locked out.
+function adminEmails(env) {
+  const fromEnv = (env.ADMIN_EMAILS || '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+  return new Set([...fromEnv, 'aistethxyz@gmail.com']);
+}
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -77,6 +88,11 @@ export async function handleApiRequest(request, env) {
     try {
       const profile = await verifyGoogleIdToken(env, body.credential);
       if (!profile.emailVerified) return err('Google account email is not verified', 401);
+      // Allowlist gate: only approved emails (or admins) may sign in during the trial.
+      const permitted = adminEmails(env).has(profile.email) || (await isAllowed(env, profile.email));
+      if (!permitted) {
+        return err('This account is not authorized for the wiserdoc trial. Contact the administrator to be added.', 403);
+      }
       const result = await fileGoogleLogin(env, profile);
       return json({ success: true, ...result });
     } catch (e) {
@@ -100,6 +116,57 @@ export async function handleApiRequest(request, env) {
 
   if (!user && path.startsWith('/api/')) {
     return err('Access denied. No valid token provided.', 401);
+  }
+
+  // ── EM Copilot: allowlist admin (owner only) ───────────────────────────────
+  if (path === '/api/admin/allowlist') {
+    if (!adminEmails(env).has(user.email)) return err('Admins only', 403);
+    if (method === 'GET') {
+      return json({ success: true, allowlist: await getAllowlist(env) });
+    }
+    if (method === 'POST') {
+      const body = await readBody(request);
+      const email = String(body.email || '').trim().toLowerCase();
+      if (!email) return err('email is required', 400);
+      const action = body.action === 'remove' ? 'remove' : 'add';
+      const allowlist = action === 'remove' ? await removeAllowed(env, email) : await addAllowed(env, email);
+      return json({ success: true, action, allowlist });
+    }
+    return err('Method not allowed', 405);
+  }
+
+  // ── EM Copilot: authenticated proxy to the RAG backend on Hetzner ──────────
+  // Residents never reach the backend directly. We verify the JWT + allowlist
+  // here, then forward with the server-to-server shared secret.
+  if ((path === '/api/copilot' || path === '/api/snapshot') && method === 'POST') {
+    if (!(user.emCopilot || (await isAllowed(env, user.email)))) {
+      return err('Not authorized for the EM Copilot', 403);
+    }
+    const base = (env.EM_COPILOT_URL || 'https://em-copilot.aisteth.xyz').replace(/\/$/, '');
+    if (!env.COPILOT_SHARED_SECRET) {
+      return err('EM Copilot backend is not configured yet (set COPILOT_SHARED_SECRET on the Worker).', 503);
+    }
+    const upstreamPath = path === '/api/copilot' ? '/copilot' : '/snapshot';
+    const body = await readBody(request);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 60000);
+    try {
+      const upstream = await fetch(`${base}${upstreamPath}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Copilot-Secret': env.COPILOT_SHARED_SECRET },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      const text = await upstream.text();
+      return new Response(text, {
+        status: upstream.status,
+        headers: { 'Content-Type': 'application/json', ...CORS },
+      });
+    } catch {
+      return err('EM Copilot backend is unavailable. Please try again.', 502);
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   if (path === '/api/analytics/dashboard' && method === 'GET') {

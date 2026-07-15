@@ -24,7 +24,12 @@ export async function verifyToken(env, token) {
   });
   const id = payload.id || payload.userId;
   if (!id) throw new Error('Invalid token');
-  return { id: String(id), email: String(payload.email || ''), role: payload.role };
+  return {
+    id: String(id),
+    email: String(payload.email || ''),
+    role: payload.role,
+    emCopilot: payload.emCopilot === true,
+  };
 }
 
 export async function verifyGoogleIdToken(env, idToken) {

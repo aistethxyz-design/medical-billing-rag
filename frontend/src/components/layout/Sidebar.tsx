@@ -8,6 +8,7 @@ import {
   Settings,
   DollarSign,
   Shield,
+  Stethoscope,
   LogOut,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
@@ -33,6 +34,11 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const { user, token, practiceName, logout } = useAuthStore();
 
+  // Show the EM Copilot link only to allowlisted trial users.
+  const navItems = user?.emCopilot
+    ? [...navigation, { name: 'EM Copilot', href: '/em-copilot', icon: Stethoscope }]
+    : navigation;
+
   const handleLogout = async () => {
     await authApi.logout(token);
     logout();
@@ -43,7 +49,7 @@ const Sidebar: React.FC = () => {
     <nav className="bg-white w-64 min-h-screen border-r border-gray-200 fixed left-0 top-16 z-30">
       <div className="flex flex-col h-full">
         <div className="flex-1 px-3 py-5 space-y-1">
-          {navigation.map((item) => {
+          {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
             return (

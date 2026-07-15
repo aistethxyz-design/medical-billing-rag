@@ -10,6 +10,7 @@ export interface User {
   practiceId?: string;
   npi?: string;
   province?: string;
+  emCopilot?: boolean;
 }
 
 interface AuthState {

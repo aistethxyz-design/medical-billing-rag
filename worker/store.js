@@ -50,6 +50,48 @@ async function saveUsers(env, users) {
   await putJson(env, USERS_KEY, users);
 }
 
+// ── EM Copilot allowlist ─────────────────────────────────────────────────────
+// A KV-stored list of emails allowed into the copilot trial, editable without a
+// redeploy. Falls back to the ALLOWED_EMAILS env var for first-run bootstrap.
+const ALLOWLIST_KEY = 'allowlist';
+
+// Always-allowed trial seed, baked in so login + copilot work even before KV /
+// env vars are configured in the Cloudflare dashboard. Add more via the admin
+// endpoint (persists to KV) or the ALLOWED_EMAILS env var. Safe to prune later.
+const BOOTSTRAP_ALLOWLIST = ['aistethxyz@gmail.com', 'mehulbh9@gmail.com'];
+
+function normalizeEmails(list) {
+  return [...new Set((list || []).map((e) => String(e).trim().toLowerCase()).filter(Boolean))];
+}
+
+export async function getAllowlist(env) {
+  const stored = await getJson(env, ALLOWLIST_KEY, null);
+  const kvList = Array.isArray(stored) ? stored : [];
+  const envList = (env.ALLOWED_EMAILS || '').split(',');
+  // KV-stored + env-seeded + always-on bootstrap emails, deduped.
+  return normalizeEmails([...BOOTSTRAP_ALLOWLIST, ...kvList, ...envList]);
+}
+
+export async function isAllowed(env, email) {
+  if (!email) return false;
+  const list = await getAllowlist(env);
+  return list.includes(String(email).trim().toLowerCase());
+}
+
+export async function addAllowed(env, email) {
+  const list = await getAllowlist(env);
+  const next = normalizeEmails([...list, email]);
+  await putJson(env, ALLOWLIST_KEY, next);
+  return next;
+}
+
+export async function removeAllowed(env, email) {
+  const target = String(email).trim().toLowerCase();
+  const next = (await getAllowlist(env)).filter((e) => e !== target);
+  await putJson(env, ALLOWLIST_KEY, next);
+  return next;
+}
+
 function encountersKey(userId) {
   return `encounters:${userId}`;
 }
@@ -137,6 +179,7 @@ export async function fileGetUser(env, userId) {
       practiceId: user.practiceId,
       npi: user.npi,
       specialty: user.specialty,
+      emCopilot: await isAllowed(env, user.email),
     },
     practice: user.practiceName
       ? { id: user.practiceId || 'practice-1', name: user.practiceName, specialties: ['Emergency Medicine'] }
@@ -145,11 +188,13 @@ export async function fileGetUser(env, userId) {
 }
 
 async function buildAuthResponse(env, user) {
+  const emCopilot = await isAllowed(env, user.email);
   const token = await signToken(env, {
     id: user.id,
     email: user.email,
     role: user.role,
     practiceId: user.practiceId,
+    emCopilot,
   });
   return {
     token,
@@ -163,6 +208,7 @@ async function buildAuthResponse(env, user) {
       npi: user.npi,
       specialty: user.specialty,
       picture: user.picture,
+      emCopilot,
     },
     practice: user.practiceName
       ? { id: user.practiceId || 'practice-1', name: user.practiceName, specialties: ['Emergency Medicine'] }

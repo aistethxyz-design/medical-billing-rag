@@ -18,6 +18,7 @@ import EncounterManagement from '@/pages/EncounterManagement';
 import Analytics from '@/pages/Analytics';
 import Settings from '@/pages/Settings';
 import BillingAssistant from '@/pages/BillingAssistant';
+import EmCopilot from '@/pages/EmCopilot';
 import ChatBot from '@/components/ChatBot';
 
 // RAG Components
@@ -46,6 +47,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return <Navigate to={`/login?redirect=${encodeURIComponent(redirect)}`} replace />;
   }
   
+  return <>{children}</>;
+};
+
+const AllowlistRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuthStore();
+  if (!user?.emCopilot) {
+    return <Navigate to="/dashboard" replace />;
+  }
   return <>{children}</>;
 };
 
@@ -137,6 +146,20 @@ function App() {
                   <AppLayout>
                     <BillingAssistant />
                   </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* EM Copilot — allowlisted trial users only */}
+            <Route
+              path="/em-copilot"
+              element={
+                <ProtectedRoute>
+                  <AllowlistRoute>
+                    <AppLayout>
+                      <EmCopilot />
+                    </AppLayout>
+                  </AllowlistRoute>
                 </ProtectedRoute>
               }
             />
