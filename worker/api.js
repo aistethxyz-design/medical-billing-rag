@@ -1,4 +1,4 @@
-import { verifyToken, verifyGoogleIdToken } from './jwt.js';
+import { verifyToken, verifyGoogleIdToken, googleClientId } from './jwt.js';
 import { matchCodesFromText } from './ohip.js';
 import {
   hasStorage,
@@ -72,18 +72,22 @@ export async function handleApiRequest(request, env) {
   }
 
   if (path === '/api/auth/config') {
-    const googleClientId = env.VITE_GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID || '';
-    return json({ success: true, googleClientId, googleConfigured: Boolean(googleClientId), fileAuth: true });
+    const clientId = googleClientId(env);
+    return json({ success: true, googleClientId: clientId, googleConfigured: Boolean(clientId), fileAuth: true });
   }
 
-  if (!hasStorage(env) && path.startsWith('/api/') && path !== '/api/auth/config') {
+  // Endpoints that must work even when KV isn't bound yet (auth + copilot use a
+  // KV-optional path). Only the KV-backed billing endpoints hard-require storage.
+  const KV_OPTIONAL = ['/api/auth/config', '/api/auth/google', '/api/auth/me', '/api/auth/logout',
+    '/api/copilot', '/api/snapshot', '/api/admin/allowlist'];
+  if (!hasStorage(env) && path.startsWith('/api/') && !KV_OPTIONAL.includes(path)) {
     return err('Add KV namespace binding named AISTETH_KV in Cloudflare Worker settings', 503);
   }
 
   if (path === '/api/auth/google' && method === 'POST') {
     const body = await readBody(request);
     if (!body.credential) return err('Google credential is required', 400);
-    const clientId = env.VITE_GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID || '';
+    const clientId = googleClientId(env);
     if (!clientId) return err('Google sign-in is not configured on the server', 503);
     try {
       const profile = await verifyGoogleIdToken(env, body.credential);
@@ -105,6 +109,22 @@ export async function handleApiRequest(request, env) {
 
   if (path === '/api/auth/me' && method === 'GET') {
     if (!user) return err('Access denied. Invalid token.', 401);
+    // Without KV, reconstruct the profile from the signed token claims so the
+    // session stays valid (the JWT is the source of truth for identity here).
+    if (!hasStorage(env)) {
+      return json({
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName || (user.email ? user.email.split('@')[0] : 'User'),
+          lastName: user.lastName || '',
+          role: user.role || 'PROVIDER',
+          emCopilot: user.emCopilot === true || (await isAllowed(env, user.email)),
+        },
+        practice: null,
+      });
+    }
     const result = await fileGetUser(env, user.id);
     if (!result) return err('User not found', 404);
     return json({ success: true, ...result });

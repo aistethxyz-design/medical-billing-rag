@@ -138,6 +138,23 @@ export async function ensureProviderData(env, providerId) {
 }
 
 export async function fileGoogleLogin(env, profile) {
+  // KV-optional path: if no namespace is bound, issue a session straight from the
+  // Google profile without persisting a user record. The JWT carries identity;
+  // the allowlist (bootstrap + env) still gates who may sign in.
+  if (!hasStorage(env)) {
+    const user = {
+      id: `g-${profile.googleId}`,
+      email: profile.email.toLowerCase(),
+      googleId: profile.googleId,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      role: 'PROVIDER',
+      specialty: 'Ontario',
+      picture: profile.picture,
+    };
+    return buildAuthResponse(env, user);
+  }
+
   const users = await getUsers(env);
   let user = users.find((u) => u.googleId === profile.googleId)
     ?? users.find((u) => u.email.toLowerCase() === profile.email.toLowerCase());
@@ -195,6 +212,8 @@ async function buildAuthResponse(env, user) {
     role: user.role,
     practiceId: user.practiceId,
     emCopilot,
+    firstName: user.firstName,
+    lastName: user.lastName,
   });
   return {
     token,

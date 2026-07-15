@@ -1,4 +1,5 @@
 import { handleApiRequest } from './worker/api.js';
+import { googleClientId } from './worker/jwt.js';
 
 function isAppStaticAsset(pathname) {
   return pathname.startsWith('/app/assets/') || /\.[a-zA-Z0-9]+$/.test(pathname);
@@ -15,11 +16,11 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === '/app/runtime-config.json') {
-      const googleClientId = env.VITE_GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID || '';
+      const clientId = googleClientId(env);
       const apiUrlRaw = env.VITE_API_URL || '';
       const apiUrl = !apiUrlRaw || apiUrlRaw.includes('YOUR-BACKEND') ? url.origin : apiUrlRaw.replace(/\/$/, '');
       return Response.json(
-        { googleClientId, apiUrl, googleConfigured: Boolean(googleClientId) },
+        { googleClientId: clientId, apiUrl, googleConfigured: Boolean(clientId) },
         { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } },
       );
     }
