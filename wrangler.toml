@@ -6,7 +6,7 @@
 #
 # After deploy, bind AISTETH_KV and set VITE_GOOGLE_CLIENT_ID + JWT_SECRET on this Worker.
 # Attach custom domain wiserdoc.com here and remove it from the Pages project.
-name = "medical-billing-rag"
+name = "wiserdoc"
 main = "worker.js"
 compatibility_date = "2024-05-24"
 compatibility_flags = ["nodejs_compat"]
