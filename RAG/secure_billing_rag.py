@@ -1181,8 +1181,8 @@ def main():
     
     # API Keys configuration
     st.sidebar.header("🔑 API Configuration")
-    pinecone_key = st.sidebar.text_input("Pinecone API Key", type="password", value="pcsk_si3DV_F4yTwrPzsfMs6zfKdZCwgYNkCrU5c8BjRXSsqCPBBbDAQqWU2Kc5z77K6ghAtd9")
-    openrouter_key = st.sidebar.text_input("OpenRouter API Key", type="password", value="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")
+    pinecone_key = st.sidebar.text_input("Pinecone API Key", type="password", value="YOUR_PINECONE_API_KEY")
+    openrouter_key = st.sidebar.text_input("OpenRouter API Key", type="password", value="YOUR_OPENROUTER_API_KEY")
     
     if not pinecone_key or not openrouter_key:
         st.warning("Please enter your API keys in the sidebar to continue.")

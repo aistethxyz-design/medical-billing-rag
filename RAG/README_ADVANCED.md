@@ -39,8 +39,8 @@ streamlit run advanced_billing_rag.py
 ## 🔧 Configuration
 
 ### API Keys
-- **Pinecone**: `pcsk_si3DV_F4yTwrPzsfMs6zfKdZCwgYNkCrU5c8BjRXSsqCPBBbDAQqWU2Kc5z77K6ghAtd9`
-- **OpenRouter**: `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`
+- **Pinecone**: `YOUR_PINECONE_API_KEY`
+- **OpenRouter**: `YOUR_OPENROUTER_API_KEY`
 
 ### Models Used
 - **Embedding Model**: `all-MiniLM-L6-v2` (384 dimensions)

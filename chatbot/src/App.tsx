@@ -6,7 +6,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { Message, Model } from './types'
 import { queryPinecone } from './services/pineconeService'
 
-const OPENROUTER_API_KEY = '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'
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY ?? ''
 
 const availableModels: Model[] = [
   {

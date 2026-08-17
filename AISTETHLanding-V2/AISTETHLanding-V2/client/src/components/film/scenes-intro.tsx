@@ -89,10 +89,13 @@ function OpeningStage({ p }: { p: MotionValue<number> }) {
 
 /* ── Scene 2 · into the lens (HUD boot) ───────────────────────────────── */
 
+// 32,978 is the real chunk count of the EM Copilot index (BM25 + vector).
+// Sources are described by category, not title — the reference texts are licensed.
 const BOOT_LINES: [string, string][] = [
   ["MIC ARRAY", "online"],
   ["SPEECH MODEL", "ready"],
-  ["RAG INDEX · 12,400 CLINICAL DOCUMENTS", "loaded"],
+  ["RAG INDEX · 32,978 PASSAGES", "loaded"],
+  ["SOURCES · EM REFERENCE TEXTS, RESUSCITATION ALGORITHMS", "indexed"],
   ["MODE", "ambient listening"],
 ];
 

@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Keys Configuration
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "pcsk_si3DV_F4yTwrPzsfMs6zfKdZCwgYNkCrU5c8BjRXSsqCPBBbDAQqWU2Kc5z77K6ghAtd9")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "YOUR_PINECONE_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "YOUR_OPENROUTER_API_KEY")
 
 # Pinecone Configuration
 PINECONE_ENVIRONMENT = "us-east-1"

@@ -18,8 +18,8 @@ def test_advanced_rag_system():
         print("📊 Initializing Advanced RAG System...")
         rag_system = AdvancedBillingRAGSystem(
             'Codes by class.csv',
-            'pcsk_si3DV_F4yTwrPzsfMs6zfKdZCwgYNkCrU5c8BjRXSsqCPBBbDAQqWU2Kc5z77K6ghAtd9',
-            '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'
+            'YOUR_PINECONE_API_KEY',
+            'YOUR_OPENROUTER_API_KEY'
         )
         print("✅ Advanced RAG System initialized successfully!")
         

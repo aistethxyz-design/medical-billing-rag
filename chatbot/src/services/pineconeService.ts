@@ -1,7 +1,7 @@
 import { Pinecone } from '@pinecone-database/pinecone'
 
 const pinecone = new Pinecone({
-  apiKey: 'pcsk_si3DV_F4yTwrPzsfMs6zfKdZCwgYNkCrU5c8BjRXSsqCPBBbDAQqWU2Kc5z77K6ghAtd9'
+  apiKey: import.meta.env.VITE_PINECONE_API_KEY ?? ''
 })
 
 export const queryPinecone = async (query: string) => {
