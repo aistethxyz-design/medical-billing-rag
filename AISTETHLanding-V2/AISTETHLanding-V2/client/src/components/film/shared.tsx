@@ -269,6 +269,73 @@ export function Plate({
   );
 }
 
+/**
+ * A living plate: the still image, with a matching video fading in on top once
+ * it has actually buffered.
+ *
+ * This is strictly an enhancement. The still underneath is the real frame and
+ * carries the composition; the video only adds breathing and a blink to a
+ * human moment. It is never loaded on small screens, under reduced motion, on
+ * save-data connections, or on low-core devices — and if it fails, stalls, or
+ * is simply slow, the still is what the visitor sees. No clinical content ever
+ * depends on it.
+ */
+export function LivePlate({
+  plate,
+  video,
+  alt,
+  style,
+  priority = false,
+}: {
+  plate: { src: string; srcSet: string };
+  video?: string;
+  alt: string;
+  style?: React.ComponentProps<typeof motion.img>["style"];
+  priority?: boolean;
+}) {
+  const reduced = useReducedMotion();
+  const [ready, setReady] = useState(false);
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    if (!video || reduced) return;
+    const nav = navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+      deviceMemory?: number;
+    };
+    const slowNet =
+      nav.connection?.saveData === true ||
+      /(^|-)(2g|slow-2g)$/.test(nav.connection?.effectiveType ?? "");
+    const weakDevice =
+      (navigator.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4;
+    const smallScreen = window.matchMedia("(max-width: 900px)").matches;
+    setAllowed(!slowNet && !weakDevice && !smallScreen);
+  }, [video, reduced]);
+
+  return (
+    <>
+      <Plate plate={plate} alt={alt} priority={priority} style={style} />
+      {video && allowed && !reduced && (
+        <motion.video
+          aria-hidden
+          src={video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          onCanPlayThrough={() => setReady(true)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: ready ? 1 : 0 }}
+          transition={{ duration: 1.1, ease: "easeOut" }}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={style}
+        />
+      )}
+    </>
+  );
+}
+
 /* ── film grain, vignette, scrim ──────────────────────────────────────── */
 
 export function Vignette({ strength = 0.75 }: { strength?: number }) {

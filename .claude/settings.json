@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"- [AISteth repo secrets]\\(aisteth-repo-secrets.md\\) — Pinecone/OpenRouter keys were public; scrubbed from HEAD 2026-08-17 but still in history and UNROTATED\")",
+      "Read(//c/Users/mehul/AppData/Local/Temp/claude/c--Users-mehul-Documents-AISteth/724220bf-c926-4442-b083-bfda8ebe98ed/tasks/**)"
+    ]
+  }
+}

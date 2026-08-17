@@ -15,15 +15,15 @@ import {
   Beat,
   useBeat,
   Plate,
+  LivePlate,
   Vignette,
   TopScrim,
-  HudFrame,
   Micro,
-  MMicro,
   Dot,
   GlassCard,
 } from "./shared";
-import { HERO_OTS, PATIENT_WARM } from "./images";
+import { LensOptics, DrawnFrame } from "./lineart";
+import { HERO_OTS, PATIENT_WARM, HERO_VIDEO } from "./images";
 
 /* ── Scene 1 · hero ───────────────────────────────────────────────────── */
 
@@ -81,8 +81,9 @@ function HeroStage({ p, tl }: StageProps) {
 
   return (
     <>
-      <Plate
+      <LivePlate
         plate={HERO_OTS}
+        video={HERO_VIDEO}
         alt="A physician wearing smart glasses listening to a relaxed patient across a consulting desk"
         priority
         style={reduced ? undefined : { scale: imgScale, willChange: "transform" }}
@@ -226,30 +227,38 @@ const BOOT_LINES: [string, string][] = [
   ["MIC ARRAY", "online"],
   ["SPEECH MODEL", "ready"],
   ["RAG INDEX · 32,978 PASSAGES", "loaded"],
-  ["SOURCES · EM REFERENCE TEXTS, RESUSCITATION ALGORITHMS", "indexed"],
+  ["SOURCES · EM TEXTS + ALGORITHMS", "indexed"],
   ["MODE", "ambient listening"],
 ];
 
 function PovStage({ p, tl }: StageProps) {
   const reduced = useReducedMotion();
-  // The transition: we start behind the physician and cross into their view.
-  // The foreground glasses plate slides up and out as the patient resolves.
-  const otsOpacity = useTransform(p, [0, 0.30], [1, 0]);
-  const otsScale = useTransform(p, [0, 0.30], [1.12, 1.6]);
-  const otsBlurV = useTransform(p, [0, 0.30], [0, 8]);
+  /* The crossing, in four overlapping movements:
+     1. the over-the-shoulder plate pushes toward camera and defocuses
+     2. the lens optics draw themselves, then expand past the viewer
+     3. the patient resolves out of that blur — we are now behind the glasses
+     4. the drawn HUD frame settles in
+     Each is a pure function of p, so the whole crossing scrubs and reverses. */
+  const otsOpacity = useTransform(p, [0, 0.28], [1, 0]);
+  const otsScale = useTransform(p, [0, 0.34], [1.1, 1.55]);
+  const otsBlurV = useTransform(p, [0, 0.28], [0, 9]);
   const otsBlur = useTransform(otsBlurV, (v) => `blur(${v.toFixed(1)}px)`);
 
-  const povOpacity = useTransform(p, [0.14, 0.34], [0, 1]);
-  const povScale = useTransform(p, [0.14, 1], [1.14, 1.02]);
-  const povBlurV = useTransform(p, [0.14, 0.36], [10, 0]);
+  const lensDraw = useTransform(p, [0.02, 0.22], [0, 1]);
+  const lensExpand = useTransform(p, [0.18, 0.46], [1, 3.4]);
+  const lensOpacity = useTransform(p, [0.02, 0.16, 0.34, 0.46], [0, 1, 1, 0]);
+
+  const povOpacity = useTransform(p, [0.18, 0.38], [0, 1]);
+  const povScale = useTransform(p, [0.18, 1], [1.16, 1.02]);
+  const povBlurV = useTransform(p, [0.18, 0.40], [12, 0]);
   const povBlur = useTransform(povBlurV, (v) => `blur(${v.toFixed(1)}px)`);
 
-  const hud = useTransform(p, [0.30, 0.44], [0, 1]);
+  const frameDraw = useTransform(p, [0.36, 0.52], [0, 1]);
   const caption = useBeat({ p, tl }, "caption");
 
   return (
     <>
-      {/* patient resolving into focus as we enter the physician's view */}
+      {/* patient resolving into focus as we cross into the physician's view */}
       <Plate
         plate={PATIENT_WARM}
         alt="The patient, seen from the physician's point of view, talking calmly"
@@ -272,8 +281,14 @@ function PovStage({ p, tl }: StageProps) {
             : { opacity: otsOpacity, scale: otsScale, filter: otsBlur, willChange: "transform" }
         }
       />
+      {/* the optics themselves — drawn, then passing over the viewer */}
+      {!reduced && (
+        <div className="film-abs-only absolute inset-0 z-[23]">
+          <LensOptics draw={lensDraw} expand={lensExpand} opacity={lensOpacity} />
+        </div>
+      )}
       <div aria-hidden className="absolute inset-0 z-[21] bg-[#050d10]/45" />
-      <HudFrame opacity={reduced ? 1 : hud} tint={0.1} />
+      <DrawnFrame t={frameDraw} tint={0.05} />
       <Vignette strength={0.7} />
       <TopScrim on={caption.opacity} />
 
@@ -289,10 +304,18 @@ function PovStage({ p, tl }: StageProps) {
           </div>
         </Beat>
 
-        <div className="absolute bottom-[12vh] left-[6vw] z-30 flex flex-col gap-2">
-          {BOOT_LINES.map(([k, v], i) => (
-            <BootLine key={k} p={p} tl={tl} i={i} k={k} v={v} />
-          ))}
+        {/* System readout lives in a panel. Loose mono text floating on
+            photography is unreadable the moment the image behind it is busy. */}
+        <div className="absolute bottom-[10vh] left-[6vw] z-30 w-[min(86vw,440px)] rounded-xl border border-hud/25 bg-[#050d10]/85 px-4 py-3.5 backdrop-blur-sm">
+          <div className="mb-2.5 flex items-center gap-2 border-b border-white/10 pb-2">
+            <Dot />
+            <Micro className="text-hud">System</Micro>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {BOOT_LINES.map(([k, v], i) => (
+              <BootLine key={k} p={p} tl={tl} i={i} k={k} v={v} />
+            ))}
+          </div>
         </div>
 
         <Beat
@@ -330,13 +353,13 @@ function BootLine({
   const opacity = useTransform(p, r.enter, [0, 1]);
   const x = useTransform(p, r.enter, [-10, 0]);
   return (
-    <MMicro
+    <motion.div
       style={reduced ? undefined : { opacity, x }}
-      className="text-hud/90"
+      className="flex items-baseline justify-between gap-3"
     >
-      {k} <span className="text-white/40">·····</span>{" "}
-      <span className="text-white/85">{v}</span>
-    </MMicro>
+      <Micro className="text-white/70">{k}</Micro>
+      <Micro className="shrink-0 text-hud">{v}</Micro>
+    </motion.div>
   );
 }
 

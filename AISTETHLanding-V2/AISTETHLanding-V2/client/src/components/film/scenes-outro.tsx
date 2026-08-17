@@ -15,6 +15,7 @@ import {
   StageProps,
   Beat,
   Plate,
+  LivePlate,
   useBeat,
   Vignette,
   HudFrame,
@@ -22,7 +23,8 @@ import {
   GlassCard,
   ProvTag,
 } from "./shared";
-import { CONSULT_WARM, GLASSES_HERO } from "./images";
+import { CONSULT_WARM, GLASSES_HERO, CONSULT_VIDEO } from "./images";
+import { CollapseWeb, DrawnFrame } from "./lineart";
 
 /* ── Scene 6 · encounter collapse → structured summary ────────────────── */
 
@@ -77,12 +79,19 @@ function SummaryStage({ p, tl }: StageProps) {
   const complete = useBeat({ p, tl }, "complete");
   // The live HUD converges into a single line before reorganising into cards.
   const converge = useTransform(complete.opacity, [0, 1], [1.06, 1]);
+  // Everything the copilot was holding runs inward and becomes structure. The
+  // lines draw first, then the cards form along them.
+  const collapse = useTransform(p, [0, tl.sub("cards", 4).start], [0, 1]);
+  const frameDraw = useTransform(p, [0, 0.1], [0, 1]);
 
   return (
     <>
       <div aria-hidden className="absolute inset-0 bg-[#050b0e]" />
-      <div aria-hidden className="hud-grid absolute inset-0 opacity-25" />
-      <HudFrame opacity={0.4} tint={0.05} />
+      <div aria-hidden className="hud-grid absolute inset-0 opacity-20" />
+      <div className="film-abs-only absolute inset-0 z-[15]">
+        <CollapseWeb t={collapse} />
+      </div>
+      <DrawnFrame t={frameDraw} tint={0.04} />
       <Vignette strength={0.8} />
 
       <SafeLayer>
@@ -229,8 +238,9 @@ function CloseStage({ p, tl }: StageProps) {
 
   return (
     <>
-      <Plate
+      <LivePlate
         plate={CONSULT_WARM}
+        video={CONSULT_VIDEO}
         alt="The physician and patient in conversation, eye to eye, with no screen between them"
         style={reduced ? undefined : { scale: wideScale, willChange: "transform" }}
       />

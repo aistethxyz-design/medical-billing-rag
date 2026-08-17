@@ -28,6 +28,7 @@ import {
   Segment,
 } from "./shared";
 import { PATIENT_WARM } from "./images";
+import { RetrievalWeb, Connector, DrawnFrame } from "./lineart";
 
 /* ── Scene 3 · listening & understanding ──────────────────────────────── */
 
@@ -66,6 +67,9 @@ function ListenStage({ p, tl }: StageProps) {
   const quiet = useBeat({ p, tl }, "quiet");
   // The AI dims itself when it has nothing useful to add.
   const hudCalm = useTransform(quiet.opacity, [0, 1], [1, 0.25]);
+  // The panel arrives with the first word, never as an empty box waiting.
+  const lineStart = tl.range("line").start;
+  const panelIn = useTransform(p, [Math.max(0, lineStart - 0.06), lineStart], [0, 1]);
 
   return (
     <>
@@ -100,7 +104,10 @@ function ListenStage({ p, tl }: StageProps) {
           className="absolute inset-x-0 bottom-[7vh] z-30 mx-auto w-[min(92vw,820px)] px-2"
         >
           {/* live transcript */}
-          <div className="rounded-2xl border border-white/12 bg-[#071310]/85 p-5 backdrop-blur-sm sm:p-6">
+          <motion.div
+            style={reduced ? undefined : { opacity: panelIn }}
+            className="rounded-2xl border border-white/12 bg-[#071310]/85 p-5 backdrop-blur-sm sm:p-6"
+          >
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <Dot />
@@ -124,7 +131,7 @@ function ListenStage({ p, tl }: StageProps) {
               <Extracted p={p} tl={tl} i={0} text="Chest pressure" />
               <Extracted p={p} tl={tl} i={1} text="Onset · yesterday evening" />
             </div>
-          </div>
+          </motion.div>
 
           {/* structured understanding — not a transcript, a clinical picture */}
           <ContextPanel p={p} tl={tl} />
@@ -252,12 +259,21 @@ function RetrieveStage({ p, tl }: StageProps) {
   const reduced = useReducedMotion();
   const searching = useBeat({ p, tl }, "searching");
   const refsIn = useTransform(p, tl.sub("refs", 0).enter, [0, 1]);
+  // The drawn layer runs slightly ahead of the cards it explains.
+  const webDraw = useTransform(p, [tl.range("searching").start, tl.sub("refs", 3).end], [0, 1]);
+  const frameDraw = useTransform(p, [0, 0.12], [0, 1]);
 
   return (
     <>
       <div aria-hidden className="absolute inset-0 bg-[#050b0e]" />
-      <div aria-hidden className="hud-grid absolute inset-0 opacity-40" />
-      <HudFrame opacity={0.45} tint={0.05} />
+      <div aria-hidden className="hud-grid absolute inset-0 opacity-30" />
+      {/* retrieval, drawn: the query reaching out into the index and pulling
+          a few passages back. The whole scene is the AI layer, so the line
+          work carries it rather than sitting on a photograph. */}
+      <div className="film-abs-only absolute inset-0 z-[15]">
+        <RetrievalWeb t={webDraw} />
+      </div>
+      <DrawnFrame t={frameDraw} tint={0.04} />
       <Vignette strength={0.8} />
 
       <SafeLayer>
@@ -429,6 +445,9 @@ function CueStage({ p, tl }: StageProps) {
   const glow = useTransform(addressed.opacity, [0, 1], [0, 0.35]);
   // Unresolved copy fades out as the resolved copy fades in, in the same box.
   const unresolvedOut = useTransform(addressed.opacity, [0, 0.6], [1, 0]);
+  // The link draws while the physician is asking, then holds.
+  const linkDraw = useTransform(p, [tl.range("ask").start, tl.range("listening").end], [0, 1]);
+  const frameDraw = useTransform(p, [0, 0.1], [0, 1]);
 
   return (
     <>
@@ -438,7 +457,12 @@ function CueStage({ p, tl }: StageProps) {
         style={reduced ? undefined : { scale: imgScale, willChange: "transform" }}
       />
       <div aria-hidden className="absolute inset-0 z-[21] bg-[#050d10]/70" />
-      <HudFrame opacity={1} tint={0.08} />
+      {/* the reasoning made visible: a line from the question the physician
+          asked down to the cue it resolves */}
+      <div className="film-abs-only absolute inset-0 z-[24]">
+        <Connector t={linkDraw} from={{ x: 72, y: 30 }} to={{ x: 30, y: 52 }} />
+      </div>
+      <DrawnFrame t={frameDraw} tint={0.06} />
       <Vignette strength={0.7} />
 
       <SafeLayer>

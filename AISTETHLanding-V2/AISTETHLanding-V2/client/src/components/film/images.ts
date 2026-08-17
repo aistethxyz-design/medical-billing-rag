@@ -17,6 +17,14 @@ import glasses960 from "@/assets/glasses-hero-960.webp";
 import glasses1440 from "@/assets/glasses-hero-1440.webp";
 import glasses1920 from "@/assets/glasses-hero-1920.webp";
 
+// Two human moments get a matching video generated from the still itself, so
+// there is no seam. These are enhancements only — see LivePlate.
+import heroVideo from "@/assets/hero-live.mp4";
+import consultVideo from "@/assets/consult-live.mp4";
+
+export const HERO_VIDEO = heroVideo;
+export const CONSULT_VIDEO = consultVideo;
+
 export type Plate = { src: string; srcSet: string };
 
 const plate = (a: string, b: string, c: string): Plate => ({
