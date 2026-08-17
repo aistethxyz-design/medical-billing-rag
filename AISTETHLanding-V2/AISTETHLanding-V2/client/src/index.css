@@ -70,6 +70,67 @@
   @apply bg-gradient-to-r from-blue-50 to-blue-100;
 }
 
+/* ── Cinematic landing film ─────────────────────────────────────────── */
+
+.film {
+  /* subtle scanlines over every scene, like a lens display */
+  position: relative;
+}
+.film::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.015) 0px,
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+/* waveform bars — animate only while visible (opacity is scroll-driven) */
+@keyframes wf {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.wf-bar {
+  animation: wf 0.9s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* blinking transcription caret */
+@keyframes caret-blink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+.caret {
+  animation: caret-blink 1.1s step-end infinite;
+}
+
+/* perspective grid for the "inside the machine" retrieval scene */
+.hud-grid {
+  background-image:
+    linear-gradient(rgba(74, 222, 158, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 222, 158, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 75%);
+}
+
+/* soft outer glow for AI cue cards */
+.hud-card {
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 158, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-bar, .caret { animation: none; }
+}
+
 .section-spacing {
   scroll-margin-top: 5rem;
 }

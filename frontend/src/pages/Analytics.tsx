@@ -1,5 +1,26 @@
 import React from 'react';
-import { BarChart3, TrendingUp, DollarSign, Shield } from 'lucide-react';
+import { BarChart3, TrendingUp, DollarSign, Shield, FlaskConical } from 'lucide-react';
+import PageHeader from '@/components/layout/PageHeader';
+
+// Illustrative sample data — clearly labeled in the UI. Live analytics will
+// populate from encounter data; keep the "Sample data" pill until then.
+const SAMPLE_TREND = [
+  { label: 'Oct', value: 28500 },
+  { label: 'Nov', value: 32100 },
+  { label: 'Dec', value: 35200 },
+  { label: 'Jan', value: 33800 },
+  { label: 'Feb', value: 38600 },
+  { label: 'Mar', value: 41200 },
+  { label: 'Apr', value: 45280 },
+];
+
+const SAMPLE_TOP_CODES = [
+  { label: 'H152 — Comprehensive ER assessment', value: 12450, color: '#3b82f6' },
+  { label: 'A004 — General reassessment', value: 9320, color: '#8b5cf6' },
+  { label: 'H153 — Multiple systems assessment', value: 7680, color: '#06b6d4' },
+  { label: 'G522 — Critical care, first hour', value: 5410, color: '#f59e0b' },
+  { label: 'H113 — After-hours premium', value: 4220, color: '#10b981' },
+];
 
 // ── Inline SVG charts (no chart-library dependency) ──────────────────────────
 
@@ -92,43 +113,25 @@ const HBarChart: React.FC<BarChartProps> = ({ data, formatValue }) => {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 const Analytics: React.FC = () => {
-  const trend = [
-    { label: 'Oct', value: 28500 },
-    { label: 'Nov', value: 32100 },
-    { label: 'Dec', value: 35200 },
-    { label: 'Jan', value: 33800 },
-    { label: 'Feb', value: 38600 },
-    { label: 'Mar', value: 41200 },
-    { label: 'Apr', value: 45280 },
-  ];
-
-  const topCodes = [
-    { label: 'H152 — Comprehensive ER assessment', value: 12450, color: '#3b82f6' },
-    { label: 'A004 — General reassessment', value: 9320, color: '#8b5cf6' },
-    { label: 'H153 — Multiple systems assessment', value: 7680, color: '#06b6d4' },
-    { label: 'G522 — Critical care, first hour', value: 5410, color: '#f59e0b' },
-    { label: 'H113 — After-hours premium', value: 4220, color: '#10b981' },
-  ];
+  const trend = SAMPLE_TREND;
+  const topCodes = SAMPLE_TOP_CODES;
 
   const formatCurrency = (n: number) =>
     new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(n);
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-gray-200 px-6 py-5 rounded-xl shadow-sm flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <BarChart3 className="w-7 h-7 text-blue-600" />
-            Analytics & Reporting
-          </h1>
-          <p className="text-gray-600 text-sm mt-1">Billing optimization and compliance metrics</p>
-        </div>
-        <select className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white" title="Date range">
-          <option>Last 7 months</option>
-          <option>Last 30 days</option>
-          <option>Year to date</option>
-        </select>
-      </div>
+      <PageHeader
+        icon={BarChart3}
+        title="Analytics & Reporting"
+        subtitle="Billing optimization and compliance metrics"
+        actions={
+          <span className="status-pill bg-blue-50 text-blue-700 border-blue-200">
+            <FlaskConical className="w-3.5 h-3.5" />
+            Sample data
+          </span>
+        }
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="stat-card p-5">
@@ -206,6 +209,10 @@ const Analytics: React.FC = () => {
           <HBarChart data={topCodes} formatValue={formatCurrency} />
         </div>
       </div>
+
+      <p className="text-center text-xs text-gray-400">
+        Illustrative sample data — live analytics populate from your encounters.
+      </p>
     </div>
   );
 };

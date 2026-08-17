@@ -11,7 +11,8 @@ import authRoutes from './routes/auth';
 import analyticsRoutes from './routes/analytics';
 import encounterRoutes from './routes/encounters';
 import documentRoutes from './routes/documents';
-import { authenticate } from './middleware/auth';
+import { authenticate, AuthenticatedRequest } from './middleware/auth';
+import { isEmCopilotAllowed } from './services/fileAuthService';
 
 dotenv.config();
 
@@ -37,6 +38,32 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+
+// EM Copilot proxy — same contract as the Worker: verify JWT + allowlist,
+// then forward to the RAG backend with the server-to-server shared secret.
+for (const [route, upstreamPath] of [['/api/copilot', '/copilot'], ['/api/snapshot', '/snapshot']] as const) {
+  app.post(route, authenticate, async (req: AuthenticatedRequest, res) => {
+    if (!isEmCopilotAllowed(req.user?.email || '')) {
+      return res.status(403).json({ error: 'Not authorized for the EM Copilot' });
+    }
+    const base = (process.env.EM_COPILOT_URL || 'https://em-copilot.aisteth.xyz').replace(/\/$/, '');
+    const secret = process.env.COPILOT_SHARED_SECRET;
+    if (!secret) {
+      return res.status(503).json({ error: 'EM Copilot backend is not configured (set COPILOT_SHARED_SECRET in backend/.env).' });
+    }
+    try {
+      const upstream = await fetch(`${base}${upstreamPath}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Copilot-Secret': secret },
+        body: JSON.stringify(req.body),
+        signal: AbortSignal.timeout(60000),
+      });
+      res.status(upstream.status).type('application/json').send(await upstream.text());
+    } catch {
+      res.status(502).json({ error: 'EM Copilot backend is unavailable. Please try again.' });
+    }
+  });
+}
 app.use('/api/analytics', authenticate, analyticsRoutes);
 app.use('/api/encounters', authenticate, encounterRoutes);
 app.use('/api/documents', authenticate, documentRoutes);

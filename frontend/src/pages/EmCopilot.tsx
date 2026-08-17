@@ -1,6 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Stethoscope,
+  Mic,
+  MicOff,
+  ChevronRight,
+  RotateCcw,
+  Send,
+  FileText,
+  Keyboard,
+  BookOpen,
+  AlertTriangle,
+} from 'lucide-react';
 import { getApiBase } from '@/services/runtimeConfig';
 import { useAuthStore } from '@/stores/authStore';
+import PageHeader from '@/components/layout/PageHeader';
+import copilotGlasses from '@/assets/copilot-glasses.png';
 
 /**
  * EM Copilot — live decision-support cues from a doctor–patient conversation.
@@ -23,11 +37,11 @@ const SNAPSHOT_REFRESH_CHARS = 40;
 type Status = 'idle' | 'listening' | 'thinking' | 'guidance' | 'error';
 
 const STATUS_STYLES: Record<Status, string> = {
-  idle: 'text-gray-400 border-gray-500',
-  listening: 'text-green-400 border-green-400 bg-green-400/10',
-  thinking: 'text-amber-400 border-amber-400 bg-amber-400/10',
-  guidance: 'text-sky-400 border-sky-400 bg-sky-400/10',
-  error: 'text-red-400 border-red-400 bg-red-400/10',
+  idle: 'bg-gray-50 text-gray-600 border-gray-200',
+  listening: 'bg-green-50 text-green-700 border-green-200',
+  thinking: 'bg-amber-50 text-amber-700 border-amber-200',
+  guidance: 'bg-sky-50 text-sky-700 border-sky-200',
+  error: 'bg-red-50 text-red-700 border-red-200',
 };
 
 function paginateByLines(text: string): string[] {
@@ -72,12 +86,12 @@ const EmCopilot: React.FC = () => {
   const [sources, setSources] = useState('');
   const [manualText, setManualText] = useState('');
   const [speechSupported, setSpeechSupported] = useState(true);
+  const [pageCount, setPageCount] = useState(0);
 
   // Imperative state that must not trigger re-renders on every keystroke.
   const finalTextRef = useRef('');
   const recognitionRef = useRef<any>(null);
   const listeningRef = useRef(false);
-  const micStreamRef = useRef<MediaStream | null>(null);
   const guidancePagesRef = useRef<string[]>([]);
   const pageIndexRef = useRef(0);
   const lastQueriedRef = useRef('');
@@ -86,6 +100,9 @@ const EmCopilot: React.FC = () => {
   const snapshotTextRef = useRef('');
   const snapshotInFlightRef = useRef(false);
   const lastSnapshotRef = useRef('');
+  // Ref indirection so dispatchQuery always calls the latest maybeTriggerQuery
+  // (they reference each other; a direct call would close over the first render's copy).
+  const maybeTriggerQueryRef = useRef<() => void>(() => {});
 
   const setChip = useCallback((kind: Status, text: string) => {
     setStatus(kind);
@@ -95,6 +112,7 @@ const EmCopilot: React.FC = () => {
   const showGlasses = useCallback((text: string, page: number, total: number) => {
     setGlasses(text.slice(0, PAGE_CHARS + 60));
     setPageLabel(total > 1 ? `${page}/${total}` : '');
+    setPageCount(total);
   }, []);
 
   const authHeaders = useCallback(
@@ -147,7 +165,7 @@ const EmCopilot: React.FC = () => {
     const isFirst = guidancePagesRef.current.length === 0;
 
     try {
-      if (isFirst && !snapshotTextRef.current) showGlasses('⏳ Analyzing…', 0, 0);
+      if (isFirst && !snapshotTextRef.current) showGlasses('Analyzing…', 0, 0);
       setChip('thinking', isFirst ? 'Querying EM Copilot…' : 'Updating guidance…');
 
       const resp = await fetch(`${apiBase}/api/copilot`, {
@@ -179,13 +197,12 @@ const EmCopilot: React.FC = () => {
     } catch (err: any) {
       setChip('error', String(err?.message || err));
       if (!guidancePagesRef.current.length && !snapshotTextRef.current) {
-        showGlasses(`⚠ ${String(err?.message || err).slice(0, 160)}`, 0, 0);
+        showGlasses(`ERROR: ${String(err?.message || err).slice(0, 160)}`, 0, 0);
       }
     } finally {
       inFlightRef.current = false;
-      if (dirtyRef.current) maybeTriggerQuery();
+      if (dirtyRef.current) maybeTriggerQueryRef.current();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiBase, authHeaders, setChip, showGlasses, maybeTriggerSnapshot]);
 
   const maybeTriggerQuery = useCallback(() => {
@@ -200,6 +217,7 @@ const EmCopilot: React.FC = () => {
     }
     if (readyForFirst || readyForRefresh) void dispatchQuery();
   }, [dispatchQuery, maybeTriggerSnapshot]);
+  maybeTriggerQueryRef.current = maybeTriggerQuery;
 
   // ── Web Speech API setup ────────────────────────────────────────────────────
   useEffect(() => {
@@ -251,7 +269,9 @@ const EmCopilot: React.FC = () => {
     if (!recognition) return;
     if (!listeningRef.current) {
       try {
-        micStreamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Permission probe only — Web Speech opens its own capture, so release immediately.
+        const probe = await navigator.mediaDevices.getUserMedia({ audio: true });
+        probe.getTracks().forEach((t) => t.stop());
       } catch {
         setChip('error', 'Mic blocked — allow microphone access (check the address-bar icon)');
         return;
@@ -265,10 +285,6 @@ const EmCopilot: React.FC = () => {
       listeningRef.current = false;
       setListening(false);
       try { recognition.stop(); } catch { /* noop */ }
-      if (micStreamRef.current) {
-        micStreamRef.current.getTracks().forEach((t) => t.stop());
-        micStreamRef.current = null;
-      }
       setChip('idle', 'Stopped');
     }
   }, [setChip, showGlasses]);
@@ -313,20 +329,45 @@ const EmCopilot: React.FC = () => {
   }, [showGlasses, setChip]);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">EM Copilot</h1>
-          <p className="text-sm text-gray-500">Decision-support prototype — speak or type a patient presentation</p>
+    <div className="max-w-4xl mx-auto space-y-5">
+      <PageHeader
+        icon={Stethoscope}
+        title="EM Copilot"
+        subtitle="Live decision support — speak or type a patient presentation"
+        iconTone="bg-purple-50 text-purple-600"
+        actions={
+          <span className={`status-pill uppercase tracking-wide ${STATUS_STYLES[status]}`}>
+            {(status === 'listening' || status === 'thinking') && (
+              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+            )}
+            {statusText}
+          </span>
+        }
+      />
+
+      {/* Glasses hero — what the simulated display below represents */}
+      <div className="panel overflow-hidden flex flex-col sm:flex-row items-stretch">
+        <div className="p-5 flex-1 flex flex-col justify-center">
+          <p className="text-xs font-bold tracking-widest uppercase text-purple-500 mb-1">Heads-up decision support</p>
+          <h2 className="text-lg font-semibold text-gray-900">Built for smart glasses at the bedside</h2>
+          <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
+            Guidance is paged into short, glanceable cues sized for a heads-up lens display.
+            The black panel below simulates exactly what the wearer sees.
+          </p>
         </div>
-        <span className={`text-xs font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full border ${STATUS_STYLES[status]}`}>
-          {statusText}
-        </span>
+        <img
+          src={copilotGlasses}
+          alt="Smart glasses with a heads-up clinical display"
+          className="w-full sm:w-72 h-40 sm:h-auto object-cover select-none"
+        />
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-2">
-        <strong>Trial use — synthetic / de-identified cases only.</strong> Do not enter real patient
-        names, MRNs, or other identifiers. This is decision support, not a medical device.
+      <div className="panel p-4 border-l-4 border-l-amber-400 bg-amber-50/60 flex items-start gap-3">
+        <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+        <p className="text-sm text-amber-800">
+          <strong>Trial use — synthetic / de-identified cases only.</strong> Do not enter real patient
+          names, MRNs, or other identifiers. This is decision support, not a medical device.
+        </p>
       </div>
 
       {/* Simulated glasses display */}
@@ -339,17 +380,24 @@ const EmCopilot: React.FC = () => {
       </div>
 
       {/* Controls */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="panel p-4">
         <div className="flex flex-wrap gap-2 items-center">
           <button
             onClick={toggleListen}
             disabled={!speechSupported}
-            className={`px-4 py-2.5 rounded-lg font-semibold text-sm ${listening ? 'bg-red-100 text-red-700' : 'bg-green-500 text-green-950'} disabled:opacity-40`}
+            className={`btn ${listening ? 'btn-danger-soft' : 'btn-success'}`}
           >
+            {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             {listening ? 'Stop listening' : 'Start listening'}
           </button>
-          <button onClick={nextPage} className="px-4 py-2.5 rounded-lg font-semibold text-sm bg-gray-200 text-gray-800">Next page</button>
-          <button onClick={clearAll} className="px-4 py-2.5 rounded-lg font-semibold text-sm bg-gray-200 text-gray-800">Clear</button>
+          <button onClick={nextPage} disabled={pageCount <= 1} className="btn btn-secondary">
+            <ChevronRight className="w-4 h-4" />
+            {pageCount > 1 ? `Next page (${pageLabel})` : 'Next page'}
+          </button>
+          <button onClick={clearAll} className="btn btn-secondary">
+            <RotateCcw className="w-4 h-4" />
+            Clear
+          </button>
         </div>
         <p className="text-xs text-gray-500 mt-2">
           {speechSupported
@@ -359,8 +407,11 @@ const EmCopilot: React.FC = () => {
       </div>
 
       {/* Transcript (operator view) */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-2">Transcript (operator view only — not shown on glasses)</p>
+      <div className="panel p-4">
+        <p className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-2">
+          <FileText className="w-3.5 h-3.5" />
+          Transcript (operator view only — not shown on glasses)
+        </p>
         <p className="text-base leading-relaxed whitespace-pre-wrap break-words min-h-[3em]">
           <span>{finalDisplay}</span>
           <span className="text-gray-400">{interimDisplay}</span>
@@ -368,8 +419,11 @@ const EmCopilot: React.FC = () => {
       </div>
 
       {/* Manual entry */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-2">Or type a scenario</p>
+      <div className="panel p-4">
+        <p className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-2">
+          <Keyboard className="w-3.5 h-3.5" />
+          Or type a scenario
+        </p>
         <textarea
           value={manualText}
           onChange={(e) => setManualText(e.target.value)}
@@ -377,14 +431,20 @@ const EmCopilot: React.FC = () => {
           className="w-full min-h-[72px] rounded-lg border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
         />
         <div className="mt-2">
-          <button onClick={submitManual} className="px-4 py-2 rounded-lg font-semibold text-sm bg-gray-800 text-white">Submit typed text</button>
+          <button onClick={submitManual} className="btn btn-primary">
+            <Send className="w-4 h-4" />
+            Submit typed text
+          </button>
         </div>
       </div>
 
       {/* Full guidance card */}
       {guidanceHtml && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-2">Clinical guidance (consider)</p>
+        <div className="panel p-4">
+          <p className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-2">
+            <BookOpen className="w-3.5 h-3.5" />
+            Clinical guidance (consider)
+          </p>
           <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: guidanceHtml }} />
           {sources && <p className="text-xs text-gray-400 mt-3 pt-2 border-t border-gray-100">{sources}</p>}
         </div>

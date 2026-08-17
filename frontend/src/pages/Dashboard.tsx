@@ -11,7 +11,6 @@ import {
   Sparkles,
   ArrowRight,
   Send,
-  ClipboardList,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
@@ -21,6 +20,8 @@ import {
   displayName,
   type DashboardSummary,
 } from '@/services/dashboardApi';
+import dashboardBanner from '@/assets/dashboard-banner.png';
+import emptyStateArt from '@/assets/empty-state.png';
 
 const formatCurrency = (n: number) =>
   new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(n);
@@ -70,9 +71,16 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header — user & practice specific */}
-      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+      <div className="relative overflow-hidden bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        {/* Banner artwork is white on the left, indigo on the right — text stays legible */}
+        <img
+          src={dashboardBanner}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover scale-[1.08] pointer-events-none select-none"
+        />
+        <div className="relative flex items-center gap-4">
+          <div className="w-11 h-11 rounded-xl bg-white/80 backdrop-blur-sm ring-1 ring-blue-100 flex items-center justify-center">
             <Stethoscope className="w-5 h-5 text-blue-600" />
           </div>
           <div>
@@ -88,7 +96,7 @@ const Dashboard: React.FC = () => {
             )}
           </div>
         </div>
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium ${slot.tone}`}>
+        <div className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium ${slot.tone}`}>
           {slot.icon}
           <span>{slot.label}</span>
         </div>
@@ -141,8 +149,8 @@ const Dashboard: React.FC = () => {
             )}
           </div>
           {recent.length === 0 ? (
-            <div className="px-6 py-12 text-center text-gray-500">
-              <ClipboardList className="w-10 h-10 mx-auto mb-2 opacity-40" />
+            <div className="px-6 py-10 text-center text-gray-500">
+              <img src={emptyStateArt} alt="" aria-hidden className="w-28 h-28 mx-auto mb-1 select-none" />
               <p className="text-sm">No encounters yet.</p>
               <button
                 onClick={() => navigate('/encounters')}
@@ -182,7 +190,7 @@ const Dashboard: React.FC = () => {
           <p className="text-sm text-gray-600 mt-3 leading-relaxed">{guide.tip}</p>
           <button
             onClick={() => navigate('/billing')}
-            className="mt-4 w-full text-sm font-medium py-2.5 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            className="btn btn-primary mt-4 w-full"
           >
             <FileText className="w-4 h-4" />
             Open Billing Assistant

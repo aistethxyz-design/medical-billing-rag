@@ -22,8 +22,8 @@ import {
   Calendar,
   UserPlus,
 } from 'lucide-react';
-import BillingCodeExtractor from '@/components/BillingCodeExtractor';
 import AddToEncounterModal from '@/components/AddToEncounterModal';
+import PageHeader from '@/components/layout/PageHeader';
 import { useAuthStore } from '@/stores/authStore';
 import {
   analyzeClinicalText,
@@ -60,7 +60,6 @@ const BillingAssistant: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [timeOfDay, setTimeOfDay] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [activeTab, setActiveTab] = useState<'search' | 'extract'>('search');
   const [error, setError] = useState<string | null>(null);
   
   // Selected billing codes state (for total calculation)
@@ -95,7 +94,6 @@ const BillingAssistant: React.FC = () => {
     const state = location.state as { searchQuery?: string } | null;
     if (state?.searchQuery) {
       setSearchQuery(state.searchQuery);
-      setActiveTab('search');
       // Trigger search
       (async () => {
         setIsSearching(true);
@@ -261,18 +259,6 @@ const BillingAssistant: React.FC = () => {
     ));
   };
 
-  const handleExtractedCodes = (codes: any[]) => {
-    codes.forEach(code => {
-      addCodeToSelected({
-        code: code.code,
-        description: code.description,
-        amount: code.amount,
-        category: code.category,
-        howToUse: code.reason || ''
-      });
-    });
-  };
-
   const openAddToEncounter = (codes: Array<{ code: string; description: string; amount: number; timeOfDay?: string }>) => {
     setCodesForEncounter(codes);
     setShowAddToEncounter(true);
@@ -282,19 +268,19 @@ const BillingAssistant: React.FC = () => {
 
   const getRiskColor = (risk: 'LOW' | 'MEDIUM' | 'HIGH') => {
     switch (risk) {
-      case 'LOW': return 'text-green-600 bg-green-100';
-      case 'MEDIUM': return 'text-yellow-600 bg-yellow-100';
-      case 'HIGH': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'LOW': return 'risk-badge-low';
+      case 'MEDIUM': return 'risk-badge-medium';
+      case 'HIGH': return 'risk-badge-high';
+      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'PRIMARY': return 'bg-blue-600 text-white';
-      case 'ADD_ON': return 'bg-green-600 text-white';
-      case 'PREMIUM': return 'bg-purple-600 text-white';
-      default: return 'bg-gray-600 text-white';
+      case 'PRIMARY': return 'bg-blue-50 text-blue-700 border border-blue-200';
+      case 'ADD_ON': return 'bg-green-50 text-green-700 border border-green-200';
+      case 'PREMIUM': return 'bg-purple-50 text-purple-700 border border-purple-200';
+      default: return 'bg-gray-50 text-gray-700 border border-gray-200';
     }
   };
 
@@ -306,45 +292,36 @@ const BillingAssistant: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-gray-900">OHIP Billing Assistant</h1>
-              {/* Auto-detected time slot badge */}
-              <div className={`flex items-center space-x-1 px-3 py-1 rounded-full border text-sm font-medium ${getTimeColor(autoTimeSlot)}`}>
-                {getTimeIcon(autoTimeSlot)}
-                <span>{autoTimeSlot}</span>
-              </div>
+    <div className="space-y-6">
+      <PageHeader
+        icon={DollarSign}
+        title="OHIP Billing Assistant"
+        subtitle="AI-assisted OHIP code search, analysis, and claim building"
+        iconTone="bg-green-50 text-green-600"
+        actions={
+          <>
+            <div className={`status-pill ${getTimeColor(autoTimeSlot)}`}>
+              {getTimeIcon(autoTimeSlot)}
+              <span>{autoTimeSlot}</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setShowCart(!showCart)}
-                className="relative flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <ClipboardList className="h-5 w-5 mr-2" />
-                <span className="font-medium">{formatCurrency(totalAmount)}</span>
-                {selectedCodes.length > 0 && (
-                  <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {selectedCodes.length}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+            <button onClick={() => setShowCart(!showCart)} className="btn btn-success relative">
+              <ClipboardList className="h-4 w-4" />
+              {formatCurrency(totalAmount)}
+              {selectedCodes.length > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-[11px] rounded-full flex items-center justify-center">
+                  {selectedCodes.length}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setShowFilters(!showFilters)} className="btn btn-secondary">
+              <Filter className="h-4 w-4" />
+              Filters
+            </button>
+          </>
+        }
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Error banner */}
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
@@ -362,35 +339,11 @@ const BillingAssistant: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Tab Navigation */}
-            <div className="bg-white rounded-lg shadow-sm border p-1 flex">
-              <button
-                onClick={() => setActiveTab('search')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'search' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-              >
-                🔍 Search & Analyze
-              </button>
-              <button
-                onClick={() => setActiveTab('extract')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'extract' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-              >
-                ✨ Extract from Notes
-              </button>
-            </div>
-
-            {activeTab === 'extract' ? (
-              <BillingCodeExtractor onCodesExtracted={handleExtractedCodes} />
-            ) : (
-              <>
                 {/* Clinical Text Analysis */}
-                <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+                <div className="panel p-6">
                   <div className="flex items-center mb-4">
-                    <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg mr-4">
-                      <DollarSign className="h-6 w-6 text-orange-600" />
+                    <div className="flex items-center justify-center w-12 h-12 bg-purple-50 rounded-xl mr-4">
+                      <Zap className="h-6 w-6 text-purple-600" />
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">AI Billing Analysis</h2>
@@ -414,12 +367,12 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                     <button
                       onClick={handleAnalyze}
                       disabled={isAnalyzing || !clinicalText.trim()}
-                      className="mt-3 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="btn btn-primary mt-3 w-full"
                     >
                       {isAnalyzing ? (
-                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        <RefreshCw className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Zap className="h-4 w-4 mr-2" />
+                        <Zap className="h-4 w-4" />
                       )}
                       {isAnalyzing ? 'Analyzing with AI...' : 'Analyze for Optimal OHIP Codes'}
                     </button>
@@ -442,7 +395,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                       <button
                         onClick={handleSearch}
                         disabled={isSearching || !searchQuery.trim()}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        className="btn btn-primary"
                       >
                         {isSearching ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                       </button>
@@ -452,11 +405,11 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
 
                 {/* ── Analysis Results ── */}
                 {analysis && (
-                  <div className="bg-white rounded-xl shadow-sm border p-6 space-y-6">
+                  <div className="panel p-6 space-y-6">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">Analysis Results</h3>
                       <div className="flex items-center space-x-2">
-                        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getTimeColor(analysis.timeSlot)}`}>
+                        <div className={`status-pill ${getTimeColor(analysis.timeSlot)}`}>
                           {getTimeIcon(analysis.timeSlot)}
                           <span>{analysis.timeSlot} billing</span>
                         </div>
@@ -511,7 +464,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center space-x-2 mb-2 flex-wrap gap-1">
-                                  <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded font-bold">
+                                  <span className="font-mono text-sm font-semibold bg-blue-50 text-blue-700 px-2 py-1 rounded ring-1 ring-blue-100">
                                     {opt.suggestedCode.code}
                                   </span>
                                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(opt.codeRole)}`}>
@@ -540,17 +493,17 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                               </div>
                               <div className="ml-4 flex flex-col gap-2">
                               <button
-                                onClick={() => addCodeToSelected(code)}
-                                className="flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                                onClick={() => addCodeToSelected(opt.suggestedCode)}
+                                className="btn btn-success"
                               >
-                                <Plus className="h-4 w-4 mr-1" />
+                                <Plus className="h-4 w-4" />
                                 Cart
                               </button>
                               <button
-                                onClick={() => openAddToEncounter([{ code: code.code, description: code.description, amount: code.amount, timeOfDay: code.timeOfDay }])}
-                                className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                                onClick={() => openAddToEncounter([{ code: opt.suggestedCode.code, description: opt.suggestedCode.description, amount: opt.suggestedCode.amount, timeOfDay: opt.suggestedCode.timeOfDay }])}
+                                className="btn btn-primary"
                               >
-                                <UserPlus className="h-4 w-4 mr-1" />
+                                <UserPlus className="h-4 w-4" />
                                 Patient
                               </button>
                             </div>
@@ -585,7 +538,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
 
                 {/* Search Results */}
                 {searchResults.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border p-6">
+                  <div className="panel p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Search Results ({searchResults.length})
                     </h3>
@@ -598,7 +551,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                                 <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded font-bold">{code.code}</span>
                                 <span className="text-sm text-gray-500">{code.category}</span>
                                 {code.timeOfDay && (
-                                  <span className={`flex items-center space-x-1 text-xs px-2 py-0.5 rounded-full ${getTimeColor(code.timeOfDay)}`}>
+                                  <span className={`status-pill ${getTimeColor(code.timeOfDay)}`}>
                                     {getTimeIcon(code.timeOfDay)}
                                     <span>{code.timeOfDay}</span>
                                   </span>
@@ -611,16 +564,16 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                             <div className="ml-4 flex flex-col gap-2">
                               <button
                                 onClick={() => addCodeToSelected(code)}
-                                className="flex items-center px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                                className="btn btn-success"
                               >
-                                <Plus className="h-4 w-4 mr-1" />
+                                <Plus className="h-4 w-4" />
                                 Cart
                               </button>
                               <button
                                 onClick={() => openAddToEncounter([{ code: code.code, description: code.description, amount: code.amount, timeOfDay: code.timeOfDay }])}
-                                className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                                className="btn btn-primary"
                               >
-                                <UserPlus className="h-4 w-4 mr-1" />
+                                <UserPlus className="h-4 w-4" />
                                 Patient
                               </button>
                             </div>
@@ -630,15 +583,13 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                     </div>
                   </div>
                 )}
-              </>
-            )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Cart */}
             {showCart && (
-              <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+              <div className="panel overflow-hidden">
                 <div className="bg-green-600 px-4 py-3 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-white flex items-center">
                     <ClipboardList className="h-5 w-5 mr-2" />
@@ -696,7 +647,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
                       <button
                         onClick={() => openAddToEncounter(selectedCodes.map((c) => ({ code: c.code, description: c.description, amount: c.amount, timeOfDay: c.timeOfDay })))}
                         disabled={selectedCodes.length === 0}
-                        className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        className="btn btn-primary mt-3 w-full"
                       >
                         <UserPlus className="h-4 w-4" />
                         Add all to patient encounter
@@ -709,7 +660,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
             )}
 
             {/* Quick Searches */}
-            <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="panel p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Searches</h3>
               <div className="grid grid-cols-2 gap-3">
                 {quickSearches.map((qs, index) => (
@@ -727,7 +678,7 @@ Example: 45-year-old male presents to ED at 18:30 on a Saturday with chest pain 
 
             {/* Filters */}
             {showFilters && (
-              <div className="bg-white rounded-xl shadow-sm border p-6">
+              <div className="panel p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
                 <div className="space-y-4">
                   <div>

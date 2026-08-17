@@ -93,7 +93,7 @@ const Sidebar: React.FC = () => {
         <div className="px-4 py-3 border-t border-gray-100">
           <div className="text-[11px] text-gray-400 text-center inline-flex items-center justify-center gap-1 w-full">
             <Shield className="w-3 h-3" />
-            <span>HIPAA compliant · v1.0</span>
+            <span>PHIPA-aligned · Ontario OHIP</span>
           </div>
         </div>
       </div>

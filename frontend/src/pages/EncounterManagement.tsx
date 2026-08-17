@@ -20,6 +20,7 @@ import {
   type BillingSummary,
 } from '@/services/encountersApi';
 import AddEncounterModal from '@/components/AddEncounterModal';
+import emptyStateArt from '@/assets/empty-state.png';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(n);
@@ -114,7 +115,7 @@ const EncounterManagement: React.FC = () => {
           <button
             type="button"
             onClick={() => openAddEncounter()}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+            className="btn btn-primary"
           >
             <Plus className="w-4 h-4" />
             Add encounter
@@ -168,6 +169,7 @@ const EncounterManagement: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900">Visits by patient</h2>
           {groups.length === 0 ? (
             <div className="panel p-8 text-center text-gray-500">
+              <img src={emptyStateArt} alt="" aria-hidden className="w-28 h-28 mx-auto mb-2 select-none" />
               <p>No encounters yet for this account.</p>
               <p className="text-sm mt-2">Visits and billing codes you add will appear here only for {user?.email ?? 'your login'}.</p>
             </div>

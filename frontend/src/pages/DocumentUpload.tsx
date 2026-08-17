@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {
   Upload,
@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/stores/authStore';
 import { analyzeDocument, type DocumentCodeMatch } from '@/services/documentsApi';
+import PageHeader from '@/components/layout/PageHeader';
 
 interface UploadedFile {
   id: string;
@@ -128,13 +129,14 @@ const DocumentUpload: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 rounded-lg shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900">Document Upload</h1>
-        <p className="text-gray-600">Upload a PDF or document to find applicable OHIP billing codes</p>
-      </div>
+      <PageHeader
+        icon={Upload}
+        title="Document Upload"
+        subtitle="Upload a PDF or document to find applicable OHIP billing codes"
+      />
 
       {/* Upload Zone */}
-      <div className="medical-card p-6">
+      <div className="panel p-6">
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
@@ -179,7 +181,7 @@ const DocumentUpload: React.FC = () => {
 
       {/* File List */}
       {files.length > 0 && (
-        <div className="medical-card">
+        <div className="panel">
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">
               Uploaded Files ({files.length})
@@ -267,7 +269,7 @@ const DocumentUpload: React.FC = () => {
 
       {/* Processing Summary */}
       {files.some(f => f.status === 'completed') && (
-        <div className="medical-card p-6 border-l-4 border-l-green-400 bg-green-50">
+        <div className="panel p-6 border-l-4 border-l-green-400 bg-green-50">
           <div className="flex items-start space-x-3">
             <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
             <div>
@@ -283,7 +285,7 @@ const DocumentUpload: React.FC = () => {
       )}
 
       {/* Tips */}
-      <div className="medical-card p-6">
+      <div className="panel p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Upload Tips for Best Results
         </h3>

@@ -6,6 +6,20 @@ import { useAuthStore } from '@/stores/authStore';
 import * as authApi from '@/services/authApi';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 import toast from 'react-hot-toast';
+import loginBackdrop from '@/assets/login-backdrop.png';
+
+const LoginBackdrop: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <img
+      src={loginBackdrop}
+      alt=""
+      aria-hidden
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/70 via-white/40 to-indigo-100/60" />
+    <div className="relative z-10 w-full flex justify-center">{children}</div>
+  </div>
+);
 
 const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +57,7 @@ const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8">
+    <LoginBackdrop>
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
@@ -57,7 +71,7 @@ const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
           </p>
         </div>
 
-        <div className="bg-white py-8 px-6 shadow-lg rounded-lg">
+        <div className="bg-white/90 backdrop-blur-sm py-8 px-6 shadow-lg rounded-lg">
           {error && (
             <div className="flex items-center space-x-2 p-3 mb-6 bg-red-50 border border-red-200 rounded-md">
               <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
@@ -86,7 +100,7 @@ const LoginPageContent: React.FC<{ clientId: string }> = ({ clientId }) => {
           </p>
         </div>
       </div>
-    </div>
+    </LoginBackdrop>
   );
 };
 
@@ -95,8 +109,8 @@ const SetupInstructions: React.FC = () => {
   const isLocal = /localhost|127\.0\.0\.1/.test(origin);
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-    <div className="max-w-lg w-full bg-white py-8 px-6 shadow-lg rounded-lg space-y-4">
+  <LoginBackdrop>
+    <div className="max-w-lg w-full bg-white/90 backdrop-blur-sm py-8 px-6 shadow-lg rounded-lg space-y-4">
       <div className="text-center">
         <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
         <h2 className="text-xl font-semibold text-gray-900 mt-2">Google sign-in not configured</h2>
@@ -143,7 +157,7 @@ const SetupInstructions: React.FC = () => {
       </p>
       <pre className="text-xs bg-slate-100 text-slate-800 p-2 rounded font-mono">{origin}</pre>
     </div>
-  </div>
+  </LoginBackdrop>
   );
 };
 
@@ -167,9 +181,9 @@ const LoginPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <LoginBackdrop>
         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-      </div>
+      </LoginBackdrop>
     );
   }
 

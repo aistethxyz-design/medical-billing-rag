@@ -53,6 +53,18 @@ export function isFileAuthEnabled(): boolean {
   return process.env.USE_FILE_AUTH === 'true' || process.env.NODE_ENV === 'development';
 }
 
+// Local mirror of the Worker's KV allowlist: EM_COPILOT_ALLOWLIST is a
+// comma-separated email list; '*' opens it to every signed-in dev user.
+export function isEmCopilotAllowed(email: string): boolean {
+  const raw = process.env.EM_COPILOT_ALLOWLIST || '';
+  if (raw.trim() === '*') return true;
+  return raw
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(email.toLowerCase());
+}
+
 export async function fileLogin(email: string, password: string) {
   const users = ensureStore();
   const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
@@ -133,6 +145,7 @@ function buildAuthResponse(user: FileUser) {
       npi: user.npi,
       specialty: user.specialty,
       picture: user.picture,
+      emCopilot: isEmCopilotAllowed(user.email),
     },
     practice: user.practiceName
       ? { id: user.practiceId || 'practice-1', name: user.practiceName, specialties: ['Emergency Medicine'] }
@@ -190,6 +203,7 @@ export function fileGetUser(userId: string) {
       practiceId: user.practiceId,
       npi: user.npi,
       specialty: user.specialty,
+      emCopilot: isEmCopilotAllowed(user.email),
     },
     practice: user.practiceName
       ? { id: user.practiceId || 'practice-1', name: user.practiceName, specialties: ['Emergency Medicine'] }

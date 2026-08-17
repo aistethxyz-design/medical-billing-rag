@@ -19,11 +19,6 @@ import Analytics from '@/pages/Analytics';
 import Settings from '@/pages/Settings';
 import BillingAssistant from '@/pages/BillingAssistant';
 import EmCopilot from '@/pages/EmCopilot';
-import ChatBot from '@/components/ChatBot';
-
-// RAG Components
-import RAGSearchPage from '@/pages/RAGSearchPage';
-import RAGLoginPage from '@/components/RAGLoginPage';
 
 // Styles
 import '@/styles/globals.css';
@@ -70,13 +65,10 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6 ml-64">
-          {children}
-        </main>
-      </div>
-      <ChatBot />
+      <Sidebar />
+      <main className="ml-64 p-6 min-w-0">
+        {children}
+      </main>
     </div>
   );
 };
