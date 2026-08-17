@@ -70,28 +70,50 @@
   @apply bg-gradient-to-r from-blue-50 to-blue-100;
 }
 
+
 /* ── Cinematic landing film ─────────────────────────────────────────── */
 
+/* Warm premium canvas. Base is deliberately a warm near-black, not a cold one:
+   the photography is amber-lit and a cold ground fights it. */
 .film {
-  /* subtle scanlines over every scene, like a lens display */
+  --film-bg: #070f12;
+  --film-bg-deep: #050b0e;
+  background: var(--film-bg);
   position: relative;
 }
-.film::after {
-  content: "";
+
+/* One global grain + scanline layer, promoted once, instead of a blend layer
+   per scene. mix-blend-mode is avoided entirely — against a near-black ground a
+   plain low-opacity overlay is visually identical and far cheaper. */
+.film-overlay {
   position: fixed;
   inset: 0;
   z-index: 55;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.015) 0px,
-    rgba(255, 255, 255, 0.015) 1px,
-    transparent 1px,
-    transparent 4px
-  );
+  opacity: 0.05;
+  transform: translateZ(0);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
 
-/* waveform bars — animate only while visible (opacity is scroll-driven) */
+/* Decorative texture is pure cost on a phone at 3x DPR. */
+@media (max-width: 640px) {
+  .film-overlay { display: none; }
+}
+
+/* Older engines: vh already equals lvh there, so this is an exact fallback. */
+@supports not (height: 100lvh) {
+  .film-stage { height: 100vh !important; }
+}
+
+/* waveform bars */
 @keyframes wf {
   0%, 100% { transform: scaleY(0.35); }
   50% { transform: scaleY(1); }
@@ -106,11 +128,26 @@
   0%, 55% { opacity: 1; }
   56%, 100% { opacity: 0; }
 }
-.caret {
-  animation: caret-blink 1.1s step-end infinite;
+.caret { animation: caret-blink 1.1s step-end infinite; }
+
+/* slow drift on the optical field so the hero breathes without scrolling */
+@keyframes field-breathe {
+  0%, 100% { opacity: 0.55; transform: scaleY(1); }
+  50%      { opacity: 0.85; transform: scaleY(1.03); }
+}
+.field-breathe {
+  animation: field-breathe 6s ease-in-out infinite;
+  transform-origin: left center;
 }
 
-/* perspective grid for the "inside the machine" retrieval scene */
+/* retrieval trace */
+@keyframes trace {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+.trace-run { animation: trace 1.1s ease-in-out infinite; }
+
+/* perspective grid for the retrieval scene */
 .hud-grid {
   background-image:
     linear-gradient(rgba(74, 222, 158, 0.07) 1px, transparent 1px),
@@ -127,10 +164,36 @@
     0 12px 40px rgba(0, 0, 0, 0.45);
 }
 
+/* Reduced motion: scenes unpin and become normal long-form content.
+   Scene stages compose with absolute layers, so static mode has to flatten
+   them back into the flow. Decorative-only elements carry .film-abs-only and
+   are dropped rather than flattened. */
+.film-static {
+  position: relative;
+  padding: 3.5rem 1.5rem;
+  max-width: 46rem;
+  margin: 0 auto;
+}
+.film-static .film-abs-only { display: none !important; }
+.film-static [class*="absolute"],
+.film-static [class*="sticky"] {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  transform: none !important;
+}
+.film-static * { max-width: 100% !important; }
+.film-static [class*="grid-cols"] { grid-template-columns: 1fr !important; }
+.film-static [class*="justify-center"] { justify-content: flex-start !important; }
+.film-static [class*="text-center"] { text-align: left !important; }
+.film-static > * > * { margin-bottom: 1.25rem; }
+
 @media (prefers-reduced-motion: reduce) {
-  .wf-bar, .caret { animation: none; }
+  .wf-bar, .caret, .field-breathe, .trace-run { animation: none; }
+  .film-overlay { display: none; }
+  html { scroll-behavior: auto; }
 }
 
-.section-spacing {
-  scroll-margin-top: 5rem;
-}
+.section-spacing { scroll-margin-top: 5rem; }

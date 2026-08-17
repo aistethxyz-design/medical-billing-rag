@@ -1,93 +1,224 @@
 /**
- * Act I — the opening title and the descent into the doctor's glasses.
+ * Act I — the hero, and the move into the physician's field of view.
+ *
+ * The hero is fully composed at zero scroll: physician, patient, glasses, the
+ * optical field and a live symptom readout are all present before the visitor
+ * touches the wheel. Nothing here is baked into the photograph — the field and
+ * every HUD element are SVG/DOM, so they stay crisp and animatable.
  */
-import { motion, useTransform, MotionValue } from "framer-motion";
+import { motion, useTransform, MotionValue, useReducedMotion } from "framer-motion";
+import type { BeatSpec } from "./clock";
 import {
   Scene,
-  Grain,
+  SafeLayer,
+  StageProps,
+  Beat,
+  useBeat,
+  Plate,
   Vignette,
+  TopScrim,
   HudFrame,
   Micro,
   MMicro,
   Dot,
+  GlassCard,
 } from "./shared";
-import consultPov from "@/assets/consult-pov.png";
+import { HERO_OTS, PATIENT_WARM } from "./images";
 
-/* ── Scene 1 · opening titles ─────────────────────────────────────────── */
+/* ── Scene 1 · hero ───────────────────────────────────────────────────── */
 
-function OpeningStage({ p }: { p: MotionValue<number> }) {
-  const line1 = useTransform(p, [0.02, 0.12, 0.22, 0.3], [0, 1, 1, 0]);
-  const line2 = useTransform(p, [0.3, 0.4, 0.5, 0.58], [0, 1, 1, 0]);
-  const title = useTransform(p, [0.6, 0.72, 0.94, 1], [0, 1, 1, 0]);
-  const titleScale = useTransform(p, [0.6, 1], [0.96, 1.02]);
-  const pulse = useTransform(p, [0.05, 0.55], [0, 1]);
-  const pulseOpacity = useTransform(p, [0.05, 0.15, 0.5, 0.62], [0, 0.5, 0.5, 0]);
-  const cue = useTransform(p, [0, 0.06], [1, 0]);
+const HERO_SPEC: readonly BeatSpec[] = [
+  { kind: "lead", vh: 30 },              // hold the composed frame
+  { kind: "beat", id: "line1" },         // "Every consultation is a stream…"
+  { kind: "beat", id: "line2" },         // "Most of it disappears…"
+  { kind: "beat", id: "states", terminal: true },
+];
 
+const STATES = ["Listening", "Understanding", "Retrieving", "Assisting"];
+
+/**
+ * The optical field: a soft cone leaving the glasses, plus the readout that
+ * lives inside it. Deliberately *not* aimed at the patient as a projection —
+ * it fans across the physician's own field of view. The patient sees a
+ * clinician looking at them; the field is ours to see, not theirs.
+ */
+function OpticalField({ opacity }: { opacity?: MotionValue<number> }) {
   return (
-    <div className="flex h-full items-center justify-center bg-[#04090b]">
-      <Grain />
-      {/* faint ECG trace drawing itself */}
-      <motion.svg
-        aria-hidden
-        viewBox="0 0 1200 120"
-        className="absolute left-0 top-1/2 w-full -translate-y-1/2"
-        style={{ opacity: pulseOpacity }}
+    <motion.div
+      aria-hidden
+      style={opacity ? { opacity } : undefined}
+      className="pointer-events-none absolute inset-0 z-[22]"
+    >
+      <svg
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        className="field-breathe absolute inset-0 h-full w-full"
       >
-        <motion.path
-          d="M0,60 H420 l14,-8 14,16 10,-44 14,72 12,-52 10,16 h80 l14,-8 14,16 10,-44 14,72 12,-52 10,16 H1200"
-          fill="none"
-          stroke="rgba(74,222,158,0.5)"
-          strokeWidth="1.5"
-          style={{ pathLength: pulse }}
-        />
-      </motion.svg>
-
-      <motion.p
-        style={{ opacity: line1 }}
-        className="absolute px-6 text-center text-xl font-light text-white/85 sm:text-3xl"
-      >
-        Every consultation is a stream of clinical information.
-      </motion.p>
-      <motion.p
-        style={{ opacity: line2 }}
-        className="absolute px-6 text-center text-xl font-light text-white/85 sm:text-3xl"
-      >
-        Most of it disappears the moment it&rsquo;s spoken.
-      </motion.p>
-
-      <motion.div
-        style={{ opacity: title, scale: titleScale }}
-        className="absolute px-6 text-center"
-      >
-        <Micro className="text-hud/80">AISteth · EM Copilot</Micro>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-6xl">
-          Put on the glasses.
-        </h1>
-        <p className="mx-auto mt-4 max-w-md text-sm text-white/60 sm:text-base">
-          The next two minutes are seen through a physician&rsquo;s eyes —
-          with a clinical intelligence layer running quietly behind them.
-        </p>
-      </motion.div>
-
-      {/* scroll cue */}
-      <motion.div
-        style={{ opacity: cue }}
-        className="absolute bottom-8 flex flex-col items-center gap-2 text-white/50"
-      >
-        <Micro>Scroll to begin</Micro>
-        <motion.span
-          animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-          className="block h-6 w-[1px] bg-gradient-to-b from-white/60 to-transparent"
-        />
-      </motion.div>
-      <Vignette strength={0.9} />
-    </div>
+        <defs>
+          <linearGradient id="cone" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#4ade9e" stopOpacity="0.20" />
+            <stop offset="45%" stopColor="#4ade9e" stopOpacity="0.07" />
+            <stop offset="100%" stopColor="#4ade9e" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {/* origin sits at the glasses in the lower-left foreground */}
+        <path d="M20,62 L100,16 L100,74 Z" fill="url(#cone)" />
+        <path d="M20,62 L100,26" stroke="#4ade9e" strokeOpacity="0.16" strokeWidth="0.25" />
+        <path d="M20,62 L100,58" stroke="#4ade9e" strokeOpacity="0.10" strokeWidth="0.25" />
+      </svg>
+    </motion.div>
   );
 }
 
-/* ── Scene 2 · into the lens (HUD boot) ───────────────────────────────── */
+function HeroStage({ p, tl }: StageProps) {
+  const reduced = useReducedMotion();
+  // Very slow push — depth without motion sickness.
+  const imgScale = useTransform(p, [0, 1], [1.04, 1.12]);
+  const fieldFade = useTransform(p, [0, 0.7], [1, 0.25]);
+  const chrome = useTransform(p, [0, 0.22], [1, 0]);
+  const line1 = useBeat({ p, tl }, "line1");
+  const line2 = useBeat({ p, tl }, "line2");
+
+  return (
+    <>
+      <Plate
+        plate={HERO_OTS}
+        alt="A physician wearing smart glasses listening to a relaxed patient across a consulting desk"
+        priority
+        style={reduced ? undefined : { scale: imgScale, willChange: "transform" }}
+      />
+      {/* Warm the shadows rather than crushing them to cold black. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 z-[21]"
+        style={{
+          background:
+            "linear-gradient(105deg, rgba(5,13,16,0.86) 0%, rgba(5,13,16,0.55) 38%, rgba(5,13,16,0.15) 62%, rgba(5,13,16,0.5) 100%)",
+        }}
+      />
+      <OpticalField opacity={reduced ? undefined : fieldFade} />
+      <Vignette strength={0.6} />
+
+      <SafeLayer>
+        <div className="relative flex h-full flex-col justify-center px-[6vw] sm:px-[8vw]">
+          {/* live readout, sitting inside the optical field */}
+          <motion.div
+            style={reduced ? undefined : { opacity: fieldFade }}
+            className="film-abs-only absolute right-[6vw] top-[14%] hidden w-[min(34vw,320px)] lg:block"
+          >
+            <GlassCard label={<><Dot /> <span className="ml-1.5">Listening</span></>} blur>
+              <p className="font-mono text-[13px] leading-relaxed text-white/85">
+                “…pressure in my chest since yesterday evening…”
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                <span className="rounded-full border border-hud/40 bg-hud/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-hud">
+                  chest pressure
+                </span>
+                <span className="rounded-full border border-hud/40 bg-hud/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-hud">
+                  onset · yesterday
+                </span>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          <div className="relative z-30 max-w-xl">
+            <Micro className="text-hud">WiserDoc · EM Copilot</Micro>
+            <h1 className="mt-4 text-[2.1rem] font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl">
+              A second set of eyes.
+              <span className="block text-white/70">
+                Without taking yours off the patient.
+              </span>
+            </h1>
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/75 sm:text-lg">
+              Real-time clinical intelligence delivered in the physician&rsquo;s
+              field of view.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="mailto:aistethxyz@gmail.com?subject=EM%20Copilot%20trial%20access"
+                className="rounded-xl bg-hud px-6 py-3 text-sm font-semibold text-[#04140c] transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
+              >
+                Request trial access
+              </a>
+              <a
+                href="#investors"
+                className="rounded-xl border border-white/25 px-6 py-3 text-sm font-medium text-white/90 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
+              >
+                For investors
+              </a>
+            </div>
+
+            {/* the product in four words, always visible */}
+            <motion.div
+              style={reduced ? undefined : { opacity: chrome }}
+              className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-1"
+            >
+              {STATES.map((s, i) => (
+                <span key={s} className="flex items-center gap-2">
+                  {i > 0 && <span className="text-white/30">→</span>}
+                  <Micro className={i === 0 ? "text-hud" : "text-white/55"}>{s}</Micro>
+                </span>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+
+        {/* narrative beats, layered over the consultation rather than on black */}
+        <Beat p={p} tl={tl} id="line1" layer="stack" y={12}>
+          <p className="max-w-2xl text-xl font-light leading-snug text-white sm:text-3xl">
+            Every consultation is a stream of clinical information.
+          </p>
+        </Beat>
+        <Beat p={p} tl={tl} id="line2" layer="stack" y={12}>
+          <p className="max-w-2xl text-xl font-light leading-snug text-white sm:text-3xl">
+            Most of it disappears the moment it&rsquo;s spoken.
+          </p>
+        </Beat>
+        <Beat p={p} tl={tl} id="states" layer="stack" y={12}>
+          <p className="max-w-2xl text-xl font-light leading-snug text-white sm:text-3xl">
+            Unless something is listening with you.
+          </p>
+        </Beat>
+
+        {/* scrims ride the beats they protect, so they can never fall out of phase */}
+        <div className="film-abs-only">
+          <motion.div
+            aria-hidden
+            style={{ opacity: line1.opacity }}
+            className="pointer-events-none absolute inset-0 z-[24] bg-[#050d10]/70"
+          />
+          <motion.div
+            aria-hidden
+            style={{ opacity: line2.opacity }}
+            className="pointer-events-none absolute inset-0 z-[24] bg-[#050d10]/70"
+          />
+        </div>
+
+        <motion.div
+          style={reduced ? undefined : { opacity: chrome }}
+          className="film-abs-only absolute bottom-[4vh] left-1/2 z-30 -translate-x-1/2 flex flex-col items-center gap-2"
+        >
+          <Micro className="text-white/60">Scroll</Micro>
+          <motion.span
+            animate={reduced ? undefined : { y: [0, 6, 0] }}
+            transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+            className="block h-6 w-px bg-gradient-to-b from-white/60 to-transparent"
+          />
+        </motion.div>
+      </SafeLayer>
+    </>
+  );
+}
+
+/* ── Scene 2 · into the physician's field of view ─────────────────────── */
+
+const POV_SPEC: readonly BeatSpec[] = [
+  { kind: "lead", vh: 4 },
+  { kind: "beat", id: "caption" },
+  { kind: "tick", id: "boot", count: 5 },
+  { kind: "beat", id: "ready", terminal: true },
+];
 
 // 32,978 is the real chunk count of the EM Copilot index (BM25 + vector).
 // Sources are described by category, not title — the reference texts are licensed.
@@ -99,88 +230,125 @@ const BOOT_LINES: [string, string][] = [
   ["MODE", "ambient listening"],
 ];
 
-function GlassesStage({ p }: { p: MotionValue<number> }) {
-  // slow dolly into the room
-  const imgScale = useTransform(p, [0, 1], [1.18, 1.02]);
-  const imgOpacity = useTransform(p, [0, 0.1], [0, 1]);
-  const caption = useTransform(p, [0.08, 0.16, 0.3, 0.38], [0, 1, 1, 0]);
-  const hud = useTransform(p, [0.38, 0.55], [0, 1]);
-  const status = useTransform(p, [0.86, 0.95], [0, 1]);
+function PovStage({ p, tl }: StageProps) {
+  const reduced = useReducedMotion();
+  // The transition: we start behind the physician and cross into their view.
+  // The foreground glasses plate slides up and out as the patient resolves.
+  const otsOpacity = useTransform(p, [0, 0.30], [1, 0]);
+  const otsScale = useTransform(p, [0, 0.30], [1.12, 1.6]);
+  const otsBlurV = useTransform(p, [0, 0.30], [0, 8]);
+  const otsBlur = useTransform(otsBlurV, (v) => `blur(${v.toFixed(1)}px)`);
+
+  const povOpacity = useTransform(p, [0.14, 0.34], [0, 1]);
+  const povScale = useTransform(p, [0.14, 1], [1.14, 1.02]);
+  const povBlurV = useTransform(p, [0.14, 0.36], [10, 0]);
+  const povBlur = useTransform(povBlurV, (v) => `blur(${v.toFixed(1)}px)`);
+
+  const hud = useTransform(p, [0.30, 0.44], [0, 1]);
+  const caption = useBeat({ p, tl }, "caption");
 
   return (
-    <div className="h-full bg-[#04090b]">
-      <motion.img
-        src={consultPov}
-        alt="A patient across the desk, describing chest pressure"
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ scale: imgScale, opacity: imgOpacity }}
+    <>
+      {/* patient resolving into focus as we enter the physician's view */}
+      <Plate
+        plate={PATIENT_WARM}
+        alt="The patient, seen from the physician's point of view, talking calmly"
+        priority
+        style={
+          reduced
+            ? undefined
+            : { opacity: povOpacity, scale: povScale, filter: povBlur, willChange: "transform" }
+        }
       />
-      <Vignette />
-      <Grain />
+      {/* the over-the-shoulder plate we came from, pushing past the camera */}
+      <Plate
+        plate={HERO_OTS}
+        alt=""
+        priority
+        className="film-abs-only"
+        style={
+          reduced
+            ? { display: "none" }
+            : { opacity: otsOpacity, scale: otsScale, filter: otsBlur, willChange: "transform" }
+        }
+      />
+      <div aria-hidden className="absolute inset-0 z-[21] bg-[#050d10]/45" />
+      <HudFrame opacity={reduced ? 1 : hud} tint={0.1} />
+      <Vignette strength={0.7} />
+      <TopScrim on={caption.opacity} />
 
-      <motion.div
-        style={{ opacity: caption }}
-        className="absolute inset-x-0 top-[16vh] z-30 text-center"
-      >
-        <p className="px-6 text-lg font-light text-white/90 sm:text-2xl">
-          This is your patient. You are the doctor.
-        </p>
-        <Micro className="mt-2 block text-white/50">
-          Doctor&rsquo;s point of view · smart glasses on
-        </Micro>
-      </motion.div>
+      <SafeLayer>
+        <Beat p={p} tl={tl} id="caption" layer="stack" y={10} className="!items-start pt-[12vh]">
+          <div>
+            <p className="text-xl font-light leading-snug text-white sm:text-3xl">
+              This is what your physician sees.
+            </p>
+            <Micro className="mt-3 block text-white/70">
+              His view has not changed at all
+            </Micro>
+          </div>
+        </Beat>
 
-      <HudFrame opacity={hud} />
+        <div className="absolute bottom-[12vh] left-[6vw] z-30 flex flex-col gap-2">
+          {BOOT_LINES.map(([k, v], i) => (
+            <BootLine key={k} p={p} tl={tl} i={i} k={k} v={v} />
+          ))}
+        </div>
 
-      {/* boot sequence */}
-      <div className="absolute bottom-[10vh] left-[6vw] z-30 flex flex-col gap-2">
-        {BOOT_LINES.map(([k, v], i) => {
-          const a = 0.45 + i * 0.1;
-          return (
-            <BootLine key={k} p={p} at={[a, a + 0.07]} k={k} v={v} />
-          );
-        })}
-      </div>
-
-      <motion.div
-        style={{ opacity: status }}
-        className="absolute right-[6vw] top-[7vh] z-30 flex items-center gap-2 rounded-full border border-hud/30 bg-black/40 px-3 py-1.5 backdrop-blur-sm"
-      >
-        <Dot />
-        <Micro className="text-hud">Listening</Micro>
-      </motion.div>
-    </div>
+        <Beat
+          p={p}
+          tl={tl}
+          id="ready"
+          className="film-abs-only absolute right-[6vw] top-[8vh] z-30"
+          x={16}
+        >
+          <span className="flex items-center gap-2 rounded-full border border-hud/40 bg-[#050d10]/70 px-3.5 py-1.5">
+            <Dot />
+            <Micro className="text-hud">Listening</Micro>
+          </span>
+        </Beat>
+      </SafeLayer>
+    </>
   );
 }
 
 function BootLine({
   p,
-  at,
+  tl,
+  i,
   k,
   v,
 }: {
   p: MotionValue<number>;
-  at: [number, number];
+  tl: StageProps["tl"];
+  i: number;
   k: string;
   v: string;
 }) {
-  const opacity = useTransform(p, at, [0, 1]);
-  const x = useTransform(p, at, [-12, 0]);
+  const reduced = useReducedMotion();
+  const r = tl.sub("boot", i);
+  const opacity = useTransform(p, r.enter, [0, 1]);
+  const x = useTransform(p, r.enter, [-10, 0]);
   return (
-    <MMicro style={{ opacity, x }} className="text-hud/80">
-      {k} <span className="text-white/45">·······</span>{" "}
-      <span className="text-white/90">{v}</span>
+    <MMicro
+      style={reduced ? undefined : { opacity, x }}
+      className="text-hud/90"
+    >
+      {k} <span className="text-white/40">·····</span>{" "}
+      <span className="text-white/85">{v}</span>
     </MMicro>
   );
 }
 
-/* ── exported act ─────────────────────────────────────────────────────── */
+/* ── act ──────────────────────────────────────────────────────────────── */
 
 export function ActIntro() {
   return (
     <>
-      <Scene height={220}>{(p) => <OpeningStage p={p} />}</Scene>
-      <Scene height={260}>{(p) => <GlassesStage p={p} />}</Scene>
+      <Scene spec={HERO_SPEC}>{(s) => <HeroStage {...s} />}</Scene>
+      <Scene spec={POV_SPEC} id="ch-listen">{(s) => <PovStage {...s} />}</Scene>
     </>
   );
 }
+
+export { HERO_SPEC, POV_SPEC };
