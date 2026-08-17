@@ -83,6 +83,10 @@ function SummaryStage({ p, tl }: StageProps) {
   // lines draw first, then the cards form along them.
   const collapse = useTransform(p, [0, tl.sub("cards", 4).start], [0, 1]);
   const frameDraw = useTransform(p, [0, 0.1], [0, 1]);
+  // The grid recedes so the closing line owns the frame rather than landing
+  // on top of the cards.
+  const closeR = tl.range("close");
+  const gridOut = useTransform(p, [closeR.start, closeR.end], [1, 0.14]);
 
   return (
     <>
@@ -96,7 +100,7 @@ function SummaryStage({ p, tl }: StageProps) {
 
       <SafeLayer>
         <motion.div
-          style={reduced ? undefined : { scale: converge }}
+          style={reduced ? undefined : { scale: converge, opacity: gridOut }}
           className="relative z-30 mx-auto flex h-full w-[min(94vw,1080px)] flex-col justify-center px-4"
         >
           <Beat p={p} tl={tl} id="complete" className="mb-6 text-center" y={12} oneWay>
@@ -163,7 +167,7 @@ function SummaryCard({
   return (
     <motion.div
       style={reduced ? undefined : { opacity, y, scale }}
-      className="rounded-xl border border-white/10 bg-[#0b1a16]/75 p-4"
+      className="rounded-xl border border-white/10 bg-[#0b1a16]/95 p-4"
     >
       <div className="flex items-start justify-between gap-2">
         <Micro className="text-white/70">{card.title}</Micro>

@@ -286,12 +286,15 @@ export function LivePlate({
   alt,
   style,
   priority = false,
+  className = "",
 }: {
   plate: { src: string; srcSet: string };
   video?: string;
   alt: string;
   style?: React.ComponentProps<typeof motion.img>["style"];
   priority?: boolean;
+  /** Passed to both still and video so their crops stay identical. */
+  className?: string;
 }) {
   const reduced = useReducedMotion();
   const [ready, setReady] = useState(false);
@@ -314,7 +317,7 @@ export function LivePlate({
 
   return (
     <>
-      <Plate plate={plate} alt={alt} priority={priority} style={style} />
+      <Plate plate={plate} alt={alt} priority={priority} style={style} className={className} />
       {video && allowed && !reduced && (
         <motion.video
           aria-hidden
@@ -328,7 +331,7 @@ export function LivePlate({
           initial={{ opacity: 0 }}
           animate={{ opacity: ready ? 1 : 0 }}
           transition={{ duration: 1.1, ease: "easeOut" }}
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover ${className}`}
           style={style}
         />
       )}

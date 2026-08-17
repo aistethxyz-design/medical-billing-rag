@@ -76,6 +76,7 @@ function ListenStage({ p, tl }: StageProps) {
       <Plate
         plate={PATIENT_WARM}
         alt=""
+        className="object-[62%_26%] md:object-center"
         style={reduced ? undefined : { scale: imgScale, willChange: "transform" }}
       />
       <motion.div
@@ -218,14 +219,33 @@ function ContextRow({
   const r = tl.sub("context", i);
   const opacity = useTransform(p, r.enter, [0, 1]);
   const x = useTransform(p, r.enter, [10, 0]);
+  // Rows claim no height until they arrive, so the panel grows with its
+  // contents instead of standing as a mostly-empty box.
+  const rows = useTransform(p, r.enter, ["0fr", "1fr"]);
   const pending = v.includes("not yet");
-  return (
-    <motion.div
-      style={reduced ? undefined : { opacity, x }}
-      className="grid gap-0.5 sm:grid-cols-[190px_1fr] sm:items-baseline sm:gap-3"
-    >
+
+  const row = (
+    <>
       <Micro className={pending ? "text-amber-200/90" : "text-white/60"}>{k}</Micro>
       <span className={`text-sm ${pending ? "text-amber-100/90" : "text-white/85"}`}>{v}</span>
+    </>
+  );
+
+  if (reduced) {
+    return (
+      <div className="grid gap-0.5 sm:grid-cols-[190px_1fr] sm:items-baseline sm:gap-3">
+        {row}
+      </div>
+    );
+  }
+  return (
+    <motion.div style={{ display: "grid", gridTemplateRows: rows }}>
+      <motion.div
+        style={{ opacity, x, overflow: "hidden" }}
+        className="grid gap-0.5 sm:grid-cols-[190px_1fr] sm:items-baseline sm:gap-3"
+      >
+        {row}
+      </motion.div>
     </motion.div>
   );
 }
@@ -260,8 +280,17 @@ function RetrieveStage({ p, tl }: StageProps) {
   const searching = useBeat({ p, tl }, "searching");
   const refsIn = useTransform(p, tl.sub("refs", 0).enter, [0, 1]);
   // The drawn layer runs slightly ahead of the cards it explains.
-  const webDraw = useTransform(p, [tl.range("searching").start, tl.sub("refs", 3).end], [0, 1]);
-  const frameDraw = useTransform(p, [0, 0.12], [0, 1]);
+  // Both columns populate together — a half-empty frame reads as broken, not
+  // as restraint. The drawn web starts immediately so the scene never opens
+  // on bare background.
+  const introR = tl.range("intro");
+  const queryIn = useTransform(p, introR.enter, [0, 1]);
+  const webDraw = useTransform(p, [0, tl.sub("refs", 3).end], [0, 1]);
+  const frameDraw = useTransform(p, [0, 0.08], [0, 1]);
+  // The scene resolves to its closing line: the working panels recede so the
+  // sentence has the frame to itself instead of landing on top of them.
+  const synthR = tl.range("synth");
+  const workOut = useTransform(p, [synthR.start, synthR.end], [1, 0.12]);
 
   return (
     <>
@@ -277,8 +306,11 @@ function RetrieveStage({ p, tl }: StageProps) {
       <Vignette strength={0.8} />
 
       <SafeLayer>
-        <div className="relative z-30 mx-auto flex h-full w-[min(94vw,1080px)] items-center px-4">
-          <div className="grid w-full gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-center">
+        <motion.div
+          style={reduced ? undefined : { opacity: workOut }}
+          className="relative z-30 mx-auto flex h-full w-[min(94vw,1080px)] items-center px-4"
+        >
+          <div className="grid w-full gap-5 lg:grid-cols-[1fr_1.15fr] lg:items-center lg:gap-8">
             <Beat p={p} tl={tl} id="intro" y={14} oneWay>
               <Micro className="text-hud">Behind the lens</Micro>
               <h2 className="mt-3 text-2xl font-semibold leading-tight text-white sm:text-4xl">
@@ -292,9 +324,9 @@ function RetrieveStage({ p, tl }: StageProps) {
               </p>
             </Beat>
 
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               {/* retrieval — small, fast, not a database console */}
-              <Beat p={p} tl={tl} id="searching" y={12} oneWay>
+              <motion.div style={reduced ? undefined : { opacity: queryIn }}>
                 <GlassCard label={<><ProvTag kind="knowledge" /></>}>
                   <div className="flex items-center justify-between gap-4">
                     <span className="font-mono text-[13px] text-white/85">
@@ -315,7 +347,7 @@ function RetrieveStage({ p, tl }: StageProps) {
                     4 relevant references
                   </motion.p>
                 </GlassCard>
-              </Beat>
+              </motion.div>
 
               <div className="grid gap-2">
                 {REFS.map((r, i) => (
@@ -335,7 +367,7 @@ function RetrieveStage({ p, tl }: StageProps) {
               </Beat>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <Beat
           p={p}
@@ -373,7 +405,7 @@ function RefRow({
   return (
     <motion.div
       style={reduced ? undefined : { opacity, y, scale }}
-      className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#0b1a16]/70 px-4 py-2.5"
+      className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#0b1a16]/90 px-4 py-2"
     >
       <span className="font-mono text-[10px] text-hud/80">{`0${i + 1}`}</span>
       <span className="text-[13px] text-white/85">{title}</span>
@@ -454,6 +486,7 @@ function CueStage({ p, tl }: StageProps) {
       <Plate
         plate={PATIENT_WARM}
         alt=""
+        className="object-[62%_26%] md:object-center"
         style={reduced ? undefined : { scale: imgScale, willChange: "transform" }}
       />
       <div aria-hidden className="absolute inset-0 z-[21] bg-[#050d10]/70" />

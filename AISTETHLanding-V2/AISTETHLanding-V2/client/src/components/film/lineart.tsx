@@ -226,15 +226,15 @@ export function RetrievalWeb({ t, className = "" }: { t: MotionValue<number>; cl
             (centre.y + n.y) / 2
           } ${n.x},${n.y}`}
           t={spoke(i)}
-          width={1.3}
-          opacity={0.75}
+          width={1.1}
+          opacity={0.5}
           glow="rw"
         />
       ))}
       {outer.map((n, i) => (
-        <Node key={`n${i}`} cx={n.x} cy={n.y} t={spoke(i)} r={1.5} glow="rw" />
+        <Node key={`n${i}`} cx={n.x} cy={n.y} t={spoke(i)} r={0.7} glow="rw" />
       ))}
-      <Node cx={centre.x} cy={centre.y} t={t} r={2.6} glow="rw" />
+      <Node cx={centre.x} cy={centre.y} t={t} r={1.2} glow="rw" />
       {!reduced && (
         <motion.circle
           cx={centre.x}
@@ -333,7 +333,7 @@ export function CollapseWeb({ t, className = "" }: { t: MotionValue<number>; cla
             opacity={0.6}
             glow="cw"
           />
-          <Node cx={o.x} cy={o.y} t={lane(i)} r={1} fill={i % 2 ? CREAM : MINT} glow="cw" />
+          <Node cx={o.x} cy={o.y} t={lane(i)} r={0.45} fill={i % 2 ? CREAM : MINT} glow="cw" />
         </React.Fragment>
       ))}
     </svg>

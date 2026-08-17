@@ -78,6 +78,11 @@ function HeroStage({ p, tl }: StageProps) {
   const chrome = useTransform(p, [0, 0.22], [1, 0]);
   const line1 = useBeat({ p, tl }, "line1");
   const line2 = useBeat({ p, tl }, "line2");
+  // The masthead hands over to the narrative beats rather than sitting behind
+  // them. Without this the headline and the beat text occupy the same band and
+  // collide — badly so on short or zoomed viewports.
+  const l1 = tl.range("line1");
+  const heroOut = useTransform(p, [Math.max(0, l1.start - 0.08), l1.start], [1, 0]);
 
   return (
     <>
@@ -86,6 +91,7 @@ function HeroStage({ p, tl }: StageProps) {
         video={HERO_VIDEO}
         alt="A physician wearing smart glasses listening to a relaxed patient across a consulting desk"
         priority
+        className="object-[68%_22%] md:object-center"
         style={reduced ? undefined : { scale: imgScale, willChange: "transform" }}
       />
       {/* Warm the shadows rather than crushing them to cold black. */}
@@ -101,7 +107,10 @@ function HeroStage({ p, tl }: StageProps) {
       <Vignette strength={0.6} />
 
       <SafeLayer>
-        <div className="relative flex h-full flex-col justify-center px-[6vw] sm:px-[8vw]">
+        <motion.div
+          style={reduced ? undefined : { opacity: heroOut }}
+          className="relative flex h-full flex-col justify-center px-[6vw] sm:px-[8vw]"
+        >
           {/* live readout, sitting inside the optical field */}
           <motion.div
             style={reduced ? undefined : { opacity: fieldFade }}
@@ -163,7 +172,7 @@ function HeroStage({ p, tl }: StageProps) {
               ))}
             </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* narrative beats, layered over the consultation rather than on black */}
         <Beat p={p} tl={tl} id="line1" layer="stack" y={12}>
@@ -255,6 +264,9 @@ function PovStage({ p, tl }: StageProps) {
 
   const frameDraw = useTransform(p, [0.36, 0.52], [0, 1]);
   const caption = useBeat({ p, tl }, "caption");
+  // Panel arrives with its first line rather than sitting empty.
+  const boot0 = tl.sub("boot", 0);
+  const bootIn = useTransform(p, [Math.max(0, boot0.start - 0.04), boot0.start], [0, 1]);
 
   return (
     <>
@@ -263,6 +275,7 @@ function PovStage({ p, tl }: StageProps) {
         plate={PATIENT_WARM}
         alt="The patient, seen from the physician's point of view, talking calmly"
         priority
+        className="object-[62%_26%] md:object-center"
         style={
           reduced
             ? undefined
@@ -305,18 +318,23 @@ function PovStage({ p, tl }: StageProps) {
         </Beat>
 
         {/* System readout lives in a panel. Loose mono text floating on
-            photography is unreadable the moment the image behind it is busy. */}
-        <div className="absolute bottom-[10vh] left-[6vw] z-30 w-[min(86vw,440px)] rounded-xl border border-hud/25 bg-[#050d10]/85 px-4 py-3.5 backdrop-blur-sm">
-          <div className="mb-2.5 flex items-center gap-2 border-b border-white/10 pb-2">
+            photography is unreadable the moment the image behind it is busy.
+            The panel arrives with its first line so it is never an empty box,
+            and sits low-left where the layout has room at any height. */}
+        <motion.div
+          style={reduced ? undefined : { opacity: bootIn }}
+          className="absolute bottom-[6vh] left-[5vw] z-30 w-[min(88vw,420px)] rounded-xl border border-hud/25 bg-[#050d10]/88 px-4 py-3 backdrop-blur-sm"
+        >
+          <div className="mb-2 flex items-center gap-2 border-b border-white/10 pb-1.5">
             <Dot />
             <Micro className="text-hud">System</Micro>
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1">
             {BOOT_LINES.map(([k, v], i) => (
               <BootLine key={k} p={p} tl={tl} i={i} k={k} v={v} />
             ))}
           </div>
-        </div>
+        </motion.div>
 
         <Beat
           p={p}
