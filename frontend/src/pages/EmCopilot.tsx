@@ -14,6 +14,7 @@ import {
 import { getApiBase } from '@/services/runtimeConfig';
 import { useAuthStore } from '@/stores/authStore';
 import PageHeader from '@/components/layout/PageHeader';
+import GlassesPairing from '@/components/GlassesPairing';
 import copilotGlasses from '@/assets/copilot-glasses.png';
 
 /**
@@ -449,6 +450,8 @@ const EmCopilot: React.FC = () => {
           {sources && <p className="text-xs text-gray-400 mt-3 pt-2 border-t border-gray-100">{sources}</p>}
         </div>
       )}
+
+      <GlassesPairing />
 
       <p className="text-center text-xs text-gray-400">
         Decision support only — the physician retains full clinical judgment · Not for real-patient use without validation

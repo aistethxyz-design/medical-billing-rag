@@ -27,6 +27,29 @@ export async function signToken(env, payload) {
     .sign(secretKey(env));
 }
 
+// Long-lived key for the Even G2 glasses plugin, pasted once on the phone. It is
+// scoped to the copilot endpoints only (enforced in api.js) and the allowlist is
+// re-checked on every request. Bump GLASSES_TOKEN_VERSION on the Worker to
+// revoke every issued glasses key at once.
+export const GLASSES_TOKEN_TYPE = 'glasses';
+const GLASSES_TOKEN_TTL = '365d';
+
+export function glassesTokenVersion(env) {
+  return String(env.GLASSES_TOKEN_VERSION || '1');
+}
+
+export async function signGlassesToken(env, user) {
+  // Never mint a year-long credential with the public fallback secret.
+  if (!env.JWT_SECRET) throw new Error('JWT_SECRET is not set on the Worker');
+  return new SignJWT({ id: user.id, email: user.email, typ: GLASSES_TOKEN_TYPE, gv: glassesTokenVersion(env) })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(GLASSES_TOKEN_TTL)
+    .setIssuer('aisteth')
+    .setAudience('aisteth-users')
+    .sign(secretKey(env));
+}
+
 export async function verifyToken(env, token) {
   const { payload } = await jwtVerify(token, secretKey(env), {
     issuer: 'aisteth',
@@ -34,13 +57,20 @@ export async function verifyToken(env, token) {
   });
   const id = payload.id || payload.userId;
   if (!id) throw new Error('Invalid token');
+  const isGlasses = payload.typ === GLASSES_TOKEN_TYPE;
+  if (isGlasses && String(payload.gv || '') !== glassesTokenVersion(env)) {
+    throw new Error('Glasses key revoked');
+  }
   return {
     id: String(id),
     email: String(payload.email || ''),
     role: payload.role,
-    emCopilot: payload.emCopilot === true,
+    // Glasses keys never carry the copilot claim; access is re-checked live.
+    emCopilot: !isGlasses && payload.emCopilot === true,
     firstName: payload.firstName ? String(payload.firstName) : '',
     lastName: payload.lastName ? String(payload.lastName) : '',
+    glasses: isGlasses,
+    exp: typeof payload.exp === 'number' ? payload.exp : undefined,
   };
 }
 

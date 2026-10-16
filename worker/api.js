@@ -1,4 +1,4 @@
-import { verifyToken, verifyGoogleIdToken, googleClientId } from './jwt.js';
+import { verifyToken, verifyGoogleIdToken, googleClientId, signGlassesToken } from './jwt.js';
 import { matchCodesFromText } from './ohip.js';
 import {
   hasStorage,
@@ -21,6 +21,19 @@ import {
 function adminEmails(env) {
   const fromEnv = (env.ADMIN_EMAILS || '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
   return new Set([...fromEnv, 'aistethxyz@gmail.com']);
+}
+
+const GLASSES_PATHS = ['/api/glasses/token', '/api/glasses/me', '/api/stt-token'];
+// Endpoints a glasses key (typ=glasses) is allowed to call.
+const GLASSES_KEY_PATHS = ['/api/glasses/me', '/api/stt-token', '/api/copilot', '/api/snapshot'];
+const STT_TOKEN_TTL_S = 60;
+
+// Web sessions carry the allowlist result from login; glasses keys are long-lived,
+// so they are always re-checked against the live allowlist (or admin list).
+async function copilotAllowed(env, user) {
+  if (adminEmails(env).has(user.email)) return true;
+  if (!user.glasses && user.emCopilot) return true;
+  return isAllowed(env, user.email);
 }
 
 const CORS = {
@@ -79,7 +92,7 @@ export async function handleApiRequest(request, env) {
   // Endpoints that must work even when KV isn't bound yet (auth + copilot use a
   // KV-optional path). Only the KV-backed billing endpoints hard-require storage.
   const KV_OPTIONAL = ['/api/auth/config', '/api/auth/google', '/api/auth/me', '/api/auth/logout',
-    '/api/copilot', '/api/snapshot', '/api/admin/allowlist'];
+    '/api/copilot', '/api/snapshot', '/api/admin/allowlist', ...GLASSES_PATHS];
   if (!hasStorage(env) && path.startsWith('/api/') && !KV_OPTIONAL.includes(path)) {
     return err('Add KV namespace binding named AISTETH_KV in Cloudflare Worker settings', 503);
   }
@@ -138,6 +151,52 @@ export async function handleApiRequest(request, env) {
     return err('Access denied. No valid token provided.', 401);
   }
 
+  // A glasses key may only drive the copilot — never billing or admin APIs.
+  if (user?.glasses && !GLASSES_KEY_PATHS.includes(path)) {
+    return err('Glasses key cannot access this endpoint', 403);
+  }
+
+  // ── EM Copilot: glasses pairing + speech-to-text token ─────────────────────
+  if (path === '/api/glasses/token' && method === 'POST') {
+    // Issued from a signed-in web session only (a glasses key can't mint more).
+    if (user.glasses) return err('Sign in on wiserdoc.com to create a glasses key', 403);
+    if (!(await copilotAllowed(env, user))) return err('Not authorized for the EM Copilot', 403);
+    try {
+      const token = await signGlassesToken(env, user);
+      return json({ success: true, token, email: user.email });
+    } catch (e) {
+      return err(e instanceof Error ? e.message : 'Could not create glasses key', 503);
+    }
+  }
+
+  if (path === '/api/glasses/me' && method === 'GET') {
+    if (!(await copilotAllowed(env, user))) return err('Not authorized for the EM Copilot', 403);
+    return json({ success: true, email: user.email, expiresAt: user.exp ? user.exp * 1000 : null });
+  }
+
+  if (path === '/api/stt-token' && method === 'POST') {
+    if (!(await copilotAllowed(env, user))) return err('Not authorized for the EM Copilot', 403);
+    if (!env.DEEPGRAM_API_KEY) {
+      return err('Speech-to-text is not configured yet (set DEEPGRAM_API_KEY on the Worker).', 503);
+    }
+    try {
+      // Short-lived Deepgram JWT: only needs to be valid when the socket opens;
+      // the open stream keeps running after it expires.
+      const upstream = await fetch('https://api.deepgram.com/v1/auth/grant', {
+        method: 'POST',
+        headers: { Authorization: `Token ${env.DEEPGRAM_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ttl_seconds: STT_TOKEN_TTL_S }),
+      });
+      const data = await upstream.json().catch(() => ({}));
+      if (!upstream.ok || !data.access_token) {
+        return err(`Speech-to-text token request failed (${upstream.status})`, 502);
+      }
+      return json({ success: true, provider: 'deepgram', token: data.access_token, expiresIn: data.expires_in });
+    } catch {
+      return err('Speech-to-text provider is unavailable. Please try again.', 502);
+    }
+  }
+
   // ── EM Copilot: allowlist admin (owner only) ───────────────────────────────
   if (path === '/api/admin/allowlist') {
     if (!adminEmails(env).has(user.email)) return err('Admins only', 403);
@@ -159,7 +218,7 @@ export async function handleApiRequest(request, env) {
   // Residents never reach the backend directly. We verify the JWT + allowlist
   // here, then forward with the server-to-server shared secret.
   if ((path === '/api/copilot' || path === '/api/snapshot') && method === 'POST') {
-    if (!(user.emCopilot || (await isAllowed(env, user.email)))) {
+    if (!(await copilotAllowed(env, user))) {
       return err('Not authorized for the EM Copilot', 403);
     }
     const base = (env.EM_COPILOT_URL || 'https://em-copilot.aisteth.xyz').replace(/\/$/, '');
@@ -178,8 +237,12 @@ export async function handleApiRequest(request, env) {
         signal: controller.signal,
       });
       const text = await upstream.text();
+      // A backend 401/403 means the Worker↔backend secret is misconfigured, not
+      // that the user's credential is bad — report it as a gateway fault so
+      // clients don't discard a valid session or glasses key.
+      const status = upstream.status === 401 || upstream.status === 403 ? 502 : upstream.status;
       return new Response(text, {
-        status: upstream.status,
+        status,
         headers: { 'Content-Type': 'application/json', ...CORS },
       });
     } catch {
