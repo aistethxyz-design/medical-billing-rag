@@ -22,7 +22,7 @@ import {
   Dot,
   GlassCard,
 } from "./shared";
-import { LensOptics, DrawnFrame } from "./lineart";
+import { DrawnFrame } from "./lineart";
 import { HERO_OTS, PATIENT_WARM, HERO_VIDEO } from "./images";
 
 /* ── Scene 1 · hero ───────────────────────────────────────────────────── */
@@ -253,10 +253,6 @@ function PovStage({ p, tl }: StageProps) {
   const otsBlurV = useTransform(p, [0, 0.28], [0, 9]);
   const otsBlur = useTransform(otsBlurV, (v) => `blur(${v.toFixed(1)}px)`);
 
-  const lensDraw = useTransform(p, [0.02, 0.22], [0, 1]);
-  const lensExpand = useTransform(p, [0.18, 0.46], [1, 3.4]);
-  const lensOpacity = useTransform(p, [0.02, 0.16, 0.34, 0.46], [0, 1, 1, 0]);
-
   const povOpacity = useTransform(p, [0.18, 0.38], [0, 1]);
   const povScale = useTransform(p, [0.18, 1], [1.16, 1.02]);
   const povBlurV = useTransform(p, [0.18, 0.40], [12, 0]);
@@ -294,12 +290,6 @@ function PovStage({ p, tl }: StageProps) {
             : { opacity: otsOpacity, scale: otsScale, filter: otsBlur, willChange: "transform" }
         }
       />
-      {/* the optics themselves — drawn, then passing over the viewer */}
-      {!reduced && (
-        <div className="film-abs-only absolute inset-0 z-[23]">
-          <LensOptics draw={lensDraw} expand={lensExpand} opacity={lensOpacity} />
-        </div>
-      )}
       <div aria-hidden className="absolute inset-0 z-[21] bg-[#050d10]/45" />
       <DrawnFrame t={frameDraw} tint={0.05} />
       <Vignette strength={0.7} />

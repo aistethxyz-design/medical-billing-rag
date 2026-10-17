@@ -28,7 +28,7 @@ import {
   Segment,
 } from "./shared";
 import { PATIENT_WARM } from "./images";
-import { RetrievalWeb, Connector, DrawnFrame } from "./lineart";
+import { DrawnFrame } from "./lineart";
 
 /* ── Scene 3 · listening & understanding ──────────────────────────────── */
 
@@ -279,13 +279,10 @@ function RetrieveStage({ p, tl }: StageProps) {
   const reduced = useReducedMotion();
   const searching = useBeat({ p, tl }, "searching");
   const refsIn = useTransform(p, tl.sub("refs", 0).enter, [0, 1]);
-  // The drawn layer runs slightly ahead of the cards it explains.
   // Both columns populate together — a half-empty frame reads as broken, not
-  // as restraint. The drawn web starts immediately so the scene never opens
-  // on bare background.
+  // as restraint.
   const introR = tl.range("intro");
   const queryIn = useTransform(p, introR.enter, [0, 1]);
-  const webDraw = useTransform(p, [0, tl.sub("refs", 3).end], [0, 1]);
   const frameDraw = useTransform(p, [0, 0.08], [0, 1]);
   // The scene resolves to its closing line: the working panels recede so the
   // sentence has the frame to itself instead of landing on top of them.
@@ -296,12 +293,6 @@ function RetrieveStage({ p, tl }: StageProps) {
     <>
       <div aria-hidden className="absolute inset-0 bg-[#050b0e]" />
       <div aria-hidden className="hud-grid absolute inset-0 opacity-30" />
-      {/* retrieval, drawn: the query reaching out into the index and pulling
-          a few passages back. The whole scene is the AI layer, so the line
-          work carries it rather than sitting on a photograph. */}
-      <div className="film-abs-only absolute inset-0 z-[15]">
-        <RetrievalWeb t={webDraw} />
-      </div>
       <DrawnFrame t={frameDraw} tint={0.04} />
       <Vignette strength={0.8} />
 
@@ -475,10 +466,10 @@ function CueStage({ p, tl }: StageProps) {
     ["rgba(251,191,36,0.45)", "rgba(74,222,158,0.55)"],
   );
   const glow = useTransform(addressed.opacity, [0, 1], [0, 0.35]);
-  // Unresolved copy fades out as the resolved copy fades in, in the same box.
-  const unresolvedOut = useTransform(addressed.opacity, [0, 0.6], [1, 0]);
-  // The link draws while the physician is asking, then holds.
-  const linkDraw = useTransform(p, [tl.range("ask").start, tl.range("listening").end], [0, 1]);
+  // Unresolved copy fades out, then the resolved copy fades in, in the same box
+  // (never both at once, or the two paragraphs overprint).
+  const unresolvedOut = useTransform(addressed.opacity, [0, 0.45], [1, 0]);
+  const resolvedIn = useTransform(addressed.opacity, [0.55, 1], [0, 1]);
   const frameDraw = useTransform(p, [0, 0.1], [0, 1]);
 
   return (
@@ -490,11 +481,6 @@ function CueStage({ p, tl }: StageProps) {
         style={reduced ? undefined : { scale: imgScale, willChange: "transform" }}
       />
       <div aria-hidden className="absolute inset-0 z-[21] bg-[#050d10]/70" />
-      {/* the reasoning made visible: a line from the question the physician
-          asked down to the cue it resolves */}
-      <div className="film-abs-only absolute inset-0 z-[24]">
-        <Connector t={linkDraw} from={{ x: 72, y: 30 }} to={{ x: 30, y: 52 }} />
-      </div>
       <DrawnFrame t={frameDraw} tint={0.06} />
       <Vignette strength={0.7} />
 
@@ -544,7 +530,7 @@ function CueStage({ p, tl }: StageProps) {
                   </p>
                 </motion.div>
                 <motion.div
-                  style={reduced ? undefined : { opacity: addressed.opacity }}
+                  style={reduced ? undefined : { opacity: resolvedIn }}
                   className={reduced ? "mt-3" : "absolute inset-0"}
                 >
                   <p className="text-sm leading-relaxed text-white/90 sm:text-[15px]">
@@ -596,10 +582,14 @@ function CueHeader({
   reduced: boolean;
 }) {
   // All three labels occupy the same slot; each is a pure function of scroll, so
-  // the sequence plays backwards correctly as well as forwards.
-  const cueOnly = useTransform(listening, [0, 1], [1, 0]);
-  const listenOnly = useTransform(addressed, [0, 0.5], [1, 0]);
-  const listenVisible = useTransform([listening, listenOnly] as const, ([a, b]: number[]) => a * b);
+  // the sequence plays backwards correctly as well as forwards. Hand-offs are
+  // sequential (outgoing gone before incoming appears) — overlapping fades in
+  // one slot render as garbled double text.
+  const cueOnly = useTransform(listening, [0, 0.45], [1, 0]);
+  const listenIn = useTransform(listening, [0.55, 1], [0, 1]);
+  const listenOut = useTransform(addressed, [0, 0.45], [1, 0]);
+  const listenVisible = useTransform([listenIn, listenOut] as const, ([a, b]: number[]) => a * b);
+  const addressedIn = useTransform(addressed, [0.55, 1], [0, 1]);
 
   if (reduced) {
     return <Micro className="text-hud">Clinical cue → addressed</Micro>;
@@ -612,7 +602,7 @@ function CueHeader({
       <motion.span style={{ opacity: listenVisible }} className="absolute inset-0">
         <Micro className="text-white/70">Listening…</Micro>
       </motion.span>
-      <motion.span style={{ opacity: addressed }} className="absolute inset-0">
+      <motion.span style={{ opacity: addressedIn }} className="absolute inset-0">
         <Micro className="text-hud">✓ Addressed</Micro>
       </motion.span>
     </div>

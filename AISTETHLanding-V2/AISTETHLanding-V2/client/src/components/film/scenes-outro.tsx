@@ -24,7 +24,7 @@ import {
   ProvTag,
 } from "./shared";
 import { CONSULT_WARM, GLASSES_HERO, CONSULT_VIDEO } from "./images";
-import { CollapseWeb, DrawnFrame } from "./lineart";
+import { DrawnFrame } from "./lineart";
 
 /* ── Scene 6 · encounter collapse → structured summary ────────────────── */
 
@@ -79,9 +79,6 @@ function SummaryStage({ p, tl }: StageProps) {
   const complete = useBeat({ p, tl }, "complete");
   // The live HUD converges into a single line before reorganising into cards.
   const converge = useTransform(complete.opacity, [0, 1], [1.06, 1]);
-  // Everything the copilot was holding runs inward and becomes structure. The
-  // lines draw first, then the cards form along them.
-  const collapse = useTransform(p, [0, tl.sub("cards", 4).start], [0, 1]);
   const frameDraw = useTransform(p, [0, 0.1], [0, 1]);
   // The grid recedes so the closing line owns the frame rather than landing
   // on top of the cards.
@@ -92,9 +89,6 @@ function SummaryStage({ p, tl }: StageProps) {
     <>
       <div aria-hidden className="absolute inset-0 bg-[#050b0e]" />
       <div aria-hidden className="hud-grid absolute inset-0 opacity-20" />
-      <div className="film-abs-only absolute inset-0 z-[15]">
-        <CollapseWeb t={collapse} />
-      </div>
       <DrawnFrame t={frameDraw} tint={0.04} />
       <Vignette strength={0.8} />
 
