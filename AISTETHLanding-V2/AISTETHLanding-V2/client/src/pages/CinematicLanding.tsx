@@ -11,6 +11,7 @@ import { ActIntro } from "@/components/film/scenes-intro";
 import { ActCopilot } from "@/components/film/scenes-copilot";
 import { ActOutro } from "@/components/film/scenes-outro";
 import { CHAPTERS } from "@/components/film/clock";
+import { BOOK_CALL_URL, external } from "@/components/film/links";
 
 /** Long jumps are instant: smooth-scrolling 1,500vh would fast-forward the film. */
 function useJump() {
@@ -64,6 +65,13 @@ function FilmHeader() {
           >
             For investors
           </button>
+          <a
+            href={BOOK_CALL_URL}
+            {...external}
+            className="hidden rounded-lg px-3 py-1.5 text-[13px] font-medium text-white/80 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud sm:inline-block"
+          >
+            Book a call
+          </a>
           <a
             href="/app/login?redirect=/em-copilot"
             className="rounded-lg border border-hud/40 bg-hud/10 px-4 py-1.5 text-[13px] font-medium text-hud transition hover:bg-hud/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"

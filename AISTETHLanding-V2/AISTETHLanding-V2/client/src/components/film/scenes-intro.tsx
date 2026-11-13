@@ -23,6 +23,7 @@ import {
   GlassCard,
 } from "./shared";
 import { DrawnFrame } from "./lineart";
+import { PREREGISTER_URL, external } from "./links";
 import { HERO_OTS, PATIENT_WARM, HERO_VIDEO } from "./images";
 
 /* ── Scene 1 · hero ───────────────────────────────────────────────────── */
@@ -146,10 +147,11 @@ function HeroStage({ p, tl }: StageProps) {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href="mailto:aistethxyz@gmail.com?subject=EM%20Copilot%20trial%20access"
+                href={PREREGISTER_URL}
+                {...external}
                 className="rounded-xl bg-hud px-6 py-3 text-sm font-semibold text-[#04140c] transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
               >
-                Request trial access
+                Pre-register as a physician
               </a>
               <a
                 href="#investors"

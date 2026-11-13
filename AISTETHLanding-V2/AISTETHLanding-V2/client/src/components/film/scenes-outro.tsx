@@ -25,6 +25,7 @@ import {
 } from "./shared";
 import { CONSULT_WARM, GLASSES_HERO, CONSULT_VIDEO } from "./images";
 import { DrawnFrame } from "./lineart";
+import { BOOK_CALL_URL, PREREGISTER_URL, external } from "./links";
 
 /* ── Scene 6 · encounter collapse → structured summary ────────────────── */
 
@@ -390,10 +391,11 @@ function InvestorBand() {
               Request the deck
             </a>
             <a
-              href="mailto:aistethxyz@gmail.com?subject=EM%20Copilot%20trial%20access"
+              href={BOOK_CALL_URL}
+              {...external}
               className="rounded-xl border border-white/25 px-6 py-3 text-sm font-medium text-white/90 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
             >
-              Request trial access
+              Book a call
             </a>
           </div>
         </motion.div>
@@ -428,18 +430,29 @@ function CtaSection() {
           </h2>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
-              href="/app/login?redirect=/em-copilot"
+              href={PREREGISTER_URL}
+              {...external}
               className="rounded-xl bg-hud px-7 py-3.5 text-sm font-semibold text-[#04140c] transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
+            >
+              Pre-register as a physician
+            </a>
+            <a
+              href={BOOK_CALL_URL}
+              {...external}
+              className="rounded-xl border border-white/25 px-7 py-3.5 text-sm font-medium text-white/90 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
+            >
+              Book a call
+            </a>
+          </div>
+          <p className="mt-5 text-sm text-white/60">
+            Already have access?{" "}
+            <a
+              href="/app/login?redirect=/em-copilot"
+              className="text-hud underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
             >
               Sign in to WiserDoc
             </a>
-            <a
-              href="mailto:aistethxyz@gmail.com?subject=EM%20Copilot%20trial%20access"
-              className="rounded-xl border border-white/25 px-7 py-3.5 text-sm font-medium text-white/90 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hud"
-            >
-              Request trial access
-            </a>
-          </div>
+          </p>
           <p className="mx-auto mt-10 max-w-lg text-xs leading-relaxed text-white/70">
             Decision support only — the physician retains full clinical judgment.
             EM Copilot is in a limited trial using synthetic and de-identified
